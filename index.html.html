@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sheets Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f0f0; text-align: center; }
+        h2 { color: #333; }
+        .form-group { margin-bottom: 10px; }
+        input[type="text"], input[type="password"] { width: 300px; padding: 8px; margin-bottom: 5px; }
+        .button-group button { padding: 10px 20px; margin: 5px; min-width: 100px; color: white; border: none; cursor: pointer; }
+        .add-btn { background-color: #003366; } /* Dark Blue */
+        .edit-btn, .search-btn { background-color: #3399FF; } /* Light Blue */
+        .clear-btn { background-color: #66CC66; } /* Light Green */
+        .refresh-btn { background-color: gold; color: black; }
+        .delete-btn { background-color: red; margin-left: 50px; }
+        table { border-collapse: collapse; width: 100%; background-color: white; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #4285F4; color: white; }
+    </style>
+</head>
+<body>
+
+<h2>Google Sheets Data Manager</h2>
+
+<div id="loginSection">
+    <input type="password" id="appPassword" placeholder="Enter Password">
+    <button onclick="checkPassword()">Unlock</button>
+</div>
+
+<div id="appSection" style="display:none;">
+    <div class="form-group">
+        <label>Email:</label><br><input type="text" id="email"><br>
+        <label>Username:</label><br><input type="text" id="username"><br>
+        <label>Phone #:</label><br><input type="text" id="phone"><br>
+        <label>Notes:</label><br><input type="text" id="notes"><br>
+        <label>Search:</label><br><input type="text" id="searchQuery" placeholder="Search by username, phone, or email"><br>
+    </div>
+
+    <div class="button-group">
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="editRow()">Edit</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
+        <button class="search-btn" onclick="searchData()">Search</button>
+        <button class="refresh-btn" onclick="loadData()">Refresh</button>
+        <button class="delete-btn" onclick="deleteRow()">Delete</button>
+    </div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Server</th>
+                <th>AutoPay</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+let sessionPassword = "";
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzRs2JtJG5gdivwVo0Fjf6vtG81vG6gtHfcJLtS-V9Fdh3eHtYHy2kV7oqlxR37o3Y/exec';
+const sheetId = 'YOUR_SHEET_ID';
+const apiKey = 'YOUR_API_KEY';
+const range = 'data!A1:G';
+
+function checkPassword() {
+    const inputPass = document.getElementById('appPassword').value;
+    if (inputPass === 'Google#2020') {
+        sessionPassword = inputPass;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'block';
+        loadData();
+    } else {
+        alert('Incorrect password');
+    }
+}
+
+function loadData() {
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+        if (data.values) {
+            data.values.slice(1).forEach(row => {
+                const newRow = tableBody.insertRow();
+                row.forEach(cell => {
+                    const newCell = newRow.insertCell();
+                    newCell.textContent = cell;
+                });
+            });
+        }
+    });
+}
+
+function normalize(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function searchData() {
+    let query = normalize(document.getElementById('searchQuery').value);
+    let rows = document.getElementById('dataTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    Array.from(rows).forEach(row => {
+        let rowText = '';
+        Array.from(row.getElementsByTagName('td')).forEach(cell => {
+            rowText += normalize(cell.textContent);
+        });
+        row.style.display = rowText.includes(query) ? '' : 'none';
+    });
+}
+
+function addRow() {
+    const timestamp = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const newNote = `#Auto: ${timestamp}: ${document.getElementById('notes').value}`;
+    const formData = new URLSearchParams();
+    formData.append('action', 'add');
+    formData.append('password', sessionPassword);
+    formData.append('username', document.getElementById('username').value);
+    formData.append('passwordField', '');
+    formData.append('email', document.getElementById('email').value);
+    formData.append('phone', document.getElementById('phone').value);
+    formData.append('server', '');
+    formData.append('autoPay', '');
+    formData.append('notes', newNote);
+
+    fetch(scriptURL, { method: 'POST', body: formData })
+    .then(response => response.text())
+    .then(result => {
+        alert(result);
+        loadData();
+    });
+}
+
+function deleteRow() {
+    let rowNum = prompt('Enter the row number to delete:');
+    if (rowNum) {
+        const formData = new URLSearchParams();
+        formData.append('action', 'delete');
+        formData.append('password', sessionPassword);
+        formData.append('row', rowNum);
+
+        fetch(scriptURL, { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(result => {
+            alert(result);
+            loadData();
+        });
+    }
+}
+
+function editRow() {
+    alert('Edit function will be added in the next version.');
+}
+
+function clearForm() {
+    document.getElementById('email').value = '';
+    document.getElementById('username').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('notes').value = '';
+    document.getElementById('searchQuery').value = '';
+}
+</script>
+
+</body>
+</html>
