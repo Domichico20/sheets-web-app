@@ -26,7 +26,7 @@
 
         h2 {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 1.5rem;
+            font-size: 3rem;
             font-weight: 600;
             text-align: center;
             margin-bottom: 20px;
@@ -35,7 +35,7 @@
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s linear infinite;
+            animation: gradientShift 4s linear infinite;
         }
 
         @keyframes gradientShift {
@@ -51,7 +51,7 @@
         h2::after {
             content: '';
             display: block;
-            width: 37%;
+            width: 73%;
             height: 4px;
             background: #0c65be;
             margin: 8px auto 0;
@@ -167,27 +167,37 @@
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
+  width: auto;
+  border-collapse: collapse;
+  background: white;
+}
 
-        th,
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-            white-space: nowrap;
-        }
+/* clamp the 3rd column (Email) to 250px with ellipsis */
+table th:nth-child(3),
+table td:nth-child(3) {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-        th {
-            background-color: #4285F4;
-            color: white;
-        }
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
 
-        tr.selected {
-            background-color: #eef;
-        }
+table th {
+  background-color: #4285F4;
+  color: white;
+}
+
+tr.selected {
+  background-color: rgb(238, 217, 217);
+}
+
     </style>
 </head>
 
