@@ -273,6 +273,8 @@
         const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
         const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
         const range = 'data!A1:G';
+        // keep track of all usernames we loaded
+        let existingUsernames = [];
 
         function checkPassword() {
             const pass = document.getElementById('appPassword').value;
@@ -291,6 +293,9 @@
                 .then(r => r.json())
                 .then(data => {
                     const allRows = data.values || [];
+                    existingUsernames = allRows
+                        .slice(1)                     // skip header
+                        .map(r => (r[0] || '').toLowerCase());
                     const tbody = document.querySelector('#dataTable tbody');
                     tbody.innerHTML = '';
 
@@ -420,6 +425,10 @@
 
         function addRow() {
             const u = document.getElementById('username').value;
+            // ❌ STOP here if this user already exists
+            if (existingUsernames.includes(u.toLowerCase())) {
+                return alert("Username already exists");
+            }
             const pwd = document.getElementById('password').value;
             const em = document.getElementById('email').value;
             const ph = normalizePhone(document.getElementById('phone').value);
