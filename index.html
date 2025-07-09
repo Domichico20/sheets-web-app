@@ -138,7 +138,7 @@
 
         .button-group button {
             padding: 20px 40px;
-            font-size: 1.25rem;
+            font-size: 1.50rem;
             color: white;
             border: none;
             border-radius: 4px;
@@ -158,7 +158,7 @@
         }
 
         .refresh-btn {
-            background-color: gold;
+            background-color: rgb(228, 195, 8);
             color: black;
         }
 
@@ -167,37 +167,36 @@
         }
 
         table {
-  width: auto;
-  border-collapse: collapse;
-  background: white;
-}
+            width: auto;
+            border-collapse: collapse;
+            background: white;
+        }
 
-/* clamp the 3rd column (Email) to 250px with ellipsis */
-table th:nth-child(3),
-table td:nth-child(3) {
-  max-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+        /* clamp the 3rd column (Email) to 250px with ellipsis */
+        table th:nth-child(3),
+        table td:nth-child(3) {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-table th,
-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  white-space: nowrap;
-}
+        table th,
+        table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap;
+        }
 
-table th {
-  background-color: #4285F4;
-  color: white;
-}
+        table th {
+            background-color: #4285F4;
+            color: white;
+        }
 
-tr.selected {
-  background-color: rgb(238, 217, 217);
-}
-
+        tr.selected {
+            background-color: rgb(238, 217, 217);
+        }
     </style>
 </head>
 
@@ -246,6 +245,264 @@ tr.selected {
                 <label for="notes">Notes:</label>
                 <input type="text" id="notes">
             </div>
+            <input type="hidden" id="rowIndex" />
+        </div>
+
+        <div class="button-row">
+            <div class="button-group left"></div>
+            <div class="button-group center">
+                <button class="add-btn" onclick="addRow()">Add</button>
+                <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+                <button class="clear-btn" onclick="clearForm()">Clear</button>
+                <button class="refresh-btn" onclick="loadData()">Refresh</button>
+            </div>
+            <div class="button-group right">
+                <button class="add-btn" style="background-color:#a14aee;" onclick="addNote()">Add Note</button>
+                <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Server</th>
+                    <th>AutoPay</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        let sessionPassword = "";
+        let selectedRowIndex = null;
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+        const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
+        const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
+        const range = 'data!A1:G3000';
+        // keep track of all usernames we loaded
+        let existingUsernames = [];
+
+        function checkPassword() {
+            const pass = document.getElementById('appPassword').value;
+            if (pass === 'Google#2020') {
+                sessionPassword = pass;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('appSection').style.display = 'block';
+                loadData();
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        function loadData() {
+            fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
+                .then(r => r.json())
+                .then(data => {
+                    const allRows = data.values || [];
+                    existingUsernames = allRows
+                        .slice(1)                     // skip header
+                        .map(r => (r[0] || '').toLowerCase());
+                    const tbody = document.querySelector('#dataTable tbody');
+                    tbody.innerHTML = '';
+
+                    // total number of data rows (excluding header)
+                    const m = allRows.length - 1;
+
+                    // skip header, reverse for UI
+                    allRows.slice(1).reverse().forEach((row, i) => {
+                        const tr = tbody.insertRow();
+                        row.forEach(cell => tr.insertCell().textContent = cell);
+
+                        tr.onclick = () => {
+                            // 1) compute which sheet‐row I clicked
+                            selectedRowIndex = allRows.length - i;
+
+                            // 2) highlight
+                            document.querySelectorAll('#dataTable tr.selected')
+                                .forEach(r => r.classList.remove('selected'));
+                            tr.classList.add('selected');
+
+                            // 3) fill inputs and hidden field
+                            document.getElementById('username').value = row[0];
+                            document.getElementById('password').value = row[1];
+                            document.getElementById('email').value = row[2];
+                            document.getElementById('phone').value = row[3];
+                            document.getElementById('server').value = row[4];
+                            document.getElementById('autoPay').value = row[5];
+                            document.getElementById('notes').value = row[6];
+                            document.getElementById('rowIndex').value = selectedRowIndex;
+                        };
+
+                    });
+                });
+        }
+
+        function normalizePhone(s) {
+            const d = s.replace(/\D/g, '');
+            if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            if (d.length === 11 && d.startsWith('1')) return d.replace(/^1(\d{3})(\d{3})(\d{4})/, '1 ($1) $2-$3');
+            return s;
+        }
+
+        function searchData() {
+            const q = document.getElementById('searchQuery').value.toLowerCase();
+            document.querySelectorAll('#dataTable tbody tr').forEach(tr => {
+                tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function confirmDelete() {
+            // If nothing’s selected, bail out
+            if (selectedRowIndex == null) {
+                alert('Please click on a row first to select it.');
+                return;
+            }
+            // Ask once more before deleting
+            if (!confirm('Are you sure you want to DELETE the selected row?')) {
+                return;
+            }
+            // Perform the delete
+            deleteRow();
+        }
+
+        function deleteRow() {
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'delete',
+                    password: sessionPassword,
+                    row: selectedRowIndex
+                })
+            })
+                .then(res => res.text())
+                .then(msg => {
+                    alert(msg);
+                    // clear your selection marker so you don’t try to delete twice
+                    selectedRowIndex = null;
+                    // reload the table
+                    loadData();
+                })
+                .catch(err => {
+                    alert('Delete failed: ' + err);
+                });
+        }
+
+        function confirmEdit() {
+            if (selectedRowIndex == null) {
+                alert('Select a row first!');
+                return;
+            }
+            if (!confirm('Save changes to this row?')) return;
+            editRow();  // do the actual POST
+        }
+
+        function editRow() {
+            // pull exactly the same inputs you use for addRow()
+            const u = document.getElementById('username').value;
+            const pwd = document.getElementById('password').value;
+            const em = document.getElementById('email').value;
+            const ph = normalizePhone(document.getElementById('phone').value);
+            const srv = document.getElementById('server').value.trim();
+            const ap = document.getElementById('autoPay').value;
+            const nt = document.getElementById('notes').value;
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'edit',            // <-- tell backend it's an edit
+                    password: sessionPassword,
+                    row: selectedRowIndex,  // <-- which row
+                    username: u,
+                    passwordField: pwd,
+                    email: em,
+                    phone: ph,
+                    server: srv,
+                    autoPay: ap,
+                    notes: nt
+                })
+            })
+                .then(r => r.text())
+                .then(m => {
+                    alert(m);       // should say “Row Edited”
+                    loadData();     // refresh table
+                })
+                .catch(err => alert('Edit failed: ' + err));
+        }
+
+        function addRow() {
+            const u = document.getElementById('username').value;
+            // ❌ STOP here if this user already exists
+            if (existingUsernames.includes(u.toLowerCase())) {
+                return alert("Username already exists");
+            }
+            const pwd = document.getElementById('password').value;
+            const em = document.getElementById('email').value;
+            const ph = normalizePhone(document.getElementById('phone').value);
+            const srv = document.getElementById('server').value.trim();
+            const ap = document.getElementById('autoPay').value;
+            const nt = document.getElementById('notes').value;
+            const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+            const newNote = `#Auto: ${ts}: ${nt}`;
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'add',
+                    password: sessionPassword,
+                    username: u,
+                    passwordField: pwd,
+                    email: em,
+                    phone: ph,
+                    server: srv,
+                    autoPay: ap,
+                    notes: newNote
+                })
+            })
+                .then(r => r.text())
+                .then(m => {
+                    alert(m);
+                    clearForm();
+                    loadData();
+                });
+        }
+
+        function addNote() {
+            if (selectedRowIndex == null) {
+                return alert('Select a row first!');
+            }
+            const nt = document.getElementById('notes').value.trim();
+            if (!nt) {
+                return alert('Notes cannot be empty!');
+            }
+            if (!confirm('Add this note?')) return;
+
+            // ← invoke server-side prepending
+            google.script.run
+                .withSuccessHandler(msg => { alert(msg); loadData(); })
+                .addNoteRow(selectedRowIndex, nt);
+        }
+
+        function clearForm() {
+            ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+            document.querySelectorAll('tr.selected').forEach(r => r.classList.remove('selected'));
+            selectedRowIndex = null;
+        }
+
+
+    </script>
+
+</body>
+
+</html>
             <input type="hidden" id="rowIndex" />
         </div>
         <div class="button-row">
