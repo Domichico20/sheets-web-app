@@ -433,42 +433,50 @@ tr.selected {
                 .catch(err => alert('Edit failed: ' + err));
         }
 
-        function addRow() {
-            const u = document.getElementById('username').value;
-            // ❌ STOP here if this user already exists
-            if (existingUsernames.includes(u.toLowerCase())) {
-                return alert("Username already exists");
-            }
-            const pwd = document.getElementById('password').value;
-            const em = document.getElementById('email').value;
-            const ph = normalizePhone(document.getElementById('phone').value);
-            const srv = document.getElementById('server').value.trim();
-            const ap = document.getElementById('autoPay').value;
-            const nt = document.getElementById('notes').value;
-            const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-            const newNote = `#Auto: ${ts}: ${nt}`;
+function addRow() {
+  // helper to grab & trim any input by ID
+  function getInput(id) {
+    return document.getElementById(id).value.trim();
+  }
 
-            fetch(scriptURL, {
-                method: 'POST',
-                body: new URLSearchParams({
-                    action: 'add',
-                    password: sessionPassword,
-                    username: u,
-                    passwordField: pwd,
-                    email: em,
-                    phone: ph,
-                    server: srv,
-                    autoPay: ap,
-                    notes: newNote
-                })
-            })
-                .then(r => r.text())
-                .then(m => {
-                    alert(m);
-                    clearForm();
-                    loadData();
-                });
-        }
+  const username = getInput('username');
+  if (existingUsernames.includes(username.toLowerCase())) {
+    return alert("Username already exists");
+  }
+
+  // gather everything (no client timestamp here!)
+  const data = {
+    action:        'add',
+    password:      sessionPassword,
+    username:      username,
+    passwordField: getInput('password'),
+    email:         getInput('email'),
+    phone:         normalizePhone(getInput('phone')),
+    server:        getInput('server'),
+    autoPay:       getInput('autoPay'),
+    notes:         getInput('notes')
+  };
+
+  // send it off
+  fetch(scriptURL, {
+    method: 'POST',
+    body:   new URLSearchParams(data)
+  })
+  .then(r => r.text())
+  .then(message => {
+    alert(message);
+    clearForm();
+    loadData();
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Sorry — there was an error saving your row.');
+  });
+}
+
+
+
+
 
         function clearForm() {
             ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
