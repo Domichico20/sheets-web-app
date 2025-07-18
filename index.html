@@ -106,15 +106,15 @@
     const apiKey    = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
     const range     = 'data!A1:G3000';
     let existingUsernames = [];
-    let allDataRows       = [];
-    let totalRows         = 0;
+    let allDataRows = [];
+    let totalRows = 0;
 
     function checkPassword() {
       const pass = document.getElementById('appPassword').value;
       if (pass === 'Google#2020') {
         sessionPassword = pass;
         document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('appSection').style.display  = 'block';
+        document.getElementById('appSection').style.display = 'block';
         loadData();
       } else {
         alert('Incorrect password');
@@ -122,8 +122,12 @@
     }
 
     function formatNotes(cell) {
+      // remove counters
       const stripped = cell.replace(/#\d+:\s*/g, '').trim();
-      const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},\s\d{2}:\d{2}\s(?:AM|PM):)/);
+      // split before every timestamp, allowing optional comma after year
+      const parts = stripped.split(
+        /(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/
+      );
       return parts.map(p => p.trim()).filter(p => p).join('<br>');
     }
 
@@ -131,26 +135,29 @@
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
         .then(r => r.json())
         .then(data => {
-          const rows = data.values||[];
+          const rows = data.values || [];
           totalRows = rows.length;
           allDataRows = rows.slice(1).reverse();
-          existingUsernames = rows.slice(1).map(r=> (r[0]||'').toLowerCase());
+          existingUsernames = rows.slice(1).map(r => (r[0]||'').toLowerCase());
           document.getElementById('searchQuery').value = '';
           const tbody = document.querySelector('#dataTable tbody');
           tbody.innerHTML = '';
-          allDataRows.slice(0,ROW_LIMIT).forEach((row,i)=>{
+          allDataRows.slice(0, ROW_LIMIT).forEach((row, i) => {
             const tr = tbody.insertRow();
-            row.forEach((cell,ci)=>{
+            row.forEach((cell, ci) => {
               const td = tr.insertCell();
-              if(ci===6) td.innerHTML = formatNotes(cell);
-              else td.textContent = cell;
+              if (ci === 6) {
+                td.innerHTML = formatNotes(cell);
+              } else {
+                td.textContent = cell;
+              }
             });
-            tr.onclick = ()=>{
+            tr.onclick = () => {
               selectedRowIndex = totalRows - i;
-              document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
+              document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
               tr.classList.add('selected');
               ['username','password','email','phone','server','autoPay']
-                .forEach((id,idx)=> document.getElementById(id).value = row[idx]||'');
+                .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
               document.getElementById('notes').value = '';
               document.getElementById('rowIndex').value = selectedRowIndex;
             };
@@ -161,8 +168,8 @@
 
     function normalizePhone(s) {
       const d = s.replace(/\D/g,'');
-      if(d.length===10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
-      if(d.length===11&&d.startsWith('1')) return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1')) return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
       return s;
     }
 
@@ -171,20 +178,23 @@
       const tbody = document.querySelector('#dataTable tbody');
       tbody.innerHTML = '';
       if (!q) { loadData(); return; }
-      allDataRows.forEach((row,i)=>{
-        if(row.join(' ').toLowerCase().includes(q)){
+      allDataRows.forEach((row, i) => {
+        if (row.join(' ').toLowerCase().includes(q)) {
           const tr = tbody.insertRow();
-          row.forEach((cell,ci)=>{
+          row.forEach((cell, ci) => {
             const td = tr.insertCell();
-            if(ci===6) td.innerHTML = formatNotes(cell);
-            else td.textContent = cell;
+            if (ci === 6) {
+              td.innerHTML = formatNotes(cell);
+            } else {
+              td.textContent = cell;
+            }
           });
-          tr.onclick = ()=>{
+          tr.onclick = () => {
             selectedRowIndex = totalRows - i;
-            document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
+            document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
             tr.classList.add('selected');
             ['username','password','email','phone','server','autoPay']
-              .forEach((id,idx)=> document.getElementById(id).value = row[idx]||'');
+              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
             document.getElementById('notes').value = '';
             document.getElementById('rowIndex').value = selectedRowIndex;
           };
@@ -193,27 +203,28 @@
     }
 
     function confirmDelete() {
-      if (selectedRowIndex===null) { alert('Select a row first.'); return; }
-      if (!confirm('Delete?')) return;
+      if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+      if (!confirm('Delete selected row?')) return;
       deleteRow();
     }
     function deleteRow() {
-      fetch(scriptURL,{method:'POST',
-        body:new URLSearchParams({action:'delete',password:sessionPassword,row:selectedRowIndex})
+      fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams({action:'delete',password:sessionPassword,row:selectedRowIndex})
       })
-      .then(r=>r.text()).then(msg=>{alert(msg);selectedRowIndex=null;loadData();})
-      .catch(err=>alert('Delete failed: '+err));
+      .then(r => r.text()).then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
+      .catch(err => alert('Delete failed: ' + err));
     }
 
     function confirmEdit() {
-      if(selectedRowIndex===null){alert('Select a row first!');return;}
-      if(!confirm('Save changes?'))return;
+      if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+      if (!confirm('Save changes to this row?')) return;
       editRow();
     }
-    function editRow(){
+    function editRow() {
       function gi(id){return document.getElementById(id).value.trim();}
-      const raw = gi('notes'); if(!raw){alert('Enter notes.');return;}
-      const tr = document.querySelector('#dataTable tr.selected'); if(!tr){alert('Select a row.');return;}
+      const raw = gi('notes'); if (!raw) { alert('Please type something in the Notes box.'); return; }
+      const tr = document.querySelector('#dataTable tr.selected'); if (!tr) { alert('Please select a row first.'); return; }
       const existing = tr.cells[6].textContent.replace(/#\d+:\s*/g,'')
         .split('\n').map(l=>l.trim()).filter(l=>l).join('\n');
       const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
@@ -234,23 +245,23 @@
     function addRow() {
       function gi(id){return document.getElementById(id).value.trim();}
       const username = gi('username');
-      if(existingUsernames.includes(username.toLowerCase())){alert('Username exists');return;}
+      if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
       const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
         month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const notesInput = gi('notes');
       const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
       const data = {
         action:'add',password:sessionPassword,
-        username, passwordField:gi('password'),
-        email:gi('email'), phone:normalizePhone(gi('phone')),
-        server:gi('server'),autoPay:gi('autoPay'),notes:formattedNotes
+        username, passwordField:gi('password'), email:gi('email'),
+        phone:normalizePhone(gi('phone')), server:gi('server'),
+        autoPay:gi('autoPay'), notes:formattedNotes
       };
       fetch(scriptURL,{method:'POST',body:new URLSearchParams(data)})
         .then(r=>r.text()).then(msg=>{alert(msg);clearForm();loadData();})
-        .catch(err=>{console.error(err);alert('Save error.');});
+        .catch(err=>{console.error(err);alert('Error saving row.');});
     }
 
-    function clearForm(){
+    function clearForm() {
       ['username','password','email','phone','server','autoPay','notes','searchQuery']
         .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
       document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
@@ -259,3 +270,6 @@
   </script>
 </body>
 </html>
+
+
+
