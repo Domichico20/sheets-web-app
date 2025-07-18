@@ -76,9 +76,9 @@
     <div class="button-row">
       <div class="button-group left"></div>
       <div class="button-group center">
-        <button class="add-btn"     onclick="addRow()">Add</button>
-        <button class="edit-btn"    onclick="confirmEdit()">Edit</button>
-        <button class="clear-btn"   onclick="clearForm()">Clear</button>
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
         <button class="refresh-btn" onclick="loadData()">Refresh</button>
       </div>
       <div class="button-group right">
@@ -99,7 +99,7 @@
 
   <script>
     const ROW_LIMIT = 25;
-    let sessionPassword  = "";
+    let sessionPassword = "";
     let selectedRowIndex = null;
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
     const sheetId   = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
@@ -116,24 +116,21 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('appSection').style.display  = 'block';
         loadData();
-      } else alert('Incorrect password');
+      } else {
+        alert('Incorrect password');
+      }
     }
 
     function formatNotes(cell) {
-      // strip counters, then inject line breaks before each timestamp
-      let text = cell.replace(/#\d+:\s*/g, '');
-      text = text.replace(
-        /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4},\s+\d{2}:\d{2}\s[AP]M:/g,
-        (m, p1, offset) => (offset>0 ? '\n' : '') + m
-      );
-      const lines = text.split('\n').map(l=>l.trim()).filter(l=>l);
-      return lines.join('<br>');
+      const stripped = cell.replace(/#\d+:\s*/g, '').trim();
+      const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},\s\d{2}:\d{2}\s(?:AM|PM):)/);
+      return parts.map(p => p.trim()).filter(p => p).join('<br>');
     }
 
     function loadData() {
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
-        .then(res=>res.json())
-        .then(data=>{
+        .then(r => r.json())
+        .then(data => {
           const rows = data.values||[];
           totalRows = rows.length;
           allDataRows = rows.slice(1).reverse();
@@ -145,11 +142,8 @@
             const tr = tbody.insertRow();
             row.forEach((cell,ci)=>{
               const td = tr.insertCell();
-              if(ci===6) {
-                td.innerHTML = formatNotes(cell);
-              } else {
-                td.textContent = cell;
-              }
+              if(ci===6) td.innerHTML = formatNotes(cell);
+              else td.textContent = cell;
             });
             tr.onclick = ()=>{
               selectedRowIndex = totalRows - i;
@@ -165,81 +159,92 @@
         .catch(console.error);
     }
 
-    function normalizePhone(s){
-      const d=s.replace(/\D/g,'');
+    function normalizePhone(s) {
+      const d = s.replace(/\D/g,'');
       if(d.length===10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
       if(d.length===11&&d.startsWith('1')) return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
       return s;
     }
 
-    function searchData(){
-      const q=document.getElementById('searchQuery').value.toLowerCase().trim();
-      const tbody=document.querySelector('#dataTable tbody');
-      tbody.innerHTML='';
-      if(!q){ loadData(); return; }
+    function searchData() {
+      const q = document.getElementById('searchQuery').value.toLowerCase().trim();
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      if (!q) { loadData(); return; }
       allDataRows.forEach((row,i)=>{
         if(row.join(' ').toLowerCase().includes(q)){
-          const tr=tbody.insertRow();
+          const tr = tbody.insertRow();
           row.forEach((cell,ci)=>{
-            const td=tr.insertCell();
-            if(ci===6) td.innerHTML=formatNotes(cell);
-            else td.textContent=cell;
+            const td = tr.insertCell();
+            if(ci===6) td.innerHTML = formatNotes(cell);
+            else td.textContent = cell;
           });
-          tr.onclick=()=>{
-            selectedRowIndex=totalRows-i;
+          tr.onclick = ()=>{
+            selectedRowIndex = totalRows - i;
             document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
             tr.classList.add('selected');
             ['username','password','email','phone','server','autoPay']
-              .forEach((id,idx)=> document.getElementById(id).value=row[idx]||'');
-            document.getElementById('notes').value='';
-            document.getElementById('rowIndex').value=selectedRowIndex;
+              .forEach((id,idx)=> document.getElementById(id).value = row[idx]||'');
+            document.getElementById('notes').value = '';
+            document.getElementById('rowIndex').value = selectedRowIndex;
           };
         }
       });
     }
 
-    function confirmDelete(){ if(selectedRowIndex==null){alert('Select a row.');return;} if(!confirm('Delete?'))return; deleteRow(); }
-    function deleteRow(){
-      fetch(scriptURL,{ method:'POST',
-        body:new URLSearchParams({ action:'delete', password:sessionPassword, row:selectedRowIndex })
+    function confirmDelete() {
+      if (selectedRowIndex===null) { alert('Select a row first.'); return; }
+      if (!confirm('Delete?')) return;
+      deleteRow();
+    }
+    function deleteRow() {
+      fetch(scriptURL,{method:'POST',
+        body:new URLSearchParams({action:'delete',password:sessionPassword,row:selectedRowIndex})
       })
       .then(r=>r.text()).then(msg=>{alert(msg);selectedRowIndex=null;loadData();})
       .catch(err=>alert('Delete failed: '+err));
     }
 
-    function confirmEdit(){ if(selectedRowIndex==null){alert('Select a row.');return;} if(!confirm('Save changes?'))return; editRow(); }
+    function confirmEdit() {
+      if(selectedRowIndex===null){alert('Select a row first!');return;}
+      if(!confirm('Save changes?'))return;
+      editRow();
+    }
     function editRow(){
       function gi(id){return document.getElementById(id).value.trim();}
-      const raw=gi('notes'); if(!raw){alert('Enter notes.');return;}
-      const tr=document.querySelector('#dataTable tr.selected'); if(!tr){alert('Select a row.');return;}
-      let existing=tr.cells[6].textContent.replace(/#\d+:\s*/g,'')
+      const raw = gi('notes'); if(!raw){alert('Enter notes.');return;}
+      const tr = document.querySelector('#dataTable tr.selected'); if(!tr){alert('Select a row.');return;}
+      const existing = tr.cells[6].textContent.replace(/#\d+:\s*/g,'')
         .split('\n').map(l=>l.trim()).filter(l=>l).join('\n');
-      const ts=new Date().toLocaleString('en-US',{ timeZone:'America/New_York',
-        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit' });
-      const stamped=`${ts}: ${raw}`;
-      const combined=existing?`${stamped}\n${existing}`:stamped;
-      const params=new URLSearchParams({
-        action:'edit', password:sessionPassword, row:selectedRowIndex,
-        username:gi('username'), passwordField:gi('password'),
-        email:gi('email'), phone:normalizePhone(gi('phone')),
-        server:gi('server'), autoPay:gi('autoPay'), notes:combined
+      const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
+        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const stamped = `${ts}: ${raw}`;
+      const combined = existing ? `${stamped}\n${existing}` : stamped;
+      const params = new URLSearchParams({
+        action:'edit',password:sessionPassword,row:selectedRowIndex,
+        username:gi('username'),passwordField:gi('password'),
+        email:gi('email'),phone:normalizePhone(gi('phone')),
+        server:gi('server'),autoPay:gi('autoPay'),notes:combined
       });
       fetch(scriptURL,{method:'POST',body:params})
         .then(r=>r.text()).then(msg=>{alert(msg);loadData();})
         .catch(err=>alert('Edit failed: '+err));
     }
 
-    function addRow(){
+    function addRow() {
       function gi(id){return document.getElementById(id).value.trim();}
-      const username=gi('username');
+      const username = gi('username');
       if(existingUsernames.includes(username.toLowerCase())){alert('Username exists');return;}
-      const ts=new Date().toLocaleString('en-US',{ timeZone:'America/New_York',
-        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit' });
-      const notesInput=gi('notes'), formattedNotes=notesInput?`${ts}: ${notesInput}`:'';
-      const data={ action:'add', password:sessionPassword,
-        username, passwordField:gi('password'), email:gi('email'),
-        phone:normalizePhone(gi('phone')), server:gi('server'),
-        autoPay:gi('autoPay'), notes:formattedNotes };
+      const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
+        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const notesInput = gi('notes');
+      const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
+      const data = {
+        action:'add',password:sessionPassword,
+        username, passwordField:gi('password'),
+        email:gi('email'), phone:normalizePhone(gi('phone')),
+        server:gi('server'),autoPay:gi('autoPay'),notes:formattedNotes
+      };
       fetch(scriptURL,{method:'POST',body:new URLSearchParams(data)})
         .then(r=>r.text()).then(msg=>{alert(msg);clearForm();loadData();})
         .catch(err=>{console.error(err);alert('Save error.');});
@@ -249,7 +254,7 @@
       ['username','password','email','phone','server','autoPay','notes','searchQuery']
         .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
       document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
-      selectedRowIndex=null;
+      selectedRowIndex = null;
     }
   </script>
 </body>
