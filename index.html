@@ -40,10 +40,7 @@
     .clear-btn { background-color: #66CC66; }
     .refresh-btn { background-color: gold; color: black; }
     .delete-btn { background-color: red; }
-    table { width: auto; border-collapse: collapse; background: white; margin: 0 auto; width: auto;
-      border-collapse: collapse;
-      background: white; }
-
+    table { margin: 0 auto; width: auto; border-collapse: collapse; background: white; }
     table th:nth-child(3), table td:nth-child(3) { max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; white-space: nowrap; }
     table th { background-color: #4285F4; color: white; }
@@ -57,12 +54,12 @@
   </header>
 
   <div id="loginSection">
-   <input
-  type="password"
-  id="appPassword"
-  placeholder="Enter Password"
-  onkeydown="if (event.key === 'Enter') { event.preventDefault(); checkPassword(); }"
-/>
+    <input
+      type="password"
+      id="appPassword"
+      placeholder="Enter Password"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}"
+    >
     <button onclick="checkPassword()">Unlock</button>
   </div>
 
@@ -114,15 +111,15 @@
     const apiKey    = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
     const range     = 'data!A1:G3000';
     let existingUsernames = [];
-    let allDataRows = [];
-    let totalRows = 0;
+    let allDataRows       = [];
+    let totalRows         = 0;
 
     function checkPassword() {
       const pass = document.getElementById('appPassword').value;
       if (pass === 'Google#2020') {
         sessionPassword = pass;
         document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('appSection').style.display = 'block';
+        document.getElementById('appSection').style.display  = 'block';
         loadData();
       } else {
         alert('Incorrect password');
@@ -130,9 +127,7 @@
     }
 
     function formatNotes(cell) {
-      // remove counters
       const stripped = cell.replace(/#\d+:\s*/g, '').trim();
-      // split before every timestamp, allowing optional comma after year
       const parts = stripped.split(
         /(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/
       );
@@ -141,7 +136,7 @@
 
     function loadData() {
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
-        .then(r => r.json())
+        .then(res => res.json())
         .then(data => {
           const rows = data.values || [];
           totalRows = rows.length;
@@ -154,15 +149,12 @@
             const tr = tbody.insertRow();
             row.forEach((cell, ci) => {
               const td = tr.insertCell();
-              if (ci === 6) {
-                td.innerHTML = formatNotes(cell);
-              } else {
-                td.textContent = cell;
-              }
+              td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
             });
             tr.onclick = () => {
               selectedRowIndex = totalRows - i;
-              document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+              document.querySelectorAll('#dataTable tr.selected')
+                .forEach(r => r.classList.remove('selected'));
               tr.classList.add('selected');
               ['username','password','email','phone','server','autoPay']
                 .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
@@ -177,7 +169,8 @@
     function normalizePhone(s) {
       const d = s.replace(/\D/g,'');
       if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
-      if (d.length === 11 && d.startsWith('1')) return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1'))
+        return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
       return s;
     }
 
@@ -191,15 +184,12 @@
           const tr = tbody.insertRow();
           row.forEach((cell, ci) => {
             const td = tr.insertCell();
-            if (ci === 6) {
-              td.innerHTML = formatNotes(cell);
-            } else {
-              td.textContent = cell;
-            }
+            td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
           });
           tr.onclick = () => {
             selectedRowIndex = totalRows - i;
-            document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+            document.querySelectorAll('#dataTable tr.selected')
+              .forEach(r => r.classList.remove('selected'));
             tr.classList.add('selected');
             ['username','password','email','phone','server','autoPay']
               .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
@@ -218,9 +208,10 @@
     function deleteRow() {
       fetch(scriptURL, {
         method: 'POST',
-        body: new URLSearchParams({action:'delete',password:sessionPassword,row:selectedRowIndex})
+        body: new URLSearchParams({ action:'delete', password:sessionPassword, row:selectedRowIndex })
       })
-      .then(r => r.text()).then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
+      .then(res => res.text())
+      .then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
       .catch(err => alert('Delete failed: ' + err));
     }
 
@@ -229,53 +220,82 @@
       if (!confirm('Save changes to this row?')) return;
       editRow();
     }
+
     function editRow() {
-      function gi(id){return document.getElementById(id).value.trim();}
-      const raw = gi('notes'); if (!raw) { alert('Please type something in the Notes box.'); return; }
-      const tr = document.querySelector('#dataTable tr.selected'); if (!tr) { alert('Please select a row first.'); return; }
-      const existing = tr.cells[6].textContent.replace(/#\d+:\s*/g,'')
+      function gi(id){ return document.getElementById(id).value.trim(); }
+      const rawNew = gi('notes');     // now optional
+      const tr = document.querySelector('#dataTable tr.selected');
+      if (!tr) { alert('Please select a row first.'); return; }
+
+      // grab existing notes
+      const existing = tr.cells[6].textContent
+        .replace(/#\d+:\s*/g,'')
         .split('\n').map(l=>l.trim()).filter(l=>l).join('\n');
-      const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
-        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      const stamped = `${ts}: ${raw}`;
-      const combined = existing ? `${stamped}\n${existing}` : stamped;
+
+      // build combined notes only if user entered one
+      let combined = existing;
+      if (rawNew) {
+        const ts = new Date().toLocaleString('en-US',{
+          timeZone:'America/New_York',
+          month:'short',day:'numeric',year:'numeric',
+          hour:'2-digit',minute:'2-digit'
+        });
+        combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+      }
+
       const params = new URLSearchParams({
-        action:'edit',password:sessionPassword,row:selectedRowIndex,
-        username:gi('username'),passwordField:gi('password'),
-        email:gi('email'),phone:normalizePhone(gi('phone')),
-        server:gi('server'),autoPay:gi('autoPay'),notes:combined
+        action:'edit',
+        password:sessionPassword,
+        row:selectedRowIndex,
+        username:gi('username'),
+        passwordField:gi('password'),
+        email:gi('email'),
+        phone:normalizePhone(gi('phone')),
+        server:gi('server'),
+        autoPay:gi('autoPay'),
+        notes:combined
       });
-      fetch(scriptURL,{method:'POST',body:params})
-        .then(r=>r.text()).then(msg=>{alert(msg);loadData();})
-        .catch(err=>alert('Edit failed: '+err));
+
+      fetch(scriptURL, { method:'POST', body:params })
+        .then(r => r.text())
+        .then(msg => { alert(msg); loadData(); })
+        .catch(err => alert('Edit failed: ' + err));
     }
 
     function addRow() {
-      function gi(id){return document.getElementById(id).value.trim();}
+      function gi(id){ return document.getElementById(id).value.trim(); }
       const username = gi('username');
       if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
-      const ts = new Date().toLocaleString('en-US',{timeZone:'America/New_York',
-        month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const ts = new Date().toLocaleString('en-US',{
+        timeZone:'America/New_York',
+        month:'short',day:'numeric',year:'numeric',
+        hour:'2-digit',minute:'2-digit'
+      });
       const notesInput = gi('notes');
       const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
       const data = {
-        action:'add',password:sessionPassword,
-        username, passwordField:gi('password'), email:gi('email'),
-        phone:normalizePhone(gi('phone')), server:gi('server'),
-        autoPay:gi('autoPay'), notes:formattedNotes
+        action:'add',
+        password:sessionPassword,
+        username:username,
+        passwordField:gi('password'),
+        email:gi('email'),
+        phone:normalizePhone(gi('phone')),
+        server:gi('server'),
+        autoPay:gi('autoPay'),
+        notes:formattedNotes
       };
-      fetch(scriptURL,{method:'POST',body:new URLSearchParams(data)})
-        .then(r=>r.text()).then(msg=>{alert(msg);clearForm();loadData();})
-        .catch(err=>{console.error(err);alert('Error saving row.');});
+      fetch(scriptURL, { method:'POST', body:new URLSearchParams(data) })
+        .then(r => r.text())
+        .then(msg => { alert(msg); clearForm(); loadData(); })
+        .catch(err => { console.error(err); alert('Error saving row.'); });
     }
 
     function clearForm() {
       ['username','password','email','phone','server','autoPay','notes','searchQuery']
-        .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-      document.querySelectorAll('#dataTable tr.selected').forEach(r=>r.classList.remove('selected'));
+        .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
       selectedRowIndex = null;
     }
   </script>
 </body>
 </html>
-
