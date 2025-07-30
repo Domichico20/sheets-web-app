@@ -14,7 +14,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 1.75rem; font-weight: 600; text-align: center; margin-bottom: 20px;
       background: linear-gradient(90deg,
-        #003366,#0066CC,#3399FF,#ff3333,#ffa733,#9a9c21,#54cc25,#1a8371,#229ea7,#33b4ff,#339cff);
+        #003366,#0066CC,#3399FF,#ff3333,#ffa733,#9a9c21,#54cc25,#1a8371,#229ea7,#33b4ff,#2b80d0,#226cb1,#1b558c,#14416a);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -184,31 +184,92 @@
       return s;
     }
 
-    function searchData() {
-      const q = document.getElementById('searchQuery').value.toLowerCase().trim();
-      const tbody = document.querySelector('#dataTable tbody');
-      tbody.innerHTML = '';
-      if (!q) { loadData(); return; }
-      allDataRows.forEach((row, i) => {
-        if (row.join(' ').toLowerCase().includes(q)) {
-          const tr = tbody.insertRow();
-          row.forEach((cell, ci) => {
-            const td = tr.insertCell();
-            td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
-          });
-          tr.onclick = () => {
-            selectedRowIndex = totalRows - i;
-            document.querySelectorAll('#dataTable tr.selected')
-              .forEach(r => r.classList.remove('selected'));
-            tr.classList.add('selected');
-            ['username','password','email','phone','server','autoPay']
-              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-            document.getElementById('notes').value = '';
-            document.getElementById('rowIndex').value = selectedRowIndex;
-          };
+function searchData() {
+  const q = document.getElementById('searchQuery').value.trim().toLowerCase();
+  const tbody = document.querySelector('#dataTable tbody');
+  tbody.innerHTML = '';
+  if (!q) { loadData(); return; }
+
+  // Regex to detect phone numbers in many common formats
+  const phoneRegex = /\b(?:1[-.\s]?)?(?:\(?\d{3}\)?)[-.\s]?\d{3}[-.\s]?\d{4}\b/;
+
+  // Regex to detect emails including mailto/mail to prefixes (case insensitive)
+  // The ?: in (?:mailto:|mail to:) means non-capturing group, optional spaces after prefix
+  const emailRegex = /(?:mailto:|mail to:)?\s*[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
+
+  allDataRows.forEach((row, i) => {
+    // Join all row cells to a single string for search, lowercased
+    const rowText = row.join(' ').toLowerCase();
+
+    // Check if user query is a phone number pattern or email pattern:
+    // We run these regexes against the query input (q)
+    const isQueryPhone = phoneRegex.test(q);
+    const isQueryEmail = emailRegex.test(q);
+
+    // Matching flags
+    let matched = false;
+
+    // If query looks like a phone number:
+    if (isQueryPhone) {
+      // Search all cells to find any phone number that matches the query digits only
+      // Strip all non-digits from query for comparison
+      const queryDigits = q.replace(/\D/g, '');
+
+      for (const cell of row) {
+        // Extract phone-like strings from the cell (using phoneRegex global)
+        const phonesInCell = (cell.match(new RegExp(phoneRegex, 'g')) || []);
+        for (const phone of phonesInCell) {
+          const phoneDigits = phone.replace(/\D/g, '');
+          if (phoneDigits.includes(queryDigits) || queryDigits.includes(phoneDigits)) {
+            matched = true;
+            break;
+          }
         }
-      });
+        if (matched) break;
+      }
     }
+    // If query looks like an email or mailto/mail to email:
+    else if (isQueryEmail) {
+      // Normalize query email: remove mailto/mail to prefix and spaces
+      const normalizedQueryEmail = q.replace(/^(mailto:|mail to:)\s*/, '');
+
+      for (const cell of row) {
+        // Normalize cell email strings similarly
+        const normalizedCell = cell.toLowerCase().replace(/^(mailto:|mail to:)\s*/, '').trim();
+        if (normalizedCell.includes(normalizedQueryEmail)) {
+          matched = true;
+          break;
+        }
+      }
+    }
+    // Otherwise, fallback to simple substring match for other queries
+    else {
+      if (rowText.includes(q)) {
+        matched = true;
+      }
+    }
+
+    // If matched, render the row in the table as before
+    if (matched) {
+      const tr = tbody.insertRow();
+      row.forEach((cell, ci) => {
+        const td = tr.insertCell();
+        td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
+      });
+      tr.onclick = () => {
+        selectedRowIndex = totalRows - i;
+        document.querySelectorAll('#dataTable tr.selected')
+          .forEach(r => r.classList.remove('selected'));
+        tr.classList.add('selected');
+        ['username','password','email','phone','server','autoPay']
+          .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+        document.getElementById('notes').value = '';
+        document.getElementById('rowIndex').value = selectedRowIndex;
+      };
+    }
+  });
+}
+
 
     function confirmDelete() {
       if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -309,7 +370,6 @@
   </script>
 </body>
 </html>
-
 
 
 
