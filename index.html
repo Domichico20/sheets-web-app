@@ -211,6 +211,13 @@
     #loginSection .unlock-btn:hover::before {
       opacity: 1;
     }
+
+       /* --- Notes wrapping + scroll + WhatsApp link styling --- */
+    table th:nth-child(7), table td:nth-child(7) { width: 360px; }
+    .notes-cell { max-height: 140px; overflow: auto; white-space: normal; line-height: 1.35; }
+    .note-entry { margin: 0 0 .55em 0; }
+    .note-entry .ts { font-weight: 100; color: #880000;}
+    .phone-wa a { text-decoration: none; }
   </style>
 </head>
 
@@ -225,7 +232,7 @@
       type="password"
       id="appPassword"
       placeholder="Enter Password"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}"> 
     <!-- Glowing Unlock button -->
     <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
   </div>
@@ -284,7 +291,8 @@
     const range     = 'data!A1:G3000';
     let existingUsernames = [];
     let allDataRows       = [];
-    let totalRows         = 0;
+let totalRows         = 0;
+let selectedRawNotes  = '';
 
     function checkPassword() {
       const pass = document.getElementById('appPassword').value;
@@ -298,13 +306,21 @@
       }
     }
 
-    function formatNotes(cell) {
-      const stripped = cell.replace(/#\d+:\s*/g, '').trim();
-      const parts = stripped.split(
-        /(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/
-      );
-      return parts.map(p => p.trim()).filter(p => p).join('<br>');
-    }
+  function formatNotes(cell) {
+  const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+  if (!stripped) return '';
+  const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
+  return parts
+    .map(p => p.trim())
+    .filter(Boolean)
+    .map(p => {
+      const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+      if (!m) return `<div class="note-entry"><span class="txt">${p}</span></div>`;
+      return `<div class="note-entry"><span class="ts">${m[1]}</span>: <span class="txt">${m[2]}</span></div>`;
+    })
+    .join('');
+}
+
 
     function loadData() {
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
@@ -319,58 +335,125 @@
           tbody.innerHTML = '';
           allDataRows.slice(0, ROW_LIMIT).forEach((row, i) => {
             const tr = tbody.insertRow();
-            row.forEach((cell, ci) => {
-              const td = tr.insertCell();
-              td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
-            });
-            tr.onclick = () => {
-              selectedRowIndex = totalRows - i;
-              document.querySelectorAll('#dataTable tr.selected')
-                .forEach(r => r.classList.remove('selected'));
-              tr.classList.add('selected');
-              ['username','password','email','phone','server','autoPay']
-                .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-              document.getElementById('notes').value = '';
-              document.getElementById('rowIndex').value = selectedRowIndex;
-            };
+          row.forEach((cell, ci) => {
+  const td = tr.insertCell();
+  if (ci === 6) {
+    td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
+  } else if (ci === 3) {
+    td.className = 'phone-wa';
+    td.innerHTML = phoneLink(cell);
+  } else {
+    td.textContent = cell;
+  }
+});
+tr.onclick = () => {
+  selectedRowIndex = totalRows - i;
+  document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+  tr.classList.add('selected');
+  ['username','password','email','phone','server','autoPay']
+    .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+  selectedRawNotes = row[6] || '';
+  document.getElementById('notes').value = '';
+  document.getElementById('rowIndex').value = selectedRowIndex;
+};
+
+
           });
         })
         .catch(console.error);
     }
 
-    function normalizePhone(s) {
-      const d = s.replace(/\D/g,'');
-      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
-      if (d.length === 11 && d.startsWith('1'))
-        return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
-      return s;
+function normalizePhone(s) {
+  const d = s.replace(/\D/g,'');
+  if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+  if (d.length === 11 && d.startsWith('1'))
+    return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
+  return s;
+}
+
+function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
+
+function canonicalPhone(s){
+  const d = digitsOnly(s);
+  if (!d) return '';
+  if (d.length === 10) return '1' + d;                 // assume US if 10 digits
+  if (d.length === 11 && d.startsWith('1')) return d;  // US with leading 1
+  return d;                                            // fallback (international digits as-is)
+}
+
+function phoneLink(s){
+  const d = digitsOnly(s);
+  if (!d) return '';
+  const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+  const display = normalizePhone(s);
+  return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${display} 📲</a>`;
+}
+
+function canonicalEmail(s){
+  return (s || '')
+    .toLowerCase()
+    .replace(/^mailto:\s*/,'')
+    .replace(/^mail\s*to:\s*/,'')
+    .replace(/\s+/g,'')
+    .trim();
+}
+
+
+function searchData() {
+  const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
+  const qDigits = (raw.match(/\d/g) || []).join('');      // phone, any punctuation/spaces
+  const qEmail  = canonicalEmail(raw);                    // email, handles mailto:/mail to:/spaces
+  const tbody   = document.querySelector('#dataTable tbody');
+  tbody.innerHTML = '';
+  if (!raw) { loadData(); return; }
+
+  const hasPhoneQuery = qDigits.length >= 7;              // tolerate partials but prefer >=7
+  const hasEmailQuery = qEmail.includes('@');
+
+  allDataRows.forEach((row, i) => {
+    const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+    let phoneMatch = false;
+    if (hasPhoneQuery) {
+      const rp = (row[3] || '').replace(/\D/g,'');
+      const last10 = s => s.slice(-10);
+      if (rp) {
+        phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
+      }
     }
 
-    function searchData() {
-      const q = document.getElementById('searchQuery').value.toLowerCase().trim();
-      const tbody = document.querySelector('#dataTable tbody');
-      tbody.innerHTML = '';
-      if (!q) { loadData(); return; }
-      allDataRows.forEach((row, i) => {
-        if (row.join(' ').toLowerCase().includes(q)) {
-          const tr = tbody.insertRow();
-          row.forEach((cell, ci) => {
-            const td = tr.insertCell();
-            td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
-          });
-          tr.onclick = () => {
-            selectedRowIndex = totalRows - i;
-            document.querySelectorAll('#dataTable tr.selected')
-              .forEach(r => r.classList.remove('selected'));
-            tr.classList.add('selected');
-            ['username','password','email','phone','server','autoPay']
-              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-            document.getElementById('notes').value = '';
-            document.getElementById('rowIndex').value = selectedRowIndex;
-          };
+    let emailMatch = false;
+    if (hasEmailQuery) {
+      const re = canonicalEmail(row[2] || '');
+      emailMatch = re.includes(qEmail);
+    }
+
+    if (baseMatch || phoneMatch || emailMatch) {
+      const tr = tbody.insertRow();
+      row.forEach((cell, ci) => {
+        const td = tr.insertCell();
+        if (ci === 6) {
+          td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
+        } else if (ci === 3) {
+          td.className = 'phone-wa';
+          td.innerHTML = phoneLink(cell);
+        } else {
+          td.textContent = cell;
         }
       });
+      tr.onclick = () => {
+        selectedRowIndex = totalRows - i;
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        tr.classList.add('selected');
+        ['username','password','email','phone','server','autoPay']
+          .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+        document.getElementById('notes').value = '';
+        document.getElementById('rowIndex').value = selectedRowIndex;
+      };
     }
+  });
+}
+
 
     function confirmDelete() {
       if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -400,9 +483,11 @@
       if (!tr) { alert('Please select a row first.'); return; }
 
       // grab existing notes
-      const existing = tr.cells[6].textContent
-        .replace(/#\d+:\s*/g,'')
-        .split('\n').map(l=>l.trim()).filter(l=>l).join('\n');
+// grab existing notes (raw from the sheet, not HTML)
+const existing = (selectedRawNotes || '')
+  .replace(/#\d+:\s*/g,'')
+  .trim();
+
 
       // build combined notes only if user entered one
       let combined = existing;
