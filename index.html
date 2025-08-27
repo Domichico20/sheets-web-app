@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,50 +8,216 @@
   <link rel="icon" href="1 logo.png" type="image/x-icon">
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f0f0; }
-    header { text-align: center; margin-bottom: 20px; }
-    header img.logo { max-width: 200px; height: auto; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f0f0f0;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header img.logo {
+      max-width: 200px;
+      height: auto;
+    }
+
     h2 {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 1.75rem; font-weight: 600; text-align: center; margin-bottom: 20px;
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
       background: linear-gradient(90deg,
-        #003366,#0066CC,#3399FF,#ff3333,#ffa733,#9a9c21,#54cc25,#1a8371,#229ea7,#33b4ff,#2b80d0,#226cb1,#1b558c,#14416a);
+          #003366, #0066CC, #3399FF, #ff3333, #ffa733, #9a9c21, #54cc25, #1a8371, #229ea7, #33b4ff, #339cff);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradientShift 4s linear infinite;
     }
-    @keyframes gradientShift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-    h2::after { content: ''; display: block; width: 43%; height: 4px; background: #0c65be; margin: 8px auto 0; border-radius: 20px; }
-    #loginSection { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 30px; }
-    #loginSection input { padding: 10px; font-size: 1rem; width: 300px; }
-    #loginSection button { padding: 10px 20px; font-size: 1.25rem; margin-left: 20px; background-color: #babbee; }
-    #searchSection { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
-    #searchSection input[type="text"] { flex: 0 0 50%; max-width: 600px; padding: 10px; font-size: 1rem; }
-    #searchSection button.search-btn { padding: 20px 40px; font-size: 1.25rem; margin-left: 20px; background-color: #92e67d; }
-    .form-section { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; justify-content: center; }
-    .form-group { display: flex; flex-direction: column; }
-    .form-group label { font-weight: bold; margin-bottom: 5px; }
-    .form-group input { padding: 10px; font-size: 1rem; width: 200px; }
-    .button-row { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; }
-    .button-group { display: flex; gap: 10px; }
-    .button-group button { padding: 20px 40px; font-size: 1.25rem; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .add-btn { background-color: #003366; }
-    .edit-btn { background-color: #3399FF; }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+
+
+    #loginSection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    #loginSection input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 300px;
+    }
+
+    /* ========= Shared glow animation ========= */
+    @keyframes glowRainbow {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* Unlock button base (keeps its own color/size/text) */
+    #loginSection .unlock-btn {
+      margin-left: 20px;
+      padding: 15px 40px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      border-radius: 4px;          /* match other buttons */
+      background-color: #2952db;   /* keep Unlock's base color */
+      color: #FFF;                 /* keep text color */
+      font-size: 1.25rem;          /* keep size */
+      isolation: isolate;
+    }
+
+    /* ====== Rest of your styles (unchanged) ====== */
+    #searchSection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #searchSection input[type="text"] {
+      flex: 0 0 50%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+
+    #searchSection button.search-btn {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      margin-left: 20px;
+      background-color: #92e67d;
+    }
+
+    .form-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 200px;
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .button-group button {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .add-btn   { background-color: #003366; }
+    .edit-btn  { background-color: #3399FF; }
     .clear-btn { background-color: #66CC66; }
     .refresh-btn { background-color: gold; color: black; }
-    .delete-btn { background-color: red; }
-    table { margin: 0 auto; width: auto; border-collapse: collapse; background: white; }
-    table th:nth-child(3), table td:nth-child(3) { max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; white-space: nowrap; }
+    .delete-btn  { background-color: red; }
+
+    table {
+      margin: 0 auto;
+      width: auto;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    table th:nth-child(3),
+    table td:nth-child(3) {
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
     table th { background-color: #4285F4; color: white; }
-    tr.selected { background-color: rgb(238,217,217); }
+    tr.selected { background-color: rgb(238, 217, 217); }
+
+    /* ========= SAME gradient glow for ALL buttons (Search/Add/Edit/Clear/Refresh/Delete/Unlock) ========= */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      position: relative;     /* needed for ::before positioning */
+      isolation: isolate;     /* keeps -1 layers within the button */
+      z-index: 0;
+    }
+
+    .button-group button::before,
+    #searchSection .search-btn::before,
+    #loginSection .unlock-btn::before {
+      content: "";
+      position: absolute;
+      inset: -2px;            /* glow ring just outside the button */
+      border-radius: inherit; /* keep existing rounded corners */
+      background: linear-gradient(45deg,
+        #FF0000, #FF7300, #FFFB00, #48FF00,
+        #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(8px);
+      animation: glowRainbow 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      opacity: 0;             /* hidden until hover */
+      z-index: -1;
+    }
+
+    .button-group button:hover::before,
+    #searchSection .search-btn:hover::before,
+    #loginSection .unlock-btn:hover::before {
+      opacity: 1;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <img src="1 logo.png" alt="Company Logo" class="logo">
-    <h2>Google Sheets Data Management Platform Developed by Ozzie</h2>
+    <h2>WebViewOnline Client Base</h2>
   </header>
 
   <div id="loginSection">
@@ -58,25 +225,19 @@
       type="password"
       id="appPassword"
       placeholder="Enter Password"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}"
-    >
-    <button onclick="checkPassword()">Unlock</button>
+      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+    <!-- Glowing Unlock button -->
+    <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
   </div>
 
   <div id="appSection" style="display:none;">
 
-<form id="searchForm" onsubmit="event.preventDefault(); searchData();">
-  <div id="searchSection">
-    <input
-      type="text"
-      id="searchQuery"
-      placeholder="Search by username, phone, or email"
-    >
-    <button type="submit" class="search-btn">
-      Search
-    </button>
-  </div>
-</form>
+    <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
+      <div id="searchSection">
+        <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
+        <button type="submit" class="search-btn">Search</button>
+      </div>
+    </form>
 
     <div class="form-section">
       <div class="form-group"><label for="username">Username:</label><input type="text" id="username"></div>
@@ -88,6 +249,7 @@
       <div class="form-group"><label for="notes">Notes:</label><input type="text" id="notes"></div>
       <input type="hidden" id="rowIndex" />
     </div>
+
     <div class="button-row">
       <div class="button-group left"></div>
       <div class="button-group center">
@@ -184,92 +346,31 @@
       return s;
     }
 
-function searchData() {
-  const q = document.getElementById('searchQuery').value.trim().toLowerCase();
-  const tbody = document.querySelector('#dataTable tbody');
-  tbody.innerHTML = '';
-  if (!q) { loadData(); return; }
-
-  // Regex to detect phone numbers in many common formats
-  const phoneRegex = /\b(?:1[-.\s]?)?(?:\(?\d{3}\)?)[-.\s]?\d{3}[-.\s]?\d{4}\b/;
-
-  // Regex to detect emails including mailto/mail to prefixes (case insensitive)
-  // The ?: in (?:mailto:|mail to:) means non-capturing group, optional spaces after prefix
-  const emailRegex = /(?:mailto:|mail to:)?\s*[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i;
-
-  allDataRows.forEach((row, i) => {
-    // Join all row cells to a single string for search, lowercased
-    const rowText = row.join(' ').toLowerCase();
-
-    // Check if user query is a phone number pattern or email pattern:
-    // We run these regexes against the query input (q)
-    const isQueryPhone = phoneRegex.test(q);
-    const isQueryEmail = emailRegex.test(q);
-
-    // Matching flags
-    let matched = false;
-
-    // If query looks like a phone number:
-    if (isQueryPhone) {
-      // Search all cells to find any phone number that matches the query digits only
-      // Strip all non-digits from query for comparison
-      const queryDigits = q.replace(/\D/g, '');
-
-      for (const cell of row) {
-        // Extract phone-like strings from the cell (using phoneRegex global)
-        const phonesInCell = (cell.match(new RegExp(phoneRegex, 'g')) || []);
-        for (const phone of phonesInCell) {
-          const phoneDigits = phone.replace(/\D/g, '');
-          if (phoneDigits.includes(queryDigits) || queryDigits.includes(phoneDigits)) {
-            matched = true;
-            break;
-          }
+    function searchData() {
+      const q = document.getElementById('searchQuery').value.toLowerCase().trim();
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      if (!q) { loadData(); return; }
+      allDataRows.forEach((row, i) => {
+        if (row.join(' ').toLowerCase().includes(q)) {
+          const tr = tbody.insertRow();
+          row.forEach((cell, ci) => {
+            const td = tr.insertCell();
+            td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
+          });
+          tr.onclick = () => {
+            selectedRowIndex = totalRows - i;
+            document.querySelectorAll('#dataTable tr.selected')
+              .forEach(r => r.classList.remove('selected'));
+            tr.classList.add('selected');
+            ['username','password','email','phone','server','autoPay']
+              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+            document.getElementById('notes').value = '';
+            document.getElementById('rowIndex').value = selectedRowIndex;
+          };
         }
-        if (matched) break;
-      }
-    }
-    // If query looks like an email or mailto/mail to email:
-    else if (isQueryEmail) {
-      // Normalize query email: remove mailto/mail to prefix and spaces
-      const normalizedQueryEmail = q.replace(/^(mailto:|mail to:)\s*/, '');
-
-      for (const cell of row) {
-        // Normalize cell email strings similarly
-        const normalizedCell = cell.toLowerCase().replace(/^(mailto:|mail to:)\s*/, '').trim();
-        if (normalizedCell.includes(normalizedQueryEmail)) {
-          matched = true;
-          break;
-        }
-      }
-    }
-    // Otherwise, fallback to simple substring match for other queries
-    else {
-      if (rowText.includes(q)) {
-        matched = true;
-      }
-    }
-
-    // If matched, render the row in the table as before
-    if (matched) {
-      const tr = tbody.insertRow();
-      row.forEach((cell, ci) => {
-        const td = tr.insertCell();
-        td.innerHTML = ci === 6 ? formatNotes(cell) : cell;
       });
-      tr.onclick = () => {
-        selectedRowIndex = totalRows - i;
-        document.querySelectorAll('#dataTable tr.selected')
-          .forEach(r => r.classList.remove('selected'));
-        tr.classList.add('selected');
-        ['username','password','email','phone','server','autoPay']
-          .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-        document.getElementById('notes').value = '';
-        document.getElementById('rowIndex').value = selectedRowIndex;
-      };
     }
-  });
-}
-
 
     function confirmDelete() {
       if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -369,8 +470,5 @@ function searchData() {
     }
   </script>
 </body>
+
 </html>
-
-
-
-
