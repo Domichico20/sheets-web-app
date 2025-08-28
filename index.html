@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +7,15 @@
   <link rel="icon" href="1 logo.png" type="image/x-icon">
 
   <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -43,20 +51,82 @@
       100% { background-position: 200% center; }
     }
 
-
-
+    /* --- Login section as a centered card --- */
     #loginSection {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 30px;
+      padding: 40px 16px;
     }
 
-    #loginSection input {
-      padding: 10px;
+    .login-card {
+      position: relative;
+      width: min(420px, 92vw);
+      padding: 28px 24px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      backdrop-filter: blur(6px);
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+        #FF0000, #FF7300, #FFFB00, #48FF00,
+        #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(14px);
+      z-index: -1;
+      opacity: .30;
+      animation: glowRainbow 20s linear infinite;
+    }
+
+    .login-card .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+      color: #003366;
+    }
+
+    .inputbox {
+      position: relative;
+      margin: 12px 0 6px;
+    }
+
+    .inputbox input {
+      width: 100%;
+      padding: 14px 12px;
       font-size: 1rem;
-      width: 300px;
+      border: 1px solid #d6d6d6;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+    }
+
+    .inputbox label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      padding: 0 6px;
+      color: #666;
+      pointer-events: none;
+      transition: .18s ease;
+    }
+
+    .inputbox input:focus + label,
+    .inputbox input:not(:placeholder-shown) + label {
+      top: 0;
+      font-size: .8rem;
+      color: #003366;
     }
 
     /* ========= Shared glow animation ========= */
@@ -68,17 +138,19 @@
 
     /* Unlock button base (keeps its own color/size/text) */
     #loginSection .unlock-btn {
-      margin-left: 20px;
+      margin-left: 0;
       padding: 15px 40px;
       border: none;
       outline: none;
       cursor: pointer;
       position: relative;
-      border-radius: 4px;          /* match other buttons */
-      background-color: #2952db;   /* keep Unlock's base color */
-      color: #FFF;                 /* keep text color */
-      font-size: 1.25rem;          /* keep size */
+      border-radius: 8px;
+      background-color: #2952db;
+      color: #FFF;
+      font-size: 1.1rem;
       isolation: isolate;
+      width: 100%;
+      margin-top: 14px;
     }
 
     /* ====== Rest of your styles (unchanged) ====== */
@@ -183,8 +255,8 @@
     .button-group button,
     #searchSection .search-btn,
     #loginSection .unlock-btn {
-      position: relative;     /* needed for ::before positioning */
-      isolation: isolate;     /* keeps -1 layers within the button */
+      position: relative;
+      isolation: isolate;
       z-index: 0;
     }
 
@@ -193,8 +265,8 @@
     #loginSection .unlock-btn::before {
       content: "";
       position: absolute;
-      inset: -2px;            /* glow ring just outside the button */
-      border-radius: inherit; /* keep existing rounded corners */
+      inset: -2px;
+      border-radius: inherit;
       background: linear-gradient(45deg,
         #FF0000, #FF7300, #FFFB00, #48FF00,
         #00FFD5, #002BFF, #FF00C8, #FF0000);
@@ -202,7 +274,7 @@
       filter: blur(8px);
       animation: glowRainbow 20s linear infinite;
       transition: opacity .3s ease-in-out;
-      opacity: 0;             /* hidden until hover */
+      opacity: 0;
       z-index: -1;
     }
 
@@ -212,7 +284,7 @@
       opacity: 1;
     }
 
-       /* --- Notes wrapping + scroll + WhatsApp link styling --- */
+    /* --- Notes wrapping + scroll + WhatsApp link styling --- */
     table th:nth-child(7), table td:nth-child(7) { width: 360px; }
     .notes-cell { max-height: 140px; overflow: auto; white-space: normal; line-height: 1.35; }
     .note-entry { margin: 0 0 .55em 0; }
@@ -228,13 +300,24 @@
   </header>
 
   <div id="loginSection">
-    <input
-      type="password"
-      id="appPassword"
-      placeholder="Enter Password"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}"> 
-    <!-- Glowing Unlock button -->
-    <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
+    <div class="login-card">
+      <h1 class="brand">
+        <ion-icon name="lock-closed"></ion-icon>
+        WebViewOnline
+      </h1>
+
+      <div class="inputbox">
+        <input
+          type="password"
+          id="appPassword"
+          placeholder=" "
+          onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+        <label for="appPassword">Enter Password</label>
+      </div>
+
+      <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
+    
+    </div>
   </div>
 
   <div id="appSection" style="display:none;">
@@ -291,8 +374,8 @@
     const range     = 'data!A1:G3000';
     let existingUsernames = [];
     let allDataRows       = [];
-let totalRows         = 0;
-let selectedRawNotes  = '';
+    let totalRows         = 0;
+    let selectedRawNotes  = '';
 
     function checkPassword() {
       const pass = document.getElementById('appPassword').value;
@@ -306,21 +389,20 @@ let selectedRawNotes  = '';
       }
     }
 
-  function formatNotes(cell) {
-  const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
-  if (!stripped) return '';
-  const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
-  return parts
-    .map(p => p.trim())
-    .filter(Boolean)
-    .map(p => {
-      const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
-      if (!m) return `<div class="note-entry"><span class="txt">${p}</span></div>`;
-      return `<div class="note-entry"><span class="ts">${m[1]}</span>: <span class="txt">${m[2]}</span></div>`;
-    })
-    .join('');
-}
-
+    function formatNotes(cell) {
+      const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+      if (!stripped) return '';
+      const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
+      return parts
+        .map(p => p.trim())
+        .filter(Boolean)
+        .map(p => {
+          const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+          if (!m) return `<div class="note-entry"><span class="txt">${p}</span></div>`;
+          return `<div class="note-entry"><span class="ts">${m[1]}</span>: <span class="txt">${m[2]}</span></div>`;
+        })
+        .join('');
+    }
 
     function loadData() {
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
@@ -335,125 +417,121 @@ let selectedRawNotes  = '';
           tbody.innerHTML = '';
           allDataRows.slice(0, ROW_LIMIT).forEach((row, i) => {
             const tr = tbody.insertRow();
-          row.forEach((cell, ci) => {
-  const td = tr.insertCell();
-  if (ci === 6) {
-    td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
-  } else if (ci === 3) {
-    td.className = 'phone-wa';
-    td.innerHTML = phoneLink(cell);
-  } else {
-    td.textContent = cell;
-  }
-});
-tr.onclick = () => {
-  selectedRowIndex = totalRows - i;
-  document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-  tr.classList.add('selected');
-  ['username','password','email','phone','server','autoPay']
-    .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-  selectedRawNotes = row[6] || '';
-  document.getElementById('notes').value = '';
-  document.getElementById('rowIndex').value = selectedRowIndex;
-};
-
-
+            row.forEach((cell, ci) => {
+              const td = tr.insertCell();
+              if (ci === 6) {
+                td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
+              } else if (ci === 3) {
+                td.className = 'phone-wa';
+                td.innerHTML = phoneLink(cell);
+              } else {
+                td.textContent = cell;
+              }
+            });
+            tr.onclick = () => {
+              selectedRowIndex = totalRows - i;
+              document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+              tr.classList.add('selected');
+              ['username','password','email','phone','server','autoPay']
+                .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+              selectedRawNotes = row[6] || '';
+              document.getElementById('notes').value = '';
+              document.getElementById('rowIndex').value = selectedRowIndex;
+            };
           });
         })
         .catch(console.error);
     }
 
-function normalizePhone(s) {
-  const d = s.replace(/\D/g,'');
-  if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
-  if (d.length === 11 && d.startsWith('1'))
-    return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
-  return s;
-}
-
-function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
-
-function canonicalPhone(s){
-  const d = digitsOnly(s);
-  if (!d) return '';
-  if (d.length === 10) return '1' + d;                 // assume US if 10 digits
-  if (d.length === 11 && d.startsWith('1')) return d;  // US with leading 1
-  return d;                                            // fallback (international digits as-is)
-}
-
-function phoneLink(s){
-  const d = digitsOnly(s);
-  if (!d) return '';
-  const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
-  const display = normalizePhone(s);
-  return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${display} 📲</a>`;
-}
-
-function canonicalEmail(s){
-  return (s || '')
-    .toLowerCase()
-    .replace(/^mailto:\s*/,'')
-    .replace(/^mail\s*to:\s*/,'')
-    .replace(/\s+/g,'')
-    .trim();
-}
-
-
-function searchData() {
-  const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
-  const qDigits = (raw.match(/\d/g) || []).join('');      // phone, any punctuation/spaces
-  const qEmail  = canonicalEmail(raw);                    // email, handles mailto:/mail to:/spaces
-  const tbody   = document.querySelector('#dataTable tbody');
-  tbody.innerHTML = '';
-  if (!raw) { loadData(); return; }
-
-  const hasPhoneQuery = qDigits.length >= 7;              // tolerate partials but prefer >=7
-  const hasEmailQuery = qEmail.includes('@');
-
-  allDataRows.forEach((row, i) => {
-    const baseMatch = row.join(' ').toLowerCase().includes(raw);
-
-    let phoneMatch = false;
-    if (hasPhoneQuery) {
-      const rp = (row[3] || '').replace(/\D/g,'');
-      const last10 = s => s.slice(-10);
-      if (rp) {
-        phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
-      }
+    function normalizePhone(s) {
+      const d = s.replace(/\D/g,'');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1'))
+        return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
+      return s;
     }
 
-    let emailMatch = false;
-    if (hasEmailQuery) {
-      const re = canonicalEmail(row[2] || '');
-      emailMatch = re.includes(qEmail);
+    function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
+
+    function canonicalPhone(s){
+      const d = digitsOnly(s);
+      if (!d) return '';
+      if (d.length === 10) return '1' + d;
+      if (d.length === 11 && d.startsWith('1')) return d;
+      return d;
     }
 
-    if (baseMatch || phoneMatch || emailMatch) {
-      const tr = tbody.insertRow();
-      row.forEach((cell, ci) => {
-        const td = tr.insertCell();
-        if (ci === 6) {
-          td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
-        } else if (ci === 3) {
-          td.className = 'phone-wa';
-          td.innerHTML = phoneLink(cell);
-        } else {
-          td.textContent = cell;
+    function phoneLink(s){
+      const d = digitsOnly(s);
+      if (!d) return '';
+      const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+      const display = normalizePhone(s);
+      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${display} 📲</a>`;
+    }
+
+    function canonicalEmail(s){
+      return (s || '')
+        .toLowerCase()
+        .replace(/^mailto:\s*/,'')
+        .replace(/^mail\s*to:\s*/,'')
+        .replace(/\s+/g,'')
+        .trim();
+    }
+
+    function searchData() {
+      const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
+      const qDigits = (raw.match(/\d/g) || []).join('');
+      const qEmail  = canonicalEmail(raw);
+      const tbody   = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      if (!raw) { loadData(); return; }
+
+      const hasPhoneQuery = qDigits.length >= 7;
+      const hasEmailQuery = qEmail.includes('@');
+
+      allDataRows.forEach((row, i) => {
+        const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+        let phoneMatch = false;
+        if (hasPhoneQuery) {
+          const rp = (row[3] || '').replace(/\D/g,'');
+          const last10 = s => s.slice(-10);
+          if (rp) {
+            phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
+          }
+        }
+
+        let emailMatch = false;
+        if (hasEmailQuery) {
+          const re = canonicalEmail(row[2] || '');
+          emailMatch = re.includes(qEmail);
+        }
+
+        if (baseMatch || phoneMatch || emailMatch) {
+          const tr = tbody.insertRow();
+          row.forEach((cell, ci) => {
+            const td = tr.insertCell();
+            if (ci === 6) {
+              td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
+            } else if (ci === 3) {
+              td.className = 'phone-wa';
+              td.innerHTML = phoneLink(cell);
+            } else {
+              td.textContent = cell;
+            }
+          });
+          tr.onclick = () => {
+            selectedRowIndex = totalRows - i;
+            document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+            tr.classList.add('selected');
+            ['username','password','email','phone','server','autoPay']
+              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+            document.getElementById('notes').value = '';
+            document.getElementById('rowIndex').value = selectedRowIndex;
+          };
         }
       });
-      tr.onclick = () => {
-        selectedRowIndex = totalRows - i;
-        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-        tr.classList.add('selected');
-        ['username','password','email','phone','server','autoPay']
-          .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-        document.getElementById('notes').value = '';
-        document.getElementById('rowIndex').value = selectedRowIndex;
-      };
     }
-  });
-}
-
 
     function confirmDelete() {
       if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -478,18 +556,14 @@ function searchData() {
 
     function editRow() {
       function gi(id){ return document.getElementById(id).value.trim(); }
-      const rawNew = gi('notes');     // now optional
+      const rawNew = gi('notes');
       const tr = document.querySelector('#dataTable tr.selected');
       if (!tr) { alert('Please select a row first.'); return; }
 
-      // grab existing notes
-// grab existing notes (raw from the sheet, not HTML)
-const existing = (selectedRawNotes || '')
-  .replace(/#\d+:\s*/g,'')
-  .trim();
+      const existing = (selectedRawNotes || '')
+        .replace(/#\d+:\s*/g,'')
+        .trim();
 
-
-      // build combined notes only if user entered one
       let combined = existing;
       if (rawNew) {
         const ts = new Date().toLocaleString('en-US',{
@@ -554,6 +628,9 @@ const existing = (selectedRawNotes || '')
       selectedRowIndex = null;
     }
   </script>
-</body>
 
+  <!-- Ionicons for the lock icon on the login card -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
 </html>
