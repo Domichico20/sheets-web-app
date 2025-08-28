@@ -52,13 +52,14 @@
     }
 
     /* --- Login section as a centered card --- */
- #loginSection {
+#loginSection {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 40px 16px;
-  min-height: calc(100vh - 160px); /* full-height area under the header */
+  align-items: flex-start;   /* ⬅️ no vertical centering */
+  padding: 8px 16px 40px;    /* small top padding only */
+  min-height: auto;          /* ⬅️ remove forced height */
 }
+.login-card { margin-top: 4px; }  /* tiny breathing room under the title */
 
 
     .login-card {
@@ -312,9 +313,8 @@ body.login-bg::before{
 /* ===== App (2nd page) background ===== */
 body.app-bg{
   min-height: 100vh;
-  background: url('3d-render-gradient-7680x4800-10996.jpg') center / cover no-repeat fixed;
+  background: url('https://github.com/Domichico20/sheets-web-app/blob/main/pexels-codioful-6985045.jpg')
 }
-
 
   </style>
 </head>
@@ -322,7 +322,6 @@ body.app-bg{
 <body>
   <header>
     <img src="1 logo.png" alt="Company Logo" class="logo">
-    <h2>WebViewOnline Client Base</h2>
   </header>
 
   <div id="loginSection">
