@@ -4,10 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Google Sheets Manager</title>
-  <link rel="icon" href="1 logo.png" type="image/x-icon">
+  <!-- Preload login background -->
+<link rel="preload" as="image" href="bg.jpg">
+<!-- Preload app background -->
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg">
+
+
+<link rel="icon" href="logo.png" type="image/png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 * {
   margin: 0;
@@ -17,7 +26,6 @@
 }
 
     body {
-      font-family: Arial, sans-serif;
       margin: 20px;
       background-color: #f0f0f0;
     }
@@ -43,8 +51,11 @@
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: gradientShift 4s linear infinite;
+      animation: gradientShift 10s linear infinite;
     }
+    @media (prefers-reduced-motion: reduce){
+  h2 { animation: none; }
+}
 
     @keyframes gradientShift {
       0% { background-position: 0% center; }
@@ -178,6 +189,9 @@
       background-color: #92e67d;
     }
 
+/* Light-purple style for the new note button; inherits all button-group button styles */
+.add-note-btn { background-color: #c9a8ff; color: #fff; }
+
     .form-section {
       display: flex;
       flex-wrap: wrap;
@@ -199,15 +213,28 @@
     .form-group input {
       padding: 10px;
       font-size: 1rem;
-      width: 200px;
+      width: 175px;
     }
 
-    .button-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 20px 0;
-    }
+.button-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* center the whole bar */
+  margin: 20px 0;
+}
+
+.button-group.center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;         /* keep on one line */
+}
+
+/* If the screen is small, allow wrapping (optional) */
+@media (max-width: 700px){
+  .button-group.center { flex-wrap: wrap; justify-content: center; }
+}
+
 
     .button-group {
       display: flex;
@@ -293,13 +320,24 @@
     .note-entry { margin: 0 0 .55em 0; }
     .note-entry .ts { font-weight: 100; color: #880000;}
     .phone-wa a { text-decoration: none; }
+/* Make the Notes input wider */
+#notes { width: 400px; }
+
+/* Optional: keep it fluid on small screens */
+@media (max-width: 600px){
+  #notes { width: 100%; }
+}
 
 
 /* ===== Login-only background (uses bg.jpg) ===== */
+/* ===== Login-only background (uses bg.jpg) ===== */
 body.login-bg{
   min-height: 100vh;
-  background: url('bg.jpg') center / cover no-repeat fixed;
+  background: url('bg.jpg') center / cover no-repeat;
+
 }
+
+
 /* subtle dark overlay to boost contrast behind the card */
 body.login-bg::before{
   content:"";
@@ -313,21 +351,28 @@ body.login-bg::before{
 /* ===== App (2nd page) background ===== */
 body.app-bg{
   min-height: 100vh;
-  background: url('pexels-codioful-6985045.jpg') center / cover no-repeat fixed;
+background: url('pexels-codioful-6985045.jpg') center / cover no-repeat;
 }
+
+/* Hide the app by default; only show it after login when body.app-bg is set */
+#appSection{ display:none; }
+body.app-bg #appSection{ display:block; }
+
 
   </style>
 </head>
 
 <body>
   <header>
-    <img src="1 logo.png" alt="Company Logo" class="logo">
+    <img src="logo.png" alt="Company Logo" class="logo" width="200" height="200" decoding="async" fetchpriority="high">
   </header>
 
   <div id="loginSection">
     <div class="login-card">
       <h1 class="brand">
-        <ion-icon name="lock-closed"></ion-icon>
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;color:#2952db">
+          <path d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z"/>
+        </svg>
         Osvaldo Nuñez
       </h1>
 
@@ -341,12 +386,11 @@ body.app-bg{
       </div>
 
       <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
-    
     </div>
   </div>
 
-  <div id="appSection" style="display:none;">
-
+  <!-- App UI: hidden by CSS until body gets class 'app-bg' after login -->
+  <div id="appSection">
     <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
       <div id="searchSection">
         <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
@@ -361,20 +405,21 @@ body.app-bg{
       <div class="form-group"><label for="phone">Phone #:</label><input type="text" id="phone"></div>
       <div class="form-group"><label for="server">Server:</label><input type="text" id="server"></div>
       <div class="form-group"><label for="autoPay">AutoPay:</label><input type="text" id="autoPay"></div>
-      <div class="form-group"><label for="notes">Notes:</label><input type="text" id="notes"></div>
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <input type="text" id="notes">
+      </div>
       <input type="hidden" id="rowIndex" />
     </div>
 
     <div class="button-row">
-      <div class="button-group left"></div>
       <div class="button-group center">
-        <button class="add-btn" onclick="addRow()">Add</button>
-        <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+        <button class="add-btn"   onclick="addRow()">Add</button>
+        <button class="edit-btn"  onclick="confirmEdit()">Edit</button>
         <button class="clear-btn" onclick="clearForm()">Clear</button>
         <button class="refresh-btn" onclick="loadData()">Refresh</button>
-      </div>
-      <div class="button-group right">
-        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button class="delete-btn"  onclick="confirmDelete()">Delete</button>
+        <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
       </div>
     </div>
 
@@ -389,279 +434,306 @@ body.app-bg{
     </table>
   </div>
 
-  <script>
-    const ROW_LIMIT = 25;
-    let sessionPassword = "";
-    let selectedRowIndex = null;
-document.body.classList.add('login-bg'); // show background on login screen
-const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+<script>
+  /* ---------- Login background on first load ---------- */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('login-bg');
+  });
 
-    const sheetId   = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
-    const apiKey    = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
-    const range     = 'data!A1:G3000';
-    let existingUsernames = [];
-    let allDataRows       = [];
-    let totalRows         = 0;
-    let selectedRawNotes  = '';
+  /* ---------- App constants ---------- */
+  const ROW_LIMIT = 25;
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+  const sheetId  = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
+  const apiKey   = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
+  const range    = 'data!A1:G3000';
 
-    function checkPassword() {
-      const pass = document.getElementById('appPassword').value;
-  if (pass === 'Google#2020') {
-  sessionPassword = pass;
-  document.body.classList.remove('login-bg'); // remove background after login
-  document.body.classList.add('app-bg');      // add background for 2nd page
-  document.getElementById('loginSection').style.display = 'none';
-  document.getElementById('appSection').style.display  = 'block';
-  loadData();
-} else {
+  let sessionPassword = "";
+  let selectedRowIndex = null;   // 1-based sheet row
+  let selectedRawNotes = '';
+  let existingUsernames = [];
+  let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
+  let totalRows = 0;
 
-
-        alert('Incorrect password');
-      }
+  /* ---------- Login ---------- */
+  function checkPassword() {
+    const pass = document.getElementById('appPassword').value.trim();
+    if (pass === 'Google#2020') {
+      sessionPassword = pass;
+      document.body.classList.remove('login-bg');
+      document.body.classList.add('app-bg');
+      document.getElementById('loginSection').style.display = 'none';
+      loadData();
+    } else {
+      alert('Incorrect password');
     }
+  }
+  window.checkPassword = checkPassword; // keep inline onclick working
 
-    function formatNotes(cell) {
-      const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
-      if (!stripped) return '';
-      const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
-      return parts
-        .map(p => p.trim())
-        .filter(Boolean)
-        .map(p => {
-          const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
-          if (!m) return `<div class="note-entry"><span class="txt">${p}</span></div>`;
-          return `<div class="note-entry"><span class="ts">${m[1]}</span>: <span class="txt">${m[2]}</span></div>`;
-        })
-        .join('');
-    }
+  /* ---------- Helpers (formatting + search) ---------- */
+  const TS_REGEX = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)/;
 
-    function loadData() {
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
-        .then(res => res.json())
-        .then(data => {
-          const rows = data.values || [];
-          totalRows = rows.length;
-          allDataRows = rows.slice(1).reverse();
-          existingUsernames = rows.slice(1).map(r => (r[0]||'').toLowerCase());
-          document.getElementById('searchQuery').value = '';
-          const tbody = document.querySelector('#dataTable tbody');
-          tbody.innerHTML = '';
-          allDataRows.slice(0, ROW_LIMIT).forEach((row, i) => {
-            const tr = tbody.insertRow();
-            row.forEach((cell, ci) => {
-              const td = tr.insertCell();
-              if (ci === 6) {
-                td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
-              } else if (ci === 3) {
-                td.className = 'phone-wa';
-                td.innerHTML = phoneLink(cell);
-              } else {
-                td.textContent = cell;
-              }
-            });
-            tr.onclick = () => {
-              selectedRowIndex = totalRows - i;
-              document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-              tr.classList.add('selected');
-              ['username','password','email','phone','server','autoPay']
-                .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-              selectedRawNotes = row[6] || '';
-              document.getElementById('notes').value = '';
-              document.getElementById('rowIndex').value = selectedRowIndex;
-            };
-          });
-        })
-        .catch(console.error);
-    }
+  function parseLastEditMs(notesCell) {
+    if (!notesCell) return 0;
+    const firstLine = String(notesCell).split('\n')[0].trim();
+    const m = firstLine.match(TS_REGEX);
+    if (!m) return 0;
+    const ms = Date.parse(m[0]);
+    return isNaN(ms) ? 0 : ms;
+  }
 
-    function normalizePhone(s) {
-      const d = s.replace(/\D/g,'');
-      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
-      if (d.length === 11 && d.startsWith('1'))
-        return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
-      return s;
-    }
+  function escapeHTML(s){
+    return String(s ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-    function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
+  function normalizePhone(s) {
+    const d = (s || '').replace(/\D/g,'');
+    if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+    if (d.length === 11 && d.startsWith('1'))
+      return d.replace(/^1(\d{3})(\d{3})(\d{4})/,'1 ($1) $2-$3');
+    return s || '';
+  }
 
-    function canonicalPhone(s){
-      const d = digitsOnly(s);
-      if (!d) return '';
-      if (d.length === 10) return '1' + d;
-      if (d.length === 11 && d.startsWith('1')) return d;
-      return d;
-    }
+  function digitsOnly(s){ return (s||'').replace(/\D/g,''); }
 
-    function phoneLink(s){
-      const d = digitsOnly(s);
-      if (!d) return '';
-      const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
-      const display = normalizePhone(s);
-      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${display} 📲</a>`;
-    }
+  function phoneLink(s){
+    const d = digitsOnly(s);
+    if (!d) return '';
+    const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+    const display = normalizePhone(s);
+    return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${escapeHTML(display)} 📲</a>`;
+  }
 
-    function canonicalEmail(s){
-      return (s || '')
-        .toLowerCase()
-        .replace(/^mailto:\s*/,'')
-        .replace(/^mail\s*to:\s*/,'')
-        .replace(/\s+/g,'')
-        .trim();
-    }
+  function canonicalEmail(s){
+    return (s || '')
+      .toLowerCase()
+      .replace(/^mailto:\s*/,'')
+      .replace(/^mail\s*to:\s*/,'')
+      .replace(/\s+/g,'')
+      .trim();
+  }
 
-    function searchData() {
-      const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
-      const qDigits = (raw.match(/\d/g) || []).join('');
-      const qEmail  = canonicalEmail(raw);
-      const tbody   = document.querySelector('#dataTable tbody');
-      tbody.innerHTML = '';
-      if (!raw) { loadData(); return; }
-
-      const hasPhoneQuery = qDigits.length >= 7;
-      const hasEmailQuery = qEmail.includes('@');
-
-      allDataRows.forEach((row, i) => {
-        const baseMatch = row.join(' ').toLowerCase().includes(raw);
-
-        let phoneMatch = false;
-        if (hasPhoneQuery) {
-          const rp = (row[3] || '').replace(/\D/g,'');
-          const last10 = s => s.slice(-10);
-          if (rp) {
-            phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
-          }
-        }
-
-        let emailMatch = false;
-        if (hasEmailQuery) {
-          const re = canonicalEmail(row[2] || '');
-          emailMatch = re.includes(qEmail);
-        }
-
-        if (baseMatch || phoneMatch || emailMatch) {
-          const tr = tbody.insertRow();
-          row.forEach((cell, ci) => {
-            const td = tr.insertCell();
-            if (ci === 6) {
-              td.innerHTML = '<div class="notes-cell">' + formatNotes(cell) + '</div>';
-            } else if (ci === 3) {
-              td.className = 'phone-wa';
-              td.innerHTML = phoneLink(cell);
-            } else {
-              td.textContent = cell;
-            }
-          });
-          tr.onclick = () => {
-            selectedRowIndex = totalRows - i;
-            document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-            tr.classList.add('selected');
-            ['username','password','email','phone','server','autoPay']
-              .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-            document.getElementById('notes').value = '';
-            document.getElementById('rowIndex').value = selectedRowIndex;
-          };
-        }
-      });
-    }
-
-    function confirmDelete() {
-      if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-      if (!confirm('Delete selected row?')) return;
-      deleteRow();
-    }
-    function deleteRow() {
-      fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({ action:'delete', password:sessionPassword, row:selectedRowIndex })
+  function formatNotes(cell) {
+    const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+    if (!stripped) return '';
+    const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
+    return parts
+      .map(p => p.trim())
+      .filter(Boolean)
+      .map(p => {
+        const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+        if (!m) return `<div class="note-entry"><span class="txt">${escapeHTML(p)}</span></div>`;
+        return `<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span>: <span class="txt">${escapeHTML(m[2])}</span></div>`;
       })
-      .then(res => res.text())
-      .then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
-      .catch(err => alert('Delete failed: ' + err));
-    }
+      .join('');
+  }
 
-    function confirmEdit() {
-      if (selectedRowIndex === null) { alert('Select a row first!'); return; }
-      if (!confirm('Save changes to this row?')) return;
-      editRow();
-    }
+  /* ---------- Table cell renderer (restores your look) ---------- */
+  function tdHTML(row){
+    return row.map((cell, ci) => {
+      if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
+      if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone
+      return '<td>' + escapeHTML(cell) + '</td>';
+    }).join('');
+  }
 
-    function editRow() {
-      function gi(id){ return document.getElementById(id).value.trim(); }
-      const rawNew = gi('notes');
-      const tr = document.querySelector('#dataTable tr.selected');
-      if (!tr) { alert('Please select a row first.'); return; }
+  /* ---------- Data load + render ---------- */
+  function renderTable(records){
+    const tbody = document.querySelector('#dataTable tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const frag = document.createDocumentFragment();
 
-      const existing = (selectedRawNotes || '')
-        .replace(/#\d+:\s*/g,'')
-        .trim();
+    records.forEach(rec => {
+      const row = rec.row;
+      const tr = document.createElement('tr');
+      tr.innerHTML = tdHTML(row);
+      tr.onclick = () => {
+        selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        tr.classList.add('selected');
+        ['username','password','email','phone','server','autoPay']
+          .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
+        selectedRawNotes = row[6] || '';
+        document.getElementById('notes').value = '';
+        document.getElementById('rowIndex').value = selectedRowIndex;
+      };
+      frag.appendChild(tr);
+    });
+    tbody.appendChild(frag);
+  }
 
-      let combined = existing;
-      if (rawNew) {
-        const ts = new Date().toLocaleString('en-US',{
-          timeZone:'America/New_York',
-          month:'short',day:'numeric',year:'numeric',
-          hour:'2-digit',minute:'2-digit'
-        });
-        combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+  function loadData(){
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
+      .then(r => r.json())
+      .then(data => {
+        const rows = data.values || [];
+        totalRows = rows.length;
+        const dataRows = rows.slice(1); // skip header
+        existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+        allRecords = dataRows.map((row, idx) => ({
+          row,
+          sheetRow: idx + 2,                 // 1-based, +1 header
+          lastEditMs: parseLastEditMs(row[6] || '')
+        }));
+
+        // Most recently edited first; tie-break by newest sheet row
+        allRecords.sort((a,b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+
+        // Reset search box, render the top chunk
+        const q = document.getElementById('searchQuery');
+        if (q) q.value = '';
+        renderTable(allRecords.slice(0, ROW_LIMIT));
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Failed to load data from Google Sheets.');
+      });
+  }
+  window.loadData = loadData;
+
+  /* ---------- Search (keeps your phone/email smarts) ---------- */
+  function searchData(){
+    const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
+    if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }
+
+    const qDigits = (raw.match(/\d/g) || []).join('');
+    const qEmail  = canonicalEmail(raw);
+    const hasPhoneQuery = qDigits.length >= 7;
+    const hasEmailQuery = qEmail.includes('@');
+
+    const filtered = allRecords.filter(rec => {
+      const row = rec.row;
+      const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+      let phoneMatch = false;
+      if (hasPhoneQuery) {
+        const rp = (row[3] || '').replace(/\D/g,'');
+        const last10 = s => s.slice(-10);
+        if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
       }
 
-      const params = new URLSearchParams({
-        action:'edit',
-        password:sessionPassword,
-        row:selectedRowIndex,
-        username:gi('username'),
-        passwordField:gi('password'),
-        email:gi('email'),
-        phone:normalizePhone(gi('phone')),
-        server:gi('server'),
-        autoPay:gi('autoPay'),
-        notes:combined
-      });
+      let emailMatch = false;
+      if (hasEmailQuery) {
+        const re = canonicalEmail(row[2] || '');
+        emailMatch = re.includes(qEmail);
+      }
 
-      fetch(scriptURL, { method:'POST', body:params })
-        .then(r => r.text())
-        .then(msg => { alert(msg); loadData(); })
-        .catch(err => alert('Edit failed: ' + err));
-    }
+      return baseMatch || phoneMatch || emailMatch;
+    });
 
-    function addRow() {
-      function gi(id){ return document.getElementById(id).value.trim(); }
-      const username = gi('username');
-      if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
+    renderTable(filtered.slice(0, ROW_LIMIT));
+  }
+  window.searchData = searchData;
+
+  /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
+  function clearForm() {
+    ['username','password','email','phone','server','autoPay','notes','searchQuery']
+      .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+    document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+    selectedRowIndex = null;
+  }
+  window.clearForm = clearForm;
+
+  function confirmDelete() {
+    if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+    if (!confirm('Delete selected row?')) return;
+    fetch(scriptURL, {
+      method: 'POST',
+      body: new URLSearchParams({ action:'delete', password:sessionPassword, row:selectedRowIndex })
+    })
+    .then(res => res.text())
+    .then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
+    .catch(err => alert('Delete failed: ' + err));
+  }
+  window.confirmDelete = confirmDelete;
+
+  function confirmEdit() {
+    if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+    if (!confirm('Save changes to this row?')) return;
+    editRow();
+  }
+  window.confirmEdit = confirmEdit;
+
+  function editRow() {
+    function gi(id){ return document.getElementById(id).value.trim(); }
+    const rawNew = gi('notes');
+    const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g,'').trim();
+
+    let combined = existing;
+    if (rawNew) {
       const ts = new Date().toLocaleString('en-US',{
         timeZone:'America/New_York',
         month:'short',day:'numeric',year:'numeric',
         hour:'2-digit',minute:'2-digit'
       });
-      const notesInput = gi('notes');
-      const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
-      const data = {
-        action:'add',
-        password:sessionPassword,
-        username:username,
-        passwordField:gi('password'),
-        email:gi('email'),
-        phone:normalizePhone(gi('phone')),
-        server:gi('server'),
-        autoPay:gi('autoPay'),
-        notes:formattedNotes
-      };
-      fetch(scriptURL, { method:'POST', body:new URLSearchParams(data) })
-        .then(r => r.text())
-        .then(msg => { alert(msg); clearForm(); loadData(); })
-        .catch(err => { console.error(err); alert('Error saving row.'); });
+      combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
     }
 
-    function clearForm() {
-      ['username','password','email','phone','server','autoPay','notes','searchQuery']
-        .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
-      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-      selectedRowIndex = null;
-    }
-  </script>
+    const params = new URLSearchParams({
+      action:'edit',
+      password:sessionPassword,
+      row:selectedRowIndex,
+      username:gi('username'),
+      passwordField:gi('password'),
+      email:gi('email'),
+      phone:normalizePhone(gi('phone')),
+      server:gi('server'),
+      autoPay:gi('autoPay'),
+      notes:combined
+    });
 
-  <!-- Ionicons for the lock icon on the login card -->
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    fetch(scriptURL, { method:'POST', body:params })
+      .then(r => r.text())
+      .then(msg => { alert(msg); loadData(); })
+      .catch(err => alert('Edit failed: ' + err));
+  }
+
+  function addNewNote(){
+    if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+    const note = document.getElementById('notes').value.trim();
+    if (!note) { alert('Type a note in the Notes box first.'); return; }
+    editRow(); // will timestamp & prepend
+  }
+  window.addNewNote = addNewNote;
+
+  function addRow() {
+    function gi(id){ return document.getElementById(id).value.trim(); }
+    const username = gi('username');
+    if (!username) { alert('Username is required.'); return; }
+    if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
+
+    const ts = new Date().toLocaleString('en-US',{
+      timeZone:'America/New_York',
+      month:'short',day:'numeric',year:'numeric',
+      hour:'2-digit',minute:'2-digit'
+    });
+    const notesInput = gi('notes');
+    const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
+
+    const data = {
+      action:'add',
+      password:sessionPassword,
+      username:username,
+      passwordField:gi('password'),
+      email:gi('email'),
+      phone:normalizePhone(gi('phone')),
+      server:gi('server'),
+      autoPay:gi('autoPay'),
+      notes:formattedNotes
+    };
+
+    fetch(scriptURL, { method:'POST', body:new URLSearchParams(data) })
+      .then(r => r.text())
+      .then(msg => { alert(msg); clearForm(); loadData(); })
+      .catch(err => { console.error(err); alert('Error saving row.'); });
+  }
+  window.addRow = addRow;
+</script>
+
+
+
 </body>
+
 </html>
