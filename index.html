@@ -52,12 +52,14 @@
     }
 
     /* --- Login section as a centered card --- */
-    #loginSection {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 16px;
-    }
+ #loginSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px;
+  min-height: calc(100vh - 160px); /* full-height area under the header */
+}
+
 
     .login-card {
       position: relative;
@@ -290,6 +292,30 @@
     .note-entry { margin: 0 0 .55em 0; }
     .note-entry .ts { font-weight: 100; color: #880000;}
     .phone-wa a { text-decoration: none; }
+
+
+/* ===== Login-only background (uses bg.jpg) ===== */
+body.login-bg{
+  min-height: 100vh;
+  background: url('bg.jpg') center / cover no-repeat fixed;
+}
+/* subtle dark overlay to boost contrast behind the card */
+body.login-bg::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ===== App (2nd page) background ===== */
+body.app-bg{
+  min-height: 100vh;
+  background: url('3d-render-gradient-7680x4800-10996.jpg') center / cover no-repeat fixed;
+}
+
+
   </style>
 </head>
 
@@ -303,7 +329,7 @@
     <div class="login-card">
       <h1 class="brand">
         <ion-icon name="lock-closed"></ion-icon>
-        WebViewOnline
+        Osvaldo Nuñez
       </h1>
 
       <div class="inputbox">
@@ -368,7 +394,9 @@
     const ROW_LIMIT = 25;
     let sessionPassword = "";
     let selectedRowIndex = null;
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+document.body.classList.add('login-bg'); // show background on login screen
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+
     const sheetId   = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
     const apiKey    = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
     const range     = 'data!A1:G3000';
@@ -379,12 +407,16 @@
 
     function checkPassword() {
       const pass = document.getElementById('appPassword').value;
-      if (pass === 'Google#2020') {
-        sessionPassword = pass;
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('appSection').style.display  = 'block';
-        loadData();
-      } else {
+  if (pass === 'Google#2020') {
+  sessionPassword = pass;
+  document.body.classList.remove('login-bg'); // remove background after login
+  document.body.classList.add('app-bg');      // add background for 2nd page
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('appSection').style.display  = 'block';
+  loadData();
+} else {
+
+
         alert('Incorrect password');
       }
     }
