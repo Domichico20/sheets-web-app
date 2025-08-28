@@ -762,38 +762,39 @@
     window.confirmEdit = confirmEdit;
 
     function editRow() {
-      function gi(id) { return document.getElementById(id).value.trim(); }
-      const rawNew = gi('notes');
-      const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  function gi(id) { return document.getElementById(id).value.trim(); }
+  const rawNew = gi('notes');
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
 
-      let combined = existing;
-      if (rawNew) {
-        const ts = new Date().toLocaleString('en-US', {
-          timeZone: 'America/New_York',
-          month: 'short', day: 'numeric', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-        combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
-      }
+  let combined = existing;
+  if (rawNew) {
+const ts = new Date().toLocaleString('en-US', {
+  timeZone: 'America/Chicago', // match server timezone used on Adds
+  month: 'short', day: 'numeric', year: 'numeric',
+  hour: '2-digit', minute: '2-digit'
+});
+    combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+  }
 
-      const params = new URLSearchParams({
-        action: 'edit',
-        password: sessionPassword,
-        row: selectedRowIndex,
-        username: gi('username'),
-        passwordField: gi('password'),
-        email: gi('email'),
-        phone: normalizePhone(gi('phone')),
-        server: gi('server'),
-        autoPay: gi('autoPay'),
-        notes: combined
-      });
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: gi('username'),
+    passwordField: gi('password'),
+    email: gi('email'),
+    phone: normalizePhone(gi('phone')),
+    server: gi('server'),
+    autoPay: gi('autoPay'),
+    notes: combined
+  });
 
-      fetch(scriptURL, { method: 'POST', body: params })
-        .then(r => r.text())
-        .then(msg => { alert(msg); loadData(); })
-        .catch(err => alert('Edit failed: ' + err));
-    }
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(msg => { alert(msg); loadData(); })
+    .catch(err => alert('Edit failed: ' + err));
+}
+
 
     function addNewNote() {
       if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -802,38 +803,39 @@
       editRow(); // will timestamp & prepend
     }
     window.addNewNote = addNewNote;
+function addRow() {
+  function gi(id) { return document.getElementById(id).value.trim(); }
+  const username = gi('username');
+  if (!username) { alert('Username is required.'); return; }
+  if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
 
-    function addRow() {
-      function gi(id) { return document.getElementById(id).value.trim(); }
-      const username = gi('username');
-      if (!username) { alert('Username is required.'); return; }
-      if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
+  const ts = new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+  const notesInput = gi('notes');
+  /* CHANGED: let the server add the single timestamp on adds */
+  const formattedNotes = notesInput ? `${notesInput}` : '';
 
-      const ts = new Date().toLocaleString('en-US', {
-        timeZone: 'America/New_York',
-        month: 'short', day: 'numeric', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-      const notesInput = gi('notes');
-      const formattedNotes = notesInput ? `${ts}: ${notesInput}` : '';
+  const data = {
+    action: 'add',
+    password: sessionPassword,
+    username: username,
+    passwordField: gi('password'),
+    email: gi('email'),
+    phone: normalizePhone(gi('phone')),
+    server: gi('server'),
+    autoPay: gi('autoPay'),
+    notes: formattedNotes
+  };
 
-      const data = {
-        action: 'add',
-        password: sessionPassword,
-        username: username,
-        passwordField: gi('password'),
-        email: gi('email'),
-        phone: normalizePhone(gi('phone')),
-        server: gi('server'),
-        autoPay: gi('autoPay'),
-        notes: formattedNotes
-      };
+  fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
+    .then(r => r.text())
+    .then(msg => { alert(msg); clearForm(); loadData(); })
+    .catch(err => { console.error(err); alert('Error saving row.'); });
+}
 
-      fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
-        .then(r => r.text())
-        .then(msg => { alert(msg); clearForm(); loadData(); })
-        .catch(err => { console.error(err); alert('Error saving row.'); });
-    }
     window.addRow = addRow;
   </script>
 
