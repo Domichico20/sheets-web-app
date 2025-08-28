@@ -226,6 +226,9 @@
       color: #fff;
     }
 
+    .fraud-btn    
+    { background-color: #fc933d; color: #fff; }
+
     .form-section {
       display: flex;
       flex-wrap: wrap;
@@ -512,16 +515,18 @@
       <input type="hidden" id="rowIndex" />
     </div>
 
-    <div class="button-row">
-      <div class="button-group center">
-        <button class="add-btn" onclick="addRow()">Add</button>
-        <button class="edit-btn" onclick="confirmEdit()">Edit</button>
-        <button class="clear-btn" onclick="clearForm()">Clear</button>
-        <button class="refresh-btn" onclick="loadData()">Refresh</button>
-        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
-        <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
-      </div>
-    </div>
+<div class="button-row">
+  <div class="button-group center">
+    <button class="add-btn" onclick="addRow()">Add</button>
+    <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+    <button class="clear-btn" onclick="clearForm()">Clear</button>
+    <button class="refresh-btn" onclick="loadData()">Refresh</button>
+    <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+    <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
+    <button type="button" class="fraud-btn" onclick="addFraudAlert()">Add Fraud Alert</button>
+  </div>
+</div>
+
 
     <table id="dataTable">
       <thead>
@@ -699,38 +704,55 @@
     window.loadData = loadData;
 
     /* ---------- Search (keeps your phone/email smarts) ---------- */
-    function searchData() {
-      const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
-      if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }
+function searchData() {
+  const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
+  if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }
 
-      const qDigits = (raw.match(/\d/g) || []).join('');
-      const qEmail = canonicalEmail(raw);
-      const hasPhoneQuery = qDigits.length >= 7;
-      const hasEmailQuery = qEmail.includes('@');
+  const qDigits = (raw.match(/\d/g) || []).join('');
+  const qEmail = canonicalEmail(raw);
+  const hasPhoneQuery = qDigits.length >= 7;
+  const hasEmailQuery = qEmail.includes('@');
 
-      const filtered = allRecords.filter(rec => {
-        const row = rec.row;
-        const baseMatch = row.join(' ').toLowerCase().includes(raw);
+  const filtered = allRecords.filter(rec => {
+    const row = rec.row;
+    const baseMatch = row.join(' ').toLowerCase().includes(raw);
 
-        let phoneMatch = false;
-        if (hasPhoneQuery) {
-          const rp = (row[3] || '').replace(/\D/g, '');
-          const last10 = s => s.slice(-10);
-          if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
-        }
-
-        let emailMatch = false;
-        if (hasEmailQuery) {
-          const re = canonicalEmail(row[2] || '');
-          emailMatch = re.includes(qEmail);
-        }
-
-        return baseMatch || phoneMatch || emailMatch;
-      });
-
-      renderTable(filtered.slice(0, ROW_LIMIT));
+    let phoneMatch = false;
+    if (hasPhoneQuery) {
+      const rp = (row[3] || '').replace(/\D/g, '');
+      const last10 = s => s.slice(-10);
+      if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
     }
+
+    let emailMatch = false;
+    if (hasEmailQuery) {
+      const re = canonicalEmail(row[2] || '');
+      emailMatch = re.includes(qEmail);
+    }
+
+    return baseMatch || phoneMatch || emailMatch;
+  });
+
+  renderTable(filtered.slice(0, ROW_LIMIT));
+
+  // If the search narrows to exactly one row and it has a fraud alert, show it immediately
+  if (filtered.length === 1) {
+    const noteCell = filtered[0].row[6] || '';
+    const m = noteCell.match(/\[FRAUD_ALERT\]\s*(.*)/);
+    if (m && m[1]) {
+      // let the UI render before alert
+      setTimeout(() => alert('⚠️ FRAUD ALERT: ' + m[1]), 0);
+    }
+  }
+}
+
+
+
+
     window.searchData = searchData;
+
+
+
 
     /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
     function clearForm() {
@@ -837,6 +859,44 @@ function addRow() {
 }
 
     window.addRow = addRow;
+    function addFraudAlert() {
+  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+
+  const msg = prompt('Enter the FRAUD ALERT message for this row:');
+  if (msg === null) return;                 // user canceled
+  const trimmed = msg.trim();
+  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
+
+  // Keep everything else in Notes, but ensure only one [FRAUD_ALERT] line exists (always on top)
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  const cleaned = existing
+    .split('\n')
+    .filter(line => !line.startsWith('[FRAUD_ALERT]'))
+    .join('\n');
+
+  const combined = `[FRAUD_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+
+  // Save back to the same row (same as your edit flow)
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: document.getElementById('username').value.trim(),
+    passwordField: document.getElementById('password').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: normalizePhone(document.getElementById('phone').value.trim()),
+    server: document.getElementById('server').value.trim(),
+    autoPay: document.getElementById('autoPay').value.trim(),
+    notes: combined
+  });
+
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => { alert('Fraud alert saved.'); loadData(); })
+    .catch(err => alert('Failed to save fraud alert: ' + err));
+}
+window.addFraudAlert = addFraudAlert;
+
   </script>
 
 
