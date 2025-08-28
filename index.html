@@ -226,7 +226,7 @@
       color: #fff;
     }
 
-    .fraud-btn    
+    .critical-btn    
     { background-color: #fc933d; color: #fff; }
 
     .form-section {
@@ -523,7 +523,7 @@
     <button class="refresh-btn" onclick="loadData()">Refresh</button>
     <button class="delete-btn" onclick="confirmDelete()">Delete</button>
     <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
-    <button type="button" class="fraud-btn" onclick="addFraudAlert()">Add Fraud Alert</button>
+    <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
   </div>
 </div>
 
@@ -735,13 +735,13 @@ function searchData() {
 
   renderTable(filtered.slice(0, ROW_LIMIT));
 
-  // If the search narrows to exactly one row and it has a fraud alert, show it immediately
+  // If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately
   if (filtered.length === 1) {
     const noteCell = filtered[0].row[6] || '';
-    const m = noteCell.match(/\[FRAUD_ALERT\]\s*(.*)/);
+    const m = noteCell.match(/\[CRITICAL_ALERT\]\s*(.*)/);
     if (m && m[1]) {
       // let the UI render before alert
-      setTimeout(() => alert('⚠️ FRAUD ALERT: ' + m[1]), 0);
+      setTimeout(() => alert('⚠️ CRITICAL ALERT: ' + m[1]), 0);
     }
   }
 }
@@ -859,22 +859,22 @@ function addRow() {
 }
 
     window.addRow = addRow;
-    function addFraudAlert() {
+    function addCriticalAlert() {
   if (selectedRowIndex === null) { alert('Select a row first.'); return; }
 
-  const msg = prompt('Enter the FRAUD ALERT message for this row:');
+  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
   if (msg === null) return;                 // user canceled
   const trimmed = msg.trim();
   if (!trimmed) { alert('Alert message cannot be empty.'); return; }
 
-  // Keep everything else in Notes, but ensure only one [FRAUD_ALERT] line exists (always on top)
+  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
   const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
   const cleaned = existing
     .split('\n')
-    .filter(line => !line.startsWith('[FRAUD_ALERT]'))
+    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
     .join('\n');
 
-  const combined = `[FRAUD_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
 
   // Save back to the same row (same as your edit flow)
   const params = new URLSearchParams({
@@ -892,10 +892,10 @@ function addRow() {
 
   fetch(scriptURL, { method: 'POST', body: params })
     .then(r => r.text())
-    .then(() => { alert('Fraud alert saved.'); loadData(); })
-    .catch(err => alert('Failed to save fraud alert: ' + err));
+    .then(() => { alert('Critical alert saved.'); loadData(); })
+    .catch(err => alert('Failed to save critical alert: ' + err));
 }
-window.addFraudAlert = addFraudAlert;
+window.addCriticalAlert = addCriticalAlert;
 
   </script>
 
