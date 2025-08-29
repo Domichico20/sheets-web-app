@@ -13,10 +13,12 @@
 
 
   <link rel="preload" as="image" href="logo.png">
-<link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6" crossorigin="anonymous">
-<link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6" crossorigin="anonymous">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
+  <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
+  <link rel="icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="shortcut icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
 
 
 
@@ -24,6 +26,15 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- speed: warm up API connections -->
+  <link rel="preconnect" href="https://sheets.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sheets.googleapis.com">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://script.google.com">
+
+
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -146,10 +157,11 @@
       padding: 14px 12px;
       font-size: 1rem;
       border: 1px solid #d6d6d6;
-      border-radius: 8px;
+      border-radius: 12px;
       outline: none;
       background: #fff;
     }
+
 
     .inputbox label {
       position: absolute;
@@ -193,7 +205,7 @@
       outline: none;
       cursor: pointer;
       position: relative;
-      border-radius: 8px;
+      border-radius: 12px;
       background-color: #2952db;
       color: #FFF;
       font-size: 1.1rem;
@@ -215,14 +227,20 @@
       max-width: 600px;
       padding: 10px;
       font-size: 1rem;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
     }
+
 
     #searchSection button.search-btn {
       padding: 20px 40px;
       font-size: 1.25rem;
       margin-left: 20px;
       background-color: #92e67d;
+      border-radius: 12px;
+      border: none;
     }
+
 
     /* Light-purple style for the new note button; inherits all button-group button styles */
     .add-note-btn {
@@ -230,8 +248,10 @@
       color: #fff;
     }
 
-    .critical-btn    
-    { background-color: #fc933d; color: #fff; }
+    .critical-btn {
+      background-color: #fc933d;
+      color: #fff;
+    }
 
     .form-section {
       display: flex;
@@ -255,7 +275,10 @@
       padding: 10px;
       font-size: 1rem;
       width: 175px;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
     }
+
 
     .button-row {
       display: flex;
@@ -292,7 +315,7 @@
       font-size: 1.25rem;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 12px;
       cursor: pointer;
     }
 
@@ -320,9 +343,13 @@
     table {
       margin: 0 auto;
       width: auto;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       background: white;
+      border-radius: 12px;
+      overflow: hidden;
     }
+
 
     table th:nth-child(3),
     table td:nth-child(3) {
@@ -406,6 +433,18 @@
       font-size: 1.05rem;
     }
 
+    /* 🔴 Critical alert highlight */
+    .note-entry.critical {
+      background: #d93025;
+      /* Google red */
+      color: #fff;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: inline-block;
+    }
+
+
     .phone-wa a {
       text-decoration: none;
     }
@@ -460,18 +499,11 @@
 </head>
 
 <body>
-<header>
-  <img
-    src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png"
-    alt="Company Logo"
-    class="logo"
-    width="200"
-    height="200"
-    decoding="async"
-    fetchpriority="high"
-    referrerpolicy="no-referrer"
-    onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
-</header>
+  <header>
+    <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
+      class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
+      onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
+  </header>
 
 
 
@@ -519,17 +551,17 @@
       <input type="hidden" id="rowIndex" />
     </div>
 
-<div class="button-row">
-  <div class="button-group center">
-    <button class="add-btn" onclick="addRow()">Add</button>
-    <button class="edit-btn" onclick="confirmEdit()">Edit</button>
-    <button class="clear-btn" onclick="clearForm()">Clear</button>
-    <button class="refresh-btn" onclick="loadData()">Refresh</button>
-    <button class="delete-btn" onclick="confirmDelete()">Delete</button>
-    <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
-    <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
-  </div>
-</div>
+    <div class="button-row">
+      <div class="button-group center">
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
+        <button class="refresh-btn" onclick="loadData()">Refresh</button>
+        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
+        <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
+      </div>
+    </div>
 
 
     <table id="dataTable">
@@ -567,6 +599,12 @@
     let existingUsernames = [];
     let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
     let totalRows = 0;
+
+    // speed helper: disable/enable a button by selector (prevents double submits)
+    function setBusy(selector, on) {
+      const btn = document.querySelector(selector);
+      if (btn) btn.disabled = !!on;
+    }
 
     /* ---------- Login ---------- */
     function checkPassword() {
@@ -630,17 +668,64 @@
     function formatNotes(cell) {
       const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
       if (!stripped) return '';
-      const parts = stripped.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM):)/);
-      return parts
-        .map(p => p.trim())
-        .filter(Boolean)
-        .map(p => {
-          const m = p.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
-          if (!m) return `<div class="note-entry"><span class="txt">${escapeHTML(p)}</span></div>`;
+
+      // Render line by line so we can style CRITICAL alerts too
+      const lines = stripped.split('\n');
+      return lines
+        .map(line => {
+          // 🔴 Critical alert line
+          const c = line.match(/^\[CRITICAL_ALERT\]\s*(.*)$/);
+          if (c) {
+            const msg = c[1] || '';
+            return `<div class="note-entry critical">CRITICAL ALERT: ${escapeHTML(msg)}</div>`;
+          }
+
+          // Normal timestamped note line
+          const m = line.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+          if (!m) return `<div class="note-entry"><span class="txt">${escapeHTML(line)}</span></div>`;
           return `<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span>: <span class="txt">${escapeHTML(m[2])}</span></div>`;
         })
         .join('');
     }
+
+    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
+    function promptCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
+      if (!m) return;
+
+      const message = m[1].trim();
+      // OK = Keep Alert, Cancel = Delete Alert
+      setTimeout(() => {
+        const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
+        if (!keep) {
+          const cleaned = (noteCell || '')
+            .split('\n')
+            .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+            .join('\n');
+
+          const row = rec.row;
+          const params = new URLSearchParams({
+            action: 'edit',
+            password: sessionPassword,
+            row: rec.sheetRow,
+            username: row[0] || '',
+            passwordField: row[1] || '',
+            email: row[2] || '',
+            phone: normalizePhone(row[3] || ''),
+            server: row[4] || '',
+            autoPay: row[5] || '',
+            notes: cleaned
+          });
+
+          fetch(scriptURL, { method: 'POST', body: params })
+            .then(r => r.text())
+            .then(() => { alert('Critical alert removed.'); loadData(); })
+            .catch(err => alert('Failed to update alert: ' + err));
+        }
+      }, 0);
+    }
+
 
     /* ---------- Table cell renderer (restores your look) ---------- */
     function tdHTML(row) {
@@ -650,34 +735,86 @@
         return '<td>' + escapeHTML(cell) + '</td>';
       }).join('');
     }
+    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
+    function promptCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
+      if (!m) return;
 
-    /* ---------- Data load + render ---------- */
-    function renderTable(records) {
-      const tbody = document.querySelector('#dataTable tbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      const frag = document.createDocumentFragment();
+      const message = m[1].trim();
+      // OK = Keep Alert, Cancel = Delete Alert
+      setTimeout(() => {
+        const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
+        if (!keep) {
+          const cleaned = (noteCell || '')
+            .split('\n')
+            .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+            .join('\n');
 
-      records.forEach(rec => {
-        const row = rec.row;
-        const tr = document.createElement('tr');
-        tr.innerHTML = tdHTML(row);
-        tr.onclick = () => {
-          selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
-          document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-          tr.classList.add('selected');
-          ['username', 'password', 'email', 'phone', 'server', 'autoPay']
-            .forEach((id, idx) => document.getElementById(id).value = row[idx] || '');
-          selectedRawNotes = row[6] || '';
-          document.getElementById('notes').value = '';
-          document.getElementById('rowIndex').value = selectedRowIndex;
-        };
-        frag.appendChild(tr);
-      });
-      tbody.appendChild(frag);
+          const row = rec.row;
+          const params = new URLSearchParams({
+            action: 'edit',
+            password: sessionPassword,
+            row: rec.sheetRow,
+            username: row[0] || '',
+            passwordField: row[1] || '',
+            email: row[2] || '',
+            phone: normalizePhone(row[3] || ''),
+            server: row[4] || '',
+            autoPay: row[5] || '',
+            notes: cleaned
+          });
+
+          fetch(scriptURL, { method: 'POST', body: params })
+            .then(r => r.text())
+            .then(() => { alert('Critical alert removed.'); loadData(); })
+            .catch(err => alert('Failed to update alert: ' + err));
+        }
+      }, 0);
     }
 
+    /* ---------- Data load + render ---------- */
+    function renderTable(records){
+  const tbody = document.querySelector('#dataTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  records.forEach(rec => {
+    const row = rec.row;
+    const tr = document.createElement('tr');
+    tr.innerHTML = tdHTML(row);
+
+    tr.addEventListener('click', () => {
+      selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
+      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+      tr.classList.add('selected');
+
+      ['username','password','email','phone','server','autoPay'].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el) el.value = row[idx] || '';
+      });
+
+      selectedRawNotes = row[6] || '';
+      const notesEl = document.getElementById('notes');
+      if (notesEl) notesEl.value = '';
+      const idxEl = document.getElementById('rowIndex');
+      if (idxEl) idxEl.value = selectedRowIndex;
+
+      // Prompt critical alert (guarded)
+      if (typeof promptCriticalAlert === 'function') {
+        try { promptCriticalAlert(rec); } catch (e) { console.warn('Alert prompt error:', e); }
+      }
+    });
+
+    frag.appendChild(tr);
+  });
+
+  tbody.appendChild(frag);
+}
+
     function loadData() {
+      setBusy('.refresh-btn', true);
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
         .then(r => r.json())
         .then(data => {
@@ -698,13 +835,21 @@
           // Reset search box, render the top chunk
           const q = document.getElementById('searchQuery');
           if (q) q.value = '';
+          const tbody = document.querySelector('#dataTable tbody');
+          if (tbody) {
+            tbody.innerHTML = '';
+          }
           renderTable(allRecords.slice(0, ROW_LIMIT));
         })
         .catch(err => {
           console.error(err);
           alert('Failed to load data from Google Sheets.');
-        });
+        })
+        .finally(() => setBusy('.refresh-btn', false));
     }
+
+
+
     window.loadData = loadData;
 
     /* ---------- Search (keeps your phone/email smarts) ---------- */
@@ -740,166 +885,166 @@ function searchData() {
   renderTable(filtered.slice(0, ROW_LIMIT));
 
   // If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately
-  if (filtered.length === 1) {
-    const noteCell = filtered[0].row[6] || '';
-    const m = noteCell.match(/\[CRITICAL_ALERT\]\s*(.*)/);
-    if (m && m[1]) {
-      // let the UI render before alert
-      setTimeout(() => alert('⚠️ CRITICAL ALERT: ' + m[1]), 0);
-    }
-  }
+  // After rendering, if any matching row has a CRITICAL alert, prompt once.
+  const alertRec = filtered.find(r => /\[CRITICAL_ALERT\]/.test((r.row[6] || '')));
+  if (alertRec) { promptCriticalAlert(alertRec); }
 }
+window.searchData = searchData;
+
+
+
+      /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
+      function clearForm() {
+        ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
+          .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        selectedRowIndex = null;
+      }
+      window.clearForm = clearForm;
+
+      function confirmDelete() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        if (!confirm('Delete selected row?')) return;
+
+        setBusy('.delete-btn', true);
+        fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({ action: 'delete', password: sessionPassword, row: selectedRowIndex })
+        })
+          .then(res => res.text())
+          .then(() => { selectedRowIndex = null; loadData(); })
+          .catch(err => alert('Delete failed: ' + err))
+          .finally(() => setBusy('.delete-btn', false));
+      }
 
 
 
 
-    window.searchData = searchData;
+      window.confirmDelete = confirmDelete;
+
+      function confirmEdit() {
+        if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+        if (!confirm('Save changes to this row?')) return;
+        editRow();
+      }
+      window.confirmEdit = confirmEdit;
+
+      function editRow() {
+        setBusy('.edit-btn', true);
+
+        function gi(id) { return document.getElementById(id).value.trim(); }
+        const rawNew = gi('notes');
+        const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+
+        let combined = existing;
+        if (rawNew) {
+          const ts = new Date().toLocaleString('en-US', {
+            timeZone: 'America/Chicago', // match server timezone used on Adds
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+          combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+        }
+
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: gi('username'),
+          passwordField: gi('password'),
+          email: gi('email'),
+          phone: normalizePhone(gi('phone')),
+          server: gi('server'),
+          autoPay: gi('autoPay'),
+          notes: combined
+        });
+
+        // non-blocking: no alert() on success; refresh quietly
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => loadData())
+          .catch(err => alert('Edit failed: ' + err))
+          .finally(() => setBusy('.edit-btn', false));
+      }
 
 
+      function addNewNote() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        const note = document.getElementById('notes').value.trim();
+        if (!note) { alert('Type a note in the Notes box first.'); return; }
+        editRow(); // will timestamp & prepend
+      }
+      window.addNewNote = addNewNote;
+
+      function addRow() {
+        setBusy('.add-btn', true);
+
+        function gi(id) { return document.getElementById(id).value.trim(); }
+        const username = gi('username');
+        if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
+        if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
+
+        const notesInput = gi('notes'); // server will attach its single timestamp
+        const formattedNotes = notesInput ? `${notesInput}` : '';
+
+        const data = {
+          action: 'add',
+          password: sessionPassword,
+          username: username,
+          passwordField: gi('password'),
+          email: gi('email'),
+          phone: normalizePhone(gi('phone')),
+          server: gi('server'),
+          autoPay: gi('autoPay'),
+          notes: formattedNotes
+        };
+
+        fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
+          .then(r => r.text())
+          .then(() => { clearForm(); loadData(); })
+          .catch(err => { console.error(err); alert('Error saving row.'); })
+          .finally(() => setBusy('.add-btn', false));
+      }
 
 
-    /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
-    function clearForm() {
-      ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
-        .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
-      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
-      selectedRowIndex = null;
-    }
-    window.clearForm = clearForm;
+      window.addRow = addRow;
+      function addCriticalAlert() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
 
-    function confirmDelete() {
-      if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-      if (!confirm('Delete selected row?')) return;
-      fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({ action: 'delete', password: sessionPassword, row: selectedRowIndex })
-      })
-        .then(res => res.text())
-        .then(msg => { alert(msg); selectedRowIndex = null; loadData(); })
-        .catch(err => alert('Delete failed: ' + err));
-    }
-    window.confirmDelete = confirmDelete;
+        const msg = prompt('Enter the CRITICAL ALERT message for this row:');
+        if (msg === null) return;                 // user canceled
+        const trimmed = msg.trim();
+        if (!trimmed) { alert('Alert message cannot be empty.'); return; }
 
-    function confirmEdit() {
-      if (selectedRowIndex === null) { alert('Select a row first!'); return; }
-      if (!confirm('Save changes to this row?')) return;
-      editRow();
-    }
-    window.confirmEdit = confirmEdit;
+        // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
+        const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+        const cleaned = existing
+          .split('\n')
+          .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+          .join('\n');
 
-    function editRow() {
-  function gi(id) { return document.getElementById(id).value.trim(); }
-  const rawNew = gi('notes');
-  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+        const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
 
-  let combined = existing;
-  if (rawNew) {
-const ts = new Date().toLocaleString('en-US', {
-  timeZone: 'America/Chicago', // match server timezone used on Adds
-  month: 'short', day: 'numeric', year: 'numeric',
-  hour: '2-digit', minute: '2-digit'
-});
-    combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
-  }
+        // Save back to the same row (same as your edit flow)
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: document.getElementById('username').value.trim(),
+          passwordField: document.getElementById('password').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: normalizePhone(document.getElementById('phone').value.trim()),
+          server: document.getElementById('server').value.trim(),
+          autoPay: document.getElementById('autoPay').value.trim(),
+          notes: combined
+        });
 
-  const params = new URLSearchParams({
-    action: 'edit',
-    password: sessionPassword,
-    row: selectedRowIndex,
-    username: gi('username'),
-    passwordField: gi('password'),
-    email: gi('email'),
-    phone: normalizePhone(gi('phone')),
-    server: gi('server'),
-    autoPay: gi('autoPay'),
-    notes: combined
-  });
-
-  fetch(scriptURL, { method: 'POST', body: params })
-    .then(r => r.text())
-    .then(msg => { alert(msg); loadData(); })
-    .catch(err => alert('Edit failed: ' + err));
-}
-
-
-    function addNewNote() {
-      if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-      const note = document.getElementById('notes').value.trim();
-      if (!note) { alert('Type a note in the Notes box first.'); return; }
-      editRow(); // will timestamp & prepend
-    }
-    window.addNewNote = addNewNote;
-function addRow() {
-  function gi(id) { return document.getElementById(id).value.trim(); }
-  const username = gi('username');
-  if (!username) { alert('Username is required.'); return; }
-  if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); return; }
-
-  const ts = new Date().toLocaleString('en-US', {
-    timeZone: 'America/New_York',
-    month: 'short', day: 'numeric', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-  const notesInput = gi('notes');
-  /* CHANGED: let the server add the single timestamp on adds */
-  const formattedNotes = notesInput ? `${notesInput}` : '';
-
-  const data = {
-    action: 'add',
-    password: sessionPassword,
-    username: username,
-    passwordField: gi('password'),
-    email: gi('email'),
-    phone: normalizePhone(gi('phone')),
-    server: gi('server'),
-    autoPay: gi('autoPay'),
-    notes: formattedNotes
-  };
-
-  fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
-    .then(r => r.text())
-    .then(msg => { alert(msg); clearForm(); loadData(); })
-    .catch(err => { console.error(err); alert('Error saving row.'); });
-}
-
-    window.addRow = addRow;
-    function addCriticalAlert() {
-  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-
-  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
-  if (msg === null) return;                 // user canceled
-  const trimmed = msg.trim();
-  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
-
-  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
-  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
-  const cleaned = existing
-    .split('\n')
-    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-    .join('\n');
-
-  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
-
-  // Save back to the same row (same as your edit flow)
-  const params = new URLSearchParams({
-    action: 'edit',
-    password: sessionPassword,
-    row: selectedRowIndex,
-    username: document.getElementById('username').value.trim(),
-    passwordField: document.getElementById('password').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: normalizePhone(document.getElementById('phone').value.trim()),
-    server: document.getElementById('server').value.trim(),
-    autoPay: document.getElementById('autoPay').value.trim(),
-    notes: combined
-  });
-
-  fetch(scriptURL, { method: 'POST', body: params })
-    .then(r => r.text())
-    .then(() => { alert('Critical alert saved.'); loadData(); })
-    .catch(err => alert('Failed to save critical alert: ' + err));
-}
-window.addCriticalAlert = addCriticalAlert;
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => { alert('Critical alert saved.'); loadData(); })
+          .catch(err => alert('Failed to save critical alert: ' + err));
+      }
+      window.addCriticalAlert = addCriticalAlert;
 
   </script>
 
