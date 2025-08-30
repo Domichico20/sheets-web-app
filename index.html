@@ -83,13 +83,8 @@
     }
 
     @keyframes gradientShift {
-      0% {
-        background-position: 0% center;
-      }
-
-      100% {
-        background-position: 200% center;
-      }
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
     }
 
     /* --- Login section as a centered card --- */
@@ -104,12 +99,7 @@
       /* ⬅️ remove forced height */
     }
 
-    .login-card {
-      margin-top: 4px;
-    }
-
-    /* tiny breathing room under the title */
-
+    .login-card { margin-top: 4px; }
 
     .login-card {
       position: relative;
@@ -147,21 +137,17 @@
       color: #003366;
     }
 
-    .inputbox {
-      position: relative;
-      margin: 12px 0 6px;
-    }
+    .inputbox { position: relative; margin: 12px 0 6px; }
 
     .inputbox input {
       width: 100%;
       padding: 14px 12px;
-      font-size: 1rem;
+      font-size: 1rem; /* >=16px on most browsers => no iOS zoom */
       border: 1px solid #d6d6d6;
       border-radius: 12px;
       outline: none;
       background: #fff;
     }
-
 
     .inputbox label {
       position: absolute;
@@ -184,20 +170,12 @@
 
     /* ========= Shared glow animation ========= */
     @keyframes glowRainbow {
-      0% {
-        background-position: 0 0;
-      }
-
-      50% {
-        background-position: 400% 0;
-      }
-
-      100% {
-        background-position: 0 0;
-      }
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
     }
 
-    /* Unlock button base (keeps its own color/size/text) */
+    /* Unlock button base */
     #loginSection .unlock-btn {
       margin-left: 0;
       padding: 15px 40px;
@@ -231,7 +209,6 @@
       border-radius: 12px;
     }
 
-
     #searchSection button.search-btn {
       padding: 20px 40px;
       font-size: 1.25rem;
@@ -241,17 +218,8 @@
       border: none;
     }
 
-
-    /* Light-purple style for the new note button; inherits all button-group button styles */
-    .add-note-btn {
-      background-color: #6934be;
-      color: #fff;
-    }
-
-    .critical-btn {
-      background-color: #fc933d;
-      color: #fff;
-    }
+    .add-note-btn { background-color: #6934be; color: #fff; }
+    .critical-btn { background-color: #fc933d; color: #fff; }
 
     .form-section {
       display: flex;
@@ -261,16 +229,8 @@
       justify-content: center;
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .form-group label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: bold; margin-bottom: 5px; }
     .form-group input {
       padding: 10px;
       font-size: 1rem;
@@ -279,12 +239,10 @@
       border-radius: 12px;
     }
 
-
     .button-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      /* center the whole bar */
+      justify-content: center; /* center the whole bar */
       margin: 20px 0;
     }
 
@@ -292,8 +250,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: nowrap;
-      /* keep on one line */
+      flex-wrap: nowrap; /* keep on one line */
     }
 
     /* If the screen is small, allow wrapping (optional) */
@@ -304,12 +261,7 @@
       }
     }
 
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-    }
-
+    .button-group { display: flex; gap: 10px; }
     .button-group button {
       padding: 20px 40px;
       font-size: 1.25rem;
@@ -319,26 +271,11 @@
       cursor: pointer;
     }
 
-    .add-btn {
-      background-color: #003366;
-    }
-
-    .edit-btn {
-      background-color: #3399FF;
-    }
-
-    .clear-btn {
-      background-color: #66CC66;
-    }
-
-    .refresh-btn {
-      background-color: gold;
-      color: black;
-    }
-
-    .delete-btn {
-      background-color: red;
-    }
+    .add-btn    { background-color: #003366; }
+    .edit-btn   { background-color: #3399FF; }
+    .clear-btn  { background-color: #66CC66; }
+    .refresh-btn{ background-color: gold; color: black; }
+    .delete-btn { background-color: red; }
 
     table {
       margin: 0 auto;
@@ -349,7 +286,6 @@
       border-radius: 12px;
       overflow: hidden;
     }
-
 
     table th:nth-child(3),
     table td:nth-child(3) {
@@ -367,16 +303,10 @@
       white-space: nowrap;
     }
 
-    table th {
-      background-color: #4285F4;
-      color: white;
-    }
+    table th { background-color: #4285F4; color: white; }
+    tr.selected { background-color: rgb(238, 217, 217); }
 
-    tr.selected {
-      background-color: rgb(238, 217, 217);
-    }
-
-    /* ========= SAME gradient glow for ALL buttons (Search/Add/Edit/Clear/Refresh/Delete/Unlock) ========= */
+    /* ========= SAME gradient glow for ALL buttons ========= */
     .button-group button,
     #searchSection .search-btn,
     #loginSection .unlock-btn {
@@ -410,11 +340,8 @@
     }
 
     /* --- Notes wrapping + scroll + WhatsApp link styling --- */
-    /* --- Notes wrapping + scroll + WhatsApp link styling --- */
     table th:nth-child(7),
-    table td:nth-child(7) {
-      width: 550px;
-    }
+    table td:nth-child(7) { width: 550px; }
 
     .notes-cell {
       max-height: 180px;
@@ -423,20 +350,12 @@
       line-height: 1.35;
     }
 
-    .note-entry {
-      margin: 0 0 .55em 0;
-    }
-
-    .note-entry .ts {
-      font-weight: 100;
-      color: #880000;
-      font-size: 1.05rem;
-    }
+    .note-entry { margin: 0 0 .55em 0; }
+    .note-entry .ts { font-weight: 100; color: #880000; font-size: 1.05rem; }
 
     /* 🔴 Critical alert highlight */
     .note-entry.critical {
-      background: #d93025;
-      /* Google red */
+      background: #d93025; /* Google red */
       color: #fff;
       font-weight: 700;
       border-radius: 10px;
@@ -444,32 +363,21 @@
       display: inline-block;
     }
 
-
-    .phone-wa a {
-      text-decoration: none;
-    }
+    .phone-wa a { text-decoration: none; }
 
     /* Make the Notes input wider */
-    #notes {
-      width: 500px;
-    }
+    #notes { width: 500px; }
 
     /* Optional: keep it fluid on small screens */
     @media (max-width: 600px) {
-      #notes {
-        width: 100%;
-      }
+      #notes { width: 100%; }
     }
 
-
-    /* ===== Login-only background (uses bg.jpg) ===== */
     /* ===== Login-only background (uses bg.jpg) ===== */
     body.login-bg {
       min-height: 100vh;
       background: url('bg.jpg') center / cover no-repeat;
-
     }
-
 
     /* subtle dark overlay to boost contrast behind the card */
     body.login-bg::before {
@@ -488,15 +396,102 @@
     }
 
     /* Hide the app by default; only show it after login when body.app-bg is set */
-    #appSection {
-      display: none;
+    #appSection { display: none; }
+    body.app-bg #appSection { display: block; }
+
+    /* =========================================================
+       ✅ MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)
+       ========================================================= */
+
+    /* Touch targets & smoother taps */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      min-height: 44px;             /* thumb-friendly */
+      will-change: transform;       /* (the line that was cut off) */
+      -webkit-tap-highlight-color: transparent;
     }
 
-    body.app-bg #appSection {
-      display: block;
+    /* Make the table paint faster and scroll nicely on mobile */
+    #dataTable {
+      content-visibility: auto;                 /* paint only when visible */
+      contain-intrinsic-size: 600px 400px;      /* reserve size for faster paint */
+    }
+
+    @media (max-width: 900px) {
+      body { margin: 10px; }
+      header img.logo { max-width: 150px; }
+    }
+
+    @media (max-width: 768px) {
+      /* Stack the search bar */
+      #searchSection { 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 10px; 
+      }
+      #searchSection input[type="text"] {
+        flex: 1 1 auto;
+        max-width: none;
+        width: 100%;
+      }
+      #searchSection button.search-btn {
+        margin-left: 0;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.05rem;
+      }
+
+      /* Inputs full-width in small screens */
+      .form-group input { width: 100%; }
+
+      /* Button group wraps nicely */
+      .button-group.center { flex-wrap: wrap; }
+      .button-group.center button {
+        flex: 1 1 48%;
+        padding: 14px 16px;
+        font-size: 1rem;
+      }
+
+      /* Table horizontal scroll instead of squeezing columns */
+      table { width: 100%; }
+      #dataTable {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #dataTable thead,
+      #dataTable tbody,
+      #dataTable tr,
+      #dataTable th,
+      #dataTable td {
+        white-space: nowrap;
+      }
+      table th:nth-child(7),
+      table td:nth-child(7) { width: auto; }
+      .notes-cell { max-height: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .login-card { width: 100%; padding: 20px 16px; }
+      .button-group.center button { flex-basis: 100%; }
+      h2 { font-size: 1.25rem; }
+    }
+
+    /* Disable heavy glow/animation on phones & reduced motion for snappier taps */
+    @media (prefers-reduced-motion: reduce), (max-width: 768px) {
+      h2 { animation: none !important; }
+      .button-group button::before,
+      #searchSection .search-btn::before,
+      #loginSection .unlock-btn::before,
+      .login-card::before {
+        display: none !important;   /* remove blurred gradient layer */
+        animation: none !important;
+      }
     }
   </style>
 </head>
+
 
 <body>
   <header>
