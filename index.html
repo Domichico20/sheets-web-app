@@ -551,7 +551,7 @@
         <button class="add-btn" onclick="addRow()">Add</button>
         <button class="edit-btn" onclick="confirmEdit()">Edit</button>
         <button class="clear-btn" onclick="clearForm()">Clear</button>
-        <button class="refresh-btn" onclick="loadData()">Refresh</button>
+        <button class="refresh-btn" onclick="loadData(true)">Refresh</button>
         <button class="delete-btn" onclick="confirmDelete()">Delete</button>
         <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
         <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
@@ -808,44 +808,83 @@
   tbody.appendChild(frag);
 }
 
-    function loadData() {
-      setBusy('.refresh-btn', true);
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
-        .then(r => r.json())
-        .then(data => {
-          const rows = data.values || [];
-          totalRows = rows.length;
-          const dataRows = rows.slice(1); // skip header
-          existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+    function loadData(onlySelected = false) {
+  // If called with true (Refresh button), update ONLY the selected row,
+  // then resort by latest change (any field) — no full table reload.
+  if (onlySelected) {
+    if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+    setBusy('.refresh-btn', true);
 
-          allRecords = dataRows.map((row, idx) => ({
-            row,
-            sheetRow: idx + 2,                 // 1-based, +1 header
-            lastEditMs: parseLastEditMs(row[6] || '')
-          }));
+    const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
 
-          // Most recently edited first; tie-break by newest sheet row
-          allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+        const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
 
-          // Reset search box, render the top chunk
-          const q = document.getElementById('searchQuery');
-          if (q) q.value = '';
-          const tbody = document.querySelector('#dataTable tbody');
-          if (tbody) {
-            tbody.innerHTML = '';
-          }
-          renderTable(allRecords.slice(0, ROW_LIMIT));
-        })
-        .catch(err => {
-          console.error(err);
-          alert('Failed to load data from Google Sheets.');
-        })
-        .finally(() => setBusy('.refresh-btn', false));
-    }
+        // Update in-memory selection + notes cache
+        selectedRawNotes = newRow[6] || '';
 
+        // Update the matched record
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        if (rec) {
+          rec.row = newRow;
+          rec.lastEditMs = Date.now(); // ► treat this as the latest change (any field)
+        }
 
+        // Update the visible selected table row immediately
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
 
-    window.loadData = loadData;
+        // Resort by latest change and re-render the visible chunk (no full reload)
+        allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+        renderTable(allRecords.slice(0, ROW_LIMIT));
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Failed to refresh the selected row from Google Sheets.');
+      })
+      .finally(() => setBusy('.refresh-btn', false));
+
+    return; // stop here; no full reload
+  }
+
+  // Original full reload (used elsewhere in the app)
+  setBusy('.refresh-btn', true);
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
+    .then(r => r.json())
+    .then(data => {
+      const rows = data.values || [];
+      totalRows = rows.length;
+      const dataRows = rows.slice(1); // skip header
+      existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+      allRecords = dataRows.map((row, idx) => ({
+        row,
+        sheetRow: idx + 2,                 // 1-based, +1 header
+        lastEditMs: parseLastEditMs(row[6] || '')
+      }));
+
+      // Most recently edited first; tie-break by newest sheet row
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+
+      // Reset search box, render the top chunk
+      const q = document.getElementById('searchQuery');
+      if (q) q.value = '';
+      const tbody = document.querySelector('#dataTable tbody');
+      if (tbody) { tbody.innerHTML = ''; }
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Failed to load data from Google Sheets.');
+    })
+    .finally(() => setBusy('.refresh-btn', false));
+}
+
+window.loadData = loadData;
 
     /* ---------- Search (keeps your phone/email smarts) ---------- */
 function searchData() {
@@ -925,43 +964,69 @@ window.searchData = searchData;
       window.confirmEdit = confirmEdit;
 
       function editRow() {
-        setBusy('.edit-btn', true);
+  setBusy('.edit-btn', true);
 
-        function gi(id) { return document.getElementById(id).value.trim(); }
-        const rawNew = gi('notes');
-        const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  function gi(id) { return document.getElementById(id).value.trim(); }
+  const rawNew = gi('notes');
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
 
-        let combined = existing;
-        if (rawNew) {
-          const ts = new Date().toLocaleString('en-US', {
-            timeZone: 'America/Chicago', // match server timezone used on Adds
-            month: 'short', day: 'numeric', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-          });
-          combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
-        }
+  let combined = existing;
+  if (rawNew) {
+    const ts = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago', // match server timezone used on Adds
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+  }
 
-        const params = new URLSearchParams({
-          action: 'edit',
-          password: sessionPassword,
-          row: selectedRowIndex,
-          username: gi('username'),
-          passwordField: gi('password'),
-          email: gi('email'),
-          phone: normalizePhone(gi('phone')),
-          server: gi('server'),
-          autoPay: gi('autoPay'),
-          notes: combined
-        });
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: gi('username'),
+    passwordField: gi('password'),
+    email: gi('email'),
+    phone: normalizePhone(gi('phone')),
+    server: gi('server'),
+    autoPay: gi('autoPay'),
+    notes: combined
+  });
 
-        // non-blocking: no alert() on success; refresh quietly
-        fetch(scriptURL, { method: 'POST', body: params })
-          .then(r => r.text())
-          .then(() => loadData())
-          .catch(err => alert('Edit failed: ' + err))
-          .finally(() => setBusy('.edit-btn', false));
+  // ✅ No page refresh: update UI + local cache, then resort by last change
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      // Build the updated row from inputs
+      const newRow = [
+        gi('username'),
+        gi('password'),
+        gi('email'),
+        normalizePhone(gi('phone')),
+        gi('server'),
+        gi('autoPay'),
+        combined
+      ];
+
+      // Update our in-memory state
+      selectedRawNotes = combined;
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // sort by latest change, regardless of field
       }
 
+      // Update the currently selected table row in place
+      const selectedTr = document.querySelector('#dataTable tr.selected');
+      if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+
+      // Resort by last change and re-render the visible chunk (no network)
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Edit failed: ' + err))
+    .finally(() => setBusy('.edit-btn', false));
+}
 
       function addNewNote() {
         if (selectedRowIndex === null) { alert('Select a row first.'); return; }
@@ -1004,42 +1069,68 @@ window.searchData = searchData;
 
       window.addRow = addRow;
       function addCriticalAlert() {
-        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
 
-        const msg = prompt('Enter the CRITICAL ALERT message for this row:');
-        if (msg === null) return;                 // user canceled
-        const trimmed = msg.trim();
-        if (!trimmed) { alert('Alert message cannot be empty.'); return; }
+  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
+  if (msg === null) return;                 // user canceled
+  const trimmed = msg.trim();
+  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
 
-        // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
-        const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
-        const cleaned = existing
-          .split('\n')
-          .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-          .join('\n');
+  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  const cleaned = existing
+    .split('\n')
+    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+    .join('\n');
 
-        const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
 
-        // Save back to the same row (same as your edit flow)
-        const params = new URLSearchParams({
-          action: 'edit',
-          password: sessionPassword,
-          row: selectedRowIndex,
-          username: document.getElementById('username').value.trim(),
-          passwordField: document.getElementById('password').value.trim(),
-          email: document.getElementById('email').value.trim(),
-          phone: normalizePhone(document.getElementById('phone').value.trim()),
-          server: document.getElementById('server').value.trim(),
-          autoPay: document.getElementById('autoPay').value.trim(),
-          notes: combined
-        });
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: document.getElementById('username').value.trim(),
+    passwordField: document.getElementById('password').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: normalizePhone(document.getElementById('phone').value.trim()),
+    server: document.getElementById('server').value.trim(),
+    autoPay: document.getElementById('autoPay').value.trim(),
+    notes: combined
+  });
 
-        fetch(scriptURL, { method: 'POST', body: params })
-          .then(r => r.text())
-          .then(() => { alert('Critical alert saved.'); loadData(); })
-          .catch(err => alert('Failed to save critical alert: ' + err));
+  // ✅ No page refresh: update UI + local cache, then resort by last change
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      alert('Critical alert saved.');
+
+      // Update our in-memory state + row UI
+      selectedRawNotes = combined;
+
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        const newRow = [
+          document.getElementById('username').value.trim(),
+          document.getElementById('password').value.trim(),
+          document.getElementById('email').value.trim(),
+          normalizePhone(document.getElementById('phone').value.trim()),
+          document.getElementById('server').value.trim(),
+          document.getElementById('autoPay').value.trim(),
+          combined
+        ];
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this as latest change
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
       }
-      window.addCriticalAlert = addCriticalAlert;
+
+      // Resort by last change and re-render the visible chunk (no network)
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Failed to save critical alert: ' + err));
+}
+window.addCriticalAlert = addCriticalAlert;
 
   </script>
 
