@@ -808,80 +808,161 @@
   tbody.appendChild(frag);
 }
 
-    function loadData(onlySelected = false) {
-  // If called with true (Refresh button), update ONLY the selected row,
-  // then resort by latest change (any field) — no full table reload.
-  if (onlySelected) {
-    if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-    setBusy('.refresh-btn', true);
+   // Tunables
+const REFRESH_COLS = 'A:G';
+const SHEET_TAB    = 'data';
 
-    const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+// Safe busy helper (does nothing if not present)
+function setBusySafe(sel, on) {
+  const el = document.querySelector(sel);
+  if (!el) return;
+  el.disabled = !!on;
+  el.style.opacity = on ? .6 : 1;
+  el.style.pointerEvents = on ? 'none' : 'auto';
+}
 
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        const row = (data && data.values && data.values[0]) ? data.values[0] : [];
-        const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+// Sort helper reused in multiple places
+function sortByRecent(a, b) {
+  return (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow);
+}
 
-        // Update in-memory selection + notes cache
-        selectedRawNotes = newRow[6] || '';
+// Build the inner <td> HTML for a row (reuse your existing impl if present)
+function tdHTML(rowArr) {
+  // col order: A..G -> adjust to your headers if needed
+  return `
+    <td>${rowArr[0] || ''}</td>
+    <td>${rowArr[1] || ''}</td>
+    <td>${rowArr[2] || ''}</td>
+    <td>${rowArr[3] || ''}</td>
+    <td>${rowArr[4] || ''}</td>
+    <td>${rowArr[5] || ''}</td>
+    <td>${rowArr[6] || ''}</td>`;
+}
 
-        // Update the matched record
-        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
-        if (rec) {
-          rec.row = newRow;
-          rec.lastEditMs = Date.now(); // ► treat this as the latest change (any field)
-        }
+// Fetch and update a set of sheet rows via one batchGet
+async function refreshRowsBatch(sheetRowNums) {
+  if (!sheetRowNums.length) return;
 
-        // Update the visible selected table row immediately
-        const selectedTr = document.querySelector('#dataTable tr.selected');
-        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+  const ranges = sheetRowNums.map(r => `${SHEET_TAB}!${REFRESH_COLS.split(':')[0]}${r}:${REFRESH_COLS.split(':')[1]}${r}`);
+  const qs = ranges.map(r => `ranges=${encodeURIComponent(r)}`).join('&');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${qs}&fields=valueRanges(range,values)&key=${apiKey}`;
 
-        // Resort by latest change and re-render the visible chunk (no full reload)
-        allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const payload = await res.json();
+  const list = (payload && payload.valueRanges) || [];
+
+  // Map “A123:G123” -> 123
+  const rowNumFromRange = (rng) => {
+    const m = String(rng || '').match(/!.*?([A-Z]+)(\d+):/i);
+    return m ? parseInt(m[2], 10) : null;
+  };
+
+  list.forEach(vr => {
+    const rnum = rowNumFromRange(vr.range);
+    if (!rnum) return;
+
+    const row = (vr.values && vr.values[0]) ? vr.values[0] : [];
+    const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+    // update selected notes cache if applicable
+    if (typeof selectedRowIndex === 'number' && rnum === selectedRowIndex) {
+      selectedRawNotes = newRow[6] || '';
+    }
+
+    // upsert into allRecords
+    let rec = allRecords.find(x => x.sheetRow === rnum);
+    if (rec) {
+      rec.row = newRow;
+      rec.lastEditMs = Date.now(); // treat as latest change
+    } else {
+      rec = {
+        row: newRow,
+        sheetRow: rnum,
+        lastEditMs: parseLastEditMs(newRow[6] || '') || Date.now()
+      };
+      allRecords.push(rec);
+    }
+
+    // update DOM cell contents if this row is currently rendered
+    const tr = document.querySelector(`#dataTable tbody tr[data-row="${rnum}"]`);
+    if (tr) tr.innerHTML = tdHTML(newRow);
+  });
+}
+
+// Full reload (reduced payload using fields=values)
+async function fullReload() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?fields=values&key=${apiKey}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.json();
+
+  const rows = data.values || [];
+  totalRows = rows.length;
+
+  const dataRows = rows.slice(1); // skip header
+  existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+  allRecords = dataRows.map((row, idx) => ({
+    row,
+    sheetRow: idx + 2, // 1-based + header
+    lastEditMs: parseLastEditMs(row[6] || '')
+  }));
+
+  allRecords.sort(sortByRecent);
+
+  const q = document.getElementById('searchQuery');
+  if (q) q.value = '';
+
+  const tbody = document.querySelector('#dataTable tbody');
+  if (tbody) tbody.innerHTML = '';
+
+  renderTable(allRecords.slice(0, ROW_LIMIT));
+}
+
+// === Optimized loader ===
+// - onlySelected === true -> refresh selected row if any,
+//   otherwise refresh all VISIBLE rows (no selection required).
+// - onlySelected === false -> full reload (lightweight payload).
+async function loadData(onlySelected = false) {
+  setBusySafe('#refreshBtn', true);
+
+  try {
+    if (onlySelected) {
+      let targets = [];
+
+      // If a row is selected, prefer that…
+      if (Number.isInteger(selectedRowIndex)) {
+        targets = [selectedRowIndex];
+      } else {
+        // …otherwise grab all rows currently rendered in the table
+        targets = Array.from(document.querySelectorAll('#dataTable tbody tr'))
+          .map(tr => parseInt(tr.dataset.row, 10))
+          .filter(Boolean);
+      }
+
+      // Fallback to top chunk if table is empty (e.g., first load)
+      if (targets.length === 0 && Array.isArray(allRecords) && allRecords.length) {
+        targets = allRecords.slice(0, ROW_LIMIT).map(r => r.sheetRow);
+      }
+
+      if (targets.length) {
+        await refreshRowsBatch(Array.from(new Set(targets)));
+        // keep table sorted by latest change, then show top chunk (fast)
+        allRecords.sort(sortByRecent);
         renderTable(allRecords.slice(0, ROW_LIMIT));
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Failed to refresh the selected row from Google Sheets.');
-      })
-      .finally(() => setBusy('.refresh-btn', false));
+        return;
+      }
+      // If we still have nothing, do a full reload.
+    }
 
-    return; // stop here; no full reload
+    await fullReload();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load data from Google Sheets.');
+  } finally {
+    setBusySafe('#refreshBtn', false);
   }
-
-  // Original full reload (used elsewhere in the app)
-  setBusy('.refresh-btn', true);
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
-    .then(r => r.json())
-    .then(data => {
-      const rows = data.values || [];
-      totalRows = rows.length;
-      const dataRows = rows.slice(1); // skip header
-      existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
-
-      allRecords = dataRows.map((row, idx) => ({
-        row,
-        sheetRow: idx + 2,                 // 1-based, +1 header
-        lastEditMs: parseLastEditMs(row[6] || '')
-      }));
-
-      // Most recently edited first; tie-break by newest sheet row
-      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
-
-      // Reset search box, render the top chunk
-      const q = document.getElementById('searchQuery');
-      if (q) q.value = '';
-      const tbody = document.querySelector('#dataTable tbody');
-      if (tbody) { tbody.innerHTML = ''; }
-      renderTable(allRecords.slice(0, ROW_LIMIT));
-    })
-    .catch(err => {
-      console.error(err);
-      alert('Failed to load data from Google Sheets.');
-    })
-    .finally(() => setBusy('.refresh-btn', false));
 }
 
 window.loadData = loadData;
