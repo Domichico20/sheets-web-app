@@ -2,4027 +2,1182 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=yes">
-  <title>Best Turizo Insurance Platform</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Sheets Manager</title>
+  <!-- Preload login background -->
+  <link rel="preload" as="image" href="bg.jpg">
+  <!-- Preload app background -->
+  <link rel="preload" as="image"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg">
+
+
+  <link rel="preload" as="image" href="logo.png">
+  <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
   <link rel="icon" type="image/png"
-    href="https://raw.githubusercontent.com/Domichico20/Best-Turizo-Insurace-Software/e71261e9aa44cbf53c48da6199c9847aea40a302/logo.png">
-  <link rel="apple-touch-icon"
-    href="https://raw.githubusercontent.com/Domichico20/Best-Turizo-Insurace-Software/e71261e9aa44cbf53c48da6199c9847aea40a302/logo.png">
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="shortcut icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
+
+
+
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- speed: warm up API connections -->
   <link rel="preconnect" href="https://sheets.googleapis.com" crossorigin>
   <link rel="dns-prefetch" href="https://sheets.googleapis.com">
   <link rel="preconnect" href="https://script.google.com" crossorigin>
   <link rel="dns-prefetch" href="https://script.google.com">
 
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
-/* Hide logo when logged-in (main + customer pages) */
-body.is-customer header { display: none; }
-body.logged-in header { display: none; }
-
-
-    /* Pause the rainbow animation once we leave the list page */
-    body.is-customer .search-btn {
-      animation: none !important;
-    }
-
-    /* ===== Base / Theme ===== */
-    :root {
-      --bg: #f6f7f9;
-      --card: #ffffff;
-      --ink: #3b2f22;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --brand1: #c59b6a;
-      --brand2: #ab7d4a;
-      --ok: #16a34a;
-      --warn: #f59e0b;
-      --danger: #ef4444;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(16, 24, 40, .06);
-      --pdf-icon-size: 40px;
-    }
-
-    .attc-icon {
-      display: inline-flex;
-      width: var(--pdf-icon-size);
-      height: var(--pdf-icon-size);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .attc-icon svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    html,
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font: 14px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
+    * {
       margin: 0;
-      /* <-- remove default 8px gap around the page */
       padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
     }
 
+    body {
+      margin: 20px;
+      background-color: #f0f0f0;
+    }
 
     header {
       text-align: center;
-      margin: 0;
-      /* no external gap */
-      padding: 0;
-      /* no internal gap */
-      line-height: 0;
-      /* collapses any inline line box */
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
     }
-
-
 
     header img.logo {
-      display: block;
-      margin: 0 auto -70px;
-      /* stronger pull-up to reduce gap above tasks */
-      max-width: 540px;
+      max-width: 200px;
       height: auto;
-      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .08));
-      pointer-events: none;
     }
 
-
-
-    /* Ensure nothing re-introduces top spacing under the header */
-    #loginSection,
-    #appSection {
-      margin-top: 0 !important;
-    }
-
-
-
-
-    /* ===== Login (UNCHANGED) ===== */
-    #loginSection {
-      width: 100%;
-      max-width: 400px;
-      padding: 28px;
-      gap: 12px;
-      margin: 0 auto;
-      border-radius: 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-    }
-
-    #loginSection input {
-      padding: 20px 100px;
-      font-size: 16px;
+    h2 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.75rem;
+      font-weight: 600;
       text-align: center;
-      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      background: linear-gradient(90deg,
+          #003366, #0066CC, #3399FF, #ff3333, #ffa733, #9a9c21, #54cc25, #1a8371, #229ea7, #33b4ff, #339cff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 10s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      h2 {
+        animation: none;
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* --- Login section as a centered card --- */
+    #loginSection {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      /* ⬅️ no vertical centering */
+      padding: 8px 16px 40px;
+      /* small top padding only */
+      min-height: auto;
+      /* ⬅️ remove forced height */
+    }
+
+    .login-card { margin-top: 4px; }
+
+    .login-card {
+      position: relative;
+      width: min(420px, 92vw);
+      padding: 28px 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+      backdrop-filter: blur(6px);
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(14px);
+      z-index: -1;
+      opacity: .30;
+      animation: glowRainbow 20s linear infinite;
+    }
+
+    .login-card .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+      color: #003366;
+    }
+
+    .inputbox { position: relative; margin: 12px 0 6px; }
+
+    .inputbox input {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 1rem; /* >=16px on most browsers => no iOS zoom */
+      border: 1px solid #d6d6d6;
       border-radius: 12px;
       outline: none;
-      transition: border .15s;
+      background: #fff;
     }
 
-    #loginSection input::placeholder {
-      text-align: center;
+    .inputbox label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      padding: 0 6px;
+      color: #666;
+      pointer-events: none;
+      transition: .18s ease;
     }
 
-    #loginSection input:focus {
-      border-color: var(--brand1);
-      box-shadow: 0 0 0 3px rgba(197, 155, 106, .18);
+    .inputbox input:focus+label,
+    .inputbox input:not(:placeholder-shown)+label {
+      top: 0;
+      font-size: .8rem;
+      color: #003366;
     }
 
-    #loginSection button {
-      width: 70%;
-      margin: 0 auto;
-      padding: 12px 14px;
-      font-size: 20px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--brand1), var(--brand2));
-      color: #fff;
-      border: 0;
+    /* ========= Shared glow animation ========= */
+    @keyframes glowRainbow {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* Unlock button base */
+    #loginSection .unlock-btn {
+      margin-left: 0;
+      padding: 15px 40px;
+      border: none;
+      outline: none;
       cursor: pointer;
+      position: relative;
+      border-radius: 12px;
+      background-color: #2952db;
+      color: #FFF;
+      font-size: 1.1rem;
+      isolation: isolate;
+      width: 100%;
+      margin-top: 14px;
     }
 
-    #customerPage .wrap {
-      width: min(1400px, 96vw);
-      margin: 0 auto;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(16, 24, 40, .08);
-      padding: 22px 24px;
-      box-sizing: border-box;
-    }
-
-
-    /* ===== Search Bar ===== */
+    /* ====== Rest of your styles (unchanged) ====== */
     #searchSection {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
-      margin: 0 auto 12px;
-      width: min(1250px, 96vw);
+      margin-bottom: 20px;
     }
-
-
 
     #searchSection input[type="text"] {
-      flex: 0 1 920px;
-      max-width: 920px;
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 1.75rem;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: #fff;
-    }
-
-
-    #searchSection input[type="text"]:focus {
-      border-color: var(--brand1);
-      box-shadow: 0 0 0 3px rgba(197, 155, 106, .15);
-    }
-
-    .search-btn {
-      font-size: 1rem;
-      font-weight: 700;
-      padding: 25px 40px;
-      border-radius: 18px;
-      color: #fff;
-      border: 0;
-      cursor: pointer;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      background: linear-gradient(90deg,
-          #C31954, #C01A53, #BD1B52, #BA1C51, #B71D50,
-          #B41E4F, #B11F4E, #AE204D, #AB214C, #A8224B,
-          #A5234A, #A22449, #9F2548, #9C2647, #992746,
-          #962845, #932944, #902A43, #8D2B42, #8A2C41,
-          #872D40, #842E3F, #812F3E, #7E303D, #7B313C,
-          #78323B, #75333A, #723439, #6F3538, #6C3637,
-          #693736, #663835, #633934, #603A33, #5D3B32,
-          #5A3C31, #573D30, #543E2F, #513F2E, #4E402D,
-          #4B412C, #48422B, #45432A, #424429, #3F4528,
-          #3C4627, #394726, #364825, #334924, #304A23,
-          #2D4B22, #2A4C21, #274D20, #244E1F, #214F1E,
-          #1E501D, #1B511C, #18521B, #15531A, #125419,
-          #0F5518, #0C5617, #095716, #065815, #035914,
-          #005A13, #005B14, #005C15, #005D16, #005E17,
-          #005F18, #006019, #00611A, #00621B, #00631C,
-          #00641D, #00651E, #00661F, #006720, #006821,
-          #006922, #006A23, #006B24, #006C25, #006D26,
-          #006E27, #006F28, #007029, #00712A, #00722B,
-          #00732C, #00742D, #00752E, #00762F, #007730,
-          #007831, #007932, #007A33, #007B34, #007C35,
-          #007C35, #007B34, #007A33, #007932, #007831,
-          #007730, #00762F, #00752E, #00742D, #00732C,
-          #00722B, #00712A, #007029, #006F28, #006E27,
-          #006D26, #006C25, #006B24, #006A23, #006922,
-          #006821, #006720, #00661F, #00651E, #00641D,
-          #00631C, #00621B, #00611A, #006019, #005F18,
-          #005E17, #005D16, #005C15, #005B14, #005A13,
-          #035914, #065815, #095716, #0C5617, #0F5518,
-          #125419, #15531A, #18521B, #1B511C, #1E501D,
-          #214F1E, #244E1F, #274D20, #2A4C21, #2D4B22,
-          #304A23, #334924, #364825, #394726, #3C4627,
-          #3F4528, #424429, #45432A, #48422B, #4B412C,
-          #4E402D, #513F2E, #543E2F, #573D30, #5A3C31,
-          #5D3B32, #603A33, #633934, #663835, #693736,
-          #6C3637, #6F3538, #723439, #75333A, #78323B,
-          #7B313C, #7E303D, #812F3E, #842E3F, #872D40,
-          #8A2C41, #8D2B42, #902A43, #932944, #962845,
-          #992746, #9C2647, #9F2548, #A22449, #A5234A,
-          #A8224B, #AB214C, #AE204D, #B11F4E, #B41E4F,
-          #B71D50, #BA1C51, #BD1B52, #C01A53, #C31954);
-      background-size: 1200% 100%;
-      animation: gradientShift 16s infinite linear, pulseGlow 4s infinite alternate;
-      box-shadow:
-        0 0 20px rgba(255, 100, 255, 0.7),
-        0 0 40px rgba(100, 200, 255, 0.5),
-        0 0 60px rgba(255, 255, 100, 0.3),
-        0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-
-
-    .search-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(156, 66, 25, .6);
-      animation-duration: 3s;
-    }
-
-
-    @keyframes gradientShift {
-      0% {
-        background-position: 0% 50%
-      }
-
-      100% {
-        background-position: 200% 50%
-      }
-    }
-
-
-    /* ===== Data Table ===== */
-    #dataTable {
-      width: 100%;
-      margin: 0 auto;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
-      table-layout: fixed;
-    }
-
-    #tab-files,
-    #tab-accord {
-      position: relative;
-      padding-right: 240px;
-      /* leaves room so content doesn’t hide under the box */
-    }
-
-    #dataTable thead th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      /* Refined gold ribbon using same colors */
-      background: linear-gradient(180deg,
-          #d1a66e 0%,
-          #b1874f 20%,
-          #b3803d 45%,
-          #a06e2c 60%,
-          #b3803d 75%,
-          #b1874f 88%,
-          #d1a66e 100%);
-      color: #f3f4f7;
-      text-transform: uppercase;
-      letter-spacing: .10em;
-      font-weight: 800;
-      font-size: 1.45rem;
-      padding: 14px 16px;
-      text-align: center;
-      border-bottom: 1px solid rgba(0, 0, 0, .08);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .25),
-        inset 0 -1px 0 rgba(0, 0, 0, .08);
-    }
-
-    /* Subtle column separators & rounded top corners */
-    #dataTable thead th+th {
-      box-shadow:
-        inset 1px 0 0 rgba(255, 255, 255, .18),
-        inset 0 -1px 0 rgba(0, 0, 0, .08);
-    }
-
-    #dataTable thead th:first-child {
-      border-top-left-radius: 14px;
-    }
-
-    #dataTable thead th:last-child {
-      border-top-right-radius: 14px;
-    }
-
-    #dataTable tbody td,
-    #dataTable tbody th {
-      padding: 12px 14px;
-      border-top: 1px solid #eef2f7;
-      vertical-align: middle;
-      color: #0f172a;
-      font-size: 20px;
-      line-height: 1.35;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-align: center;
-    }
-
-
-    /* Hide specific inputs in the Customer Info form */
-    #tab-info #custInfoForm .fg:has(#ci_policy),
-    #tab-info #custInfoForm .fg:has(#ci_insurer),
-    #tab-info #custInfoForm .fg:has(#ci_effDate),
-    #tab-info #custInfoForm .fg:has(#ci_expDate),
-    #tab-info #custInfoForm .fg:has(#ci_year),
-    #tab-info #custInfoForm .fg:has(#ci_make),
-    #tab-info #custInfoForm .fg:has(#ci_model),
-    #tab-info #custInfoForm .fg:has(#ci_vin) {
-      display: none;
-    }
-
-    /* Hide the first 4 summary cards ONLY on the Customer Info tab (except while adding a new client) */
-    #customerPage.info-active:not(.adding-client) #custDetailsGrid .card:nth-child(-n+4) {
-      display: none;
-    }
-
-    /* Do not show any summary fields on Files and Accord tabs */
-    #customerPage.files-active #custDetailsGrid,
-    #customerPage.accord-active #custDetailsGrid {
-      display: none;
-    }
-
-
-
-    #dataTable tbody tr:nth-child(odd) {
-      background: #fcfcff;
-    }
-
-    #dataTable tbody tr:hover {
-      background: #f5f8ff;
-    }
-
-    #dataTable tr.selected {
-      background: #e8f0ff !important;
-      box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .35);
-    }
-
-    /* Selected/highlighted row in Policies table */
-    .themed-table tr.selected {
-      background: #e8f0ff !important;
-      box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .35);
-    }
-
-
-    /* Status pill + Go button */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: 1.35rem;
-    }
-
-    .badge.active {
-      border: 1px solid #113f18;
-      background: #66b684;
-      color: #1e1ca3;
-      cursor: default;
-    }
-
-    .badge.inactive {
-      background: #fdecec;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-      cursor: default
-    }
-
-    .go-btn {
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid #113f18;
-      background: #66b684;
-      color: #1e1ca3;
-      cursor: pointer;
-      font-weight: 1000;
-    }
-
-    .go-btn:hover {
-      background: #fa5656;
-    }
-
-    #customerPage .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 12px;
-    }
-
-
-    #customerPage .title {
-      font-size: 2.15rem;
-      font-weight: 900;
-      letter-spacing: .3px;
-      background: linear-gradient(90deg, #7c5b2e, #c79d4b 60%, #7c5b2e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 1px 0 rgba(0, 0, 0, .04);
-    }
-
-
-    /* Tabs row */
-    .tabs {
-      display: flex;
-      gap: 12px;
-      margin: 12px 0 16px;
-      flex-wrap: wrap;
-    }
-
-
-    /* Modern pill tabs */
-
-    .tab {
-      appearance: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      /* bigger + consistent size */
-      padding: 12px 20px;
-      min-height: 44px;
-      width: 140px;
-      /* <- all 8 will match this width */
-      border-radius: 999px;
-
-      border: 1px solid #8a673c;
-      background: linear-gradient(180deg,
-          #d1a66e 0%,
-          #b1874f 35%,
-          #9c6a33 70%,
-          #7c5b2e 100%);
-      color: #ffffff;
-      font-weight: 800;
-      font-size: 1.20rem;
-      line-height: 1;
-
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 8px 14px rgba(16, 24, 40, .10);
-      transition:
-        background .2s ease,
-        transform .12s ease,
-        box-shadow .2s ease,
-        color .2s ease,
-        border-color .2s ease;
-    }
-
-    /* User label chip (makes the "Logged in as" text compact & polished) */
-    .user-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #fff;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      line-height: 1;
-    }
-
-    .user-chip .user-label {
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: #6f5a3e;
-      font-weight: 800;
-      opacity: .9;
-    }
-
-    .user-chip #userName {
-      font-weight: 900;
-      font-size: .95rem;
-      color: var(--ink);
-    }
-
-    /* Smaller pill using your modern tab gradient, with a left white icon-box */
-    #userWidget .logout-btn.tab {
-      display: inline-flex;
-      align-items: stretch;
-      padding: 0;
-      /* let inner pieces control spacing */
-      min-height: 40px;
-      /* smaller than default tab */
-      width: auto;
-      /* don’t force the 140px width */
-      border-radius: 999px;
-      overflow: hidden;
-      /* so the white box sits flush on the left */
-    }
-
-    /* White box all the way to the left */
-    #userWidget .logout-btn .icon-box {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      /* tweak 36–44px as you like */
-      background: #fff;
-      color: #7d2a2a;
-      /* harmonizes with your tab gradient */
-      border-right: 1px solid rgba(0, 0, 0, .08);
-    }
-
-    /* Cleaner text sizing/spacing */
-    #userWidget .logout-btn .txt {
-      display: inline-block;
-      padding: 0 14px;
-      font-weight: 900;
-      font-size: .9rem;
-      /* slightly smaller */
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      line-height: 40px;
-      /* match min-height for perfect centering */
-    }
-
-
-    /* Hover / Press / Focus */
-    .tab:hover {
-      transform: translateY(-1px);
-      background: linear-gradient(180deg,
-          #e0be8a 0%,
-          #c39a62 38%,
-          #a5743c 70%,
-          #835829 100%);
-      box-shadow: 0 12px 22px rgba(16, 24, 40, .16);
-    }
-
-
-    .tab:active {
-      transform: none;
-      box-shadow: inset 0 4px 10px rgba(0, 0, 0, .18);
-      background: linear-gradient(180deg, #8a5f2d 0%, #70461b 100%);
-    }
-
-
-    .tab:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(197, 155, 106, .35);
-    }
-
-    /* Selected tab (brand gradient) */
-    .tab[aria-selected="true"] {
-      background: linear-gradient(180deg, #b14a4a 0%, #7d2a2a 50%, #522222 100%);
-      color: #ffffff;
-      border-color: #5a3b1a;
-      box-shadow: 0 8px 18px rgba(123, 88, 46, .45);
-    }
-
-
-
-
-    .tabpanel {
-      display: none;
-    }
-
-    .tabpanel.active {
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      /* NEW: make this whole block look like a distinct panel */
-      padding: 16px;
-      margin-bottom: 14px;
-      border: 1px solid #e7d4bd;
-      border-radius: 16px;
-      background: radial-gradient(140% 140% at 0% 0%, #ffffff 0%, #f9f4ea 100%);
-      box-shadow: 0 10px 30px rgba(16, 24, 40, .06);
-    }
-
-
-
-    @media(max-width:1100px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .card {
-      background: linear-gradient(180deg, #ffffff 0%, #fbf7f0 100%);
-      border: 1px solid #eadcc6;
-      border-radius: 14px;
-      padding: 12px 14px;
-      box-shadow: 0 3px 10px rgba(16, 24, 40, .05);
-    }
-
-
-    .label {
-      font-size: 1.5rem;
-      color: #6f5a3e;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-
-
-    .value {
-      font-weight: 600;
-      font-size: 1.20rem;
-      color: #3b2f22;
-      /* ties to --ink feel */
-      letter-spacing: .01em;
-      line-height: 1.25;
-      word-break: break-word;
-    }
-
-
-
-
-    /* Forms */
-    .form {
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 12px 14px;
-    }
-
-    .form .fg {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #custInfoForm .fg label,
-    #policyEditor .fg label {
-      font-size: 1.5rem;
-      color: #6f5a3e;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      font-weight: 700;
-      margin: 0 0 4px;
-      /* match the top cards */
-    }
-
-
-    .form .fg input,
-    .form .fg textarea,
-    .form .fg select {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      background: #fff;
-      box-shadow: 0 1px 0 rgba(16, 24, 40, .02) inset;
-      transition: border-color .15s, box-shadow .15s;
-      font-size: 1.20rem;
-      line-height: 1.25;
-    }
-
-
-
-    .form .fg input:focus,
-    .form .fg textarea:focus {
-      border-color: var(--brand1);
-      box-shadow: 0 0 0 3px rgba(197, 155, 106, .18);
-      outline: none;
-    }
-
-
-    .row-full {
-      grid-column: 1/-1;
-    }
-
-    .row-6 {
-      grid-column: span 6;
-    }
-
-    .row-4 {
-      grid-column: span 4;
-    }
-
-    .row-3 {
-      grid-column: span 3;
-    }
-
-    .row-2 {
-      grid-column: span 2;
-    }
-
-    /* NEW: distinct, clean panel for the editable form */
-    #custInfoForm {
-      background: #ffffff;
-      border: 1px solid #ece5d6;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 6px 18px rgba(16, 24, 40, .04);
-    }
-
-
-    .actionbar {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
-    }
-
-    .btn {
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      cursor: pointer;
-      font-weight: 800;
-      box-shadow: 0 4px 12px rgba(16, 24, 40, .06);
-      transition: transform .08s ease, box-shadow .12s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(16, 24, 40, .10);
-    }
-
-    .btn.primary {
-      background: linear-gradient(90deg, var(--brand1), var(--brand2));
-      color: #fff;
-      border: 0;
-
-      /* match top tab size */
-      width: 140px;
-      min-height: 44px;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-size: 1.20rem;
-      line-height: 1;
-    }
-
-
-
-    /* Make date inputs in the policy editor ~2× larger */
-    /* Make date inputs in the policy editor ~1× (half of previous) */
-    #policyEditor input[type="date"] {
-      font-size: 0.8rem;
-      padding: 8px 7px;
-      height: 29px;
-    }
-
-    #policyEditor input[type="date"]::-webkit-calendar-picker-indicator {
-      transform: scale(0.9);
-    }
-
-    #policyEditor input::-webkit-datetime-edit {
-      font-size: 0.7rem;
-    }
-
-    /* Bigger popup calendar (Flatpickr) */
-    .flatpickr-calendar {
-      transform: scale(1);
-      transform-origin: top left;
-      z-index: 99999;
-    }
-
-    .flatpickr-day {
-      width: 4.1rem;
-      height: 4.1rem;
-      line-height: 2.1rem;
-      font-size: 1.1rem;
-    }
-
-    /* Tables inside customer page */
-
-
-    /* Tables inside customer page */
-    .themed-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
-      table-layout: fixed;
-    }
-
-
-    .themed-table td,
-    .themed-table th {
-      text-align: center;
-      font-size: 1.35rem;
-
-    }
-
-
-    .themed-table thead th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: linear-gradient(180deg,
-          #d1a66e 0%,
-          #b1874f 20%,
-          #b3803d 45%,
-          #a06e2c 60%,
-          #b3803d 75%,
-          #b1874f 88%,
-          #d1a66e 100%);
-      color: #fefefe;
-      text-transform: uppercase;
-      letter-spacing: .10em;
-      font-weight: 800;
-      font-size: 1.25rem;
-      padding: 12px 14px;
-      text-align: center;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22),
-        inset 0 -1px 0 rgba(0, 0, 0, .10);
-    }
-
-
-    .themed-table thead th+th {
-      box-shadow: inset 1px 0 0 rgba(255, 255, 255, .18),
-        inset 0 -1px 0 rgba(0, 0, 0, .08);
-    }
-
-    .themed-table thead th:first-child {
-      border-top-left-radius: 14px;
-    }
-
-    .themed-table thead th:last-child {
-      border-top-right-radius: 14px;
-    }
-
-
-    .themed-table td {
-      padding: 9px 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border-top: 1px solid #eef2f7;
-    }
-
-    /* Notes Tab */
-    /* Notes Tab */
-    /* Notes Tab */
-    .notes-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 420px;
-      overflow-y: auto;
-      padding-right: 8px;
-    }
-
-    /* 🔴 CRITICAL ALERT - Dynamic & Attention-Grabbing */
-    .note-entry.critical {
-      background: linear-gradient(145deg, #d93025, #b0251d, #8a1812, #7c120c);
-      /* Subtle gradient for depth */
-      color: #fff;
-      font-size: 1.5em;
-      font-weight: 900;
-      /* Even bolder weight (900 is the strongest) */
-      border-radius: 10px;
-      padding: 10px 16px;
-      /* Slightly more padding for better presence */
-      display: inline-block;
-      border: 2px solid #ff4d4d;
-      /* Bright border to make it "pop" */
-      box-shadow: 0 4px 8px rgba(217, 48, 37, 0.4);
-      /* Soft shadow for depth */
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-      /* Improves text readability on background */
-      transition: all 0.3s ease;
-      /* Smooth transition for hover effects */
-    }
-
-    /* Optional: Add a hover effect to make it interactive */
-    .note-entry.critical:hover {
-      transform: translateY(-2px);
-      /* Slight "lift" effect */
-      box-shadow: 0 6px 12px rgba(217, 48, 37, 0.5);
-      /* Enhanced shadow on hover */
-      cursor: pointer;
-    }
-
-
-    .note-card {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 6px 14px rgba(16, 24, 40, .05);
-    }
-
-    .note-meta {
-      font-size: 1.25rem;
-      color: #465a83;
-      margin-bottom: 6px;
-    }
-
-
-    .note-text {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      font-size: 1.55rem;
-      line-height: 1.6;
-    }
-
-
-    /* === Modern upload control === */
-    .hid-input {
-      display: none;
-    }
-
-    .attc-upload {
-      margin: 10px 0 16px;
-    }
-
-    .attc-dropzone {
-      display: grid;
-      grid-template-columns: 36px 1fr auto;
-      align-items: center;
-      gap: 12px;
-
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 2px dashed #d7c3a6;
-      background: linear-gradient(180deg, #ffffff 0%, #fbf7f0 100%);
-
-      color: var(--ink);
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(16, 24, 40, .06);
-      transition: border-color .2s, box-shadow .2s, transform .1s, background .2s;
-    }
-
-    .attc-dropzone:hover {
-      transform: translateY(-1px);
-      border-color: var(--brand1);
-      box-shadow: 0 10px 24px rgba(16, 24, 40, .10);
-    }
-
-    .attc-dropzone.dragover {
-      border-color: var(--brand2);
-      background: radial-gradient(120% 140% at 0% 0%, #fff 0%, #fffbed 100%);
-    }
-
-    .attc-dropzone svg {
-      width: 28px;
-      height: 28px;
-      color: var(--brand2);
-    }
-
-    .attc-dropzone .text strong {
-      display: block;
-      font-size: 1.1rem;
-      line-height: 1.1;
-    }
-
-    .attc-dropzone .text span {
-      display: block;
-      font-size: .95rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .attc-dropzone .meta {
-      font-size: .9rem;
-      color: #6b7280;
-      white-space: nowrap;
-    }
-
-    .attc-file {
-      margin-top: 8px;
-      font-size: .95rem;
-      color: #334155;
-    }
-
-    .attc-file .name {
-      font-weight: 700;
-    }
-
-    #tab-files .attc-upload,
-    #tab-accord .attc-upload {
-      position: fixed;
-      right: 12px;
-      /* was 175px */
-      bottom: 12px;
-      /* was 465px */
-      width: 220px;
-      margin: 0;
-      z-index: 3000;
-      pointer-events: auto;
-    }
-
-
-
-    #tab-files .attc-dropzone,
-    #tab-accord .attc-dropzone {
-      grid-template-columns: 20px 1fr;
-      /* was 24px 1fr */
-      gap: 8px;
-      /* was 10px */
-      padding: 8px 10px;
-      /* was 12px 14px */
-      border-radius: 10px;
-      /* was 12px */
-    }
-
-
-    #tab-files .attc-dropzone svg,
-    #tab-accord .attc-dropzone svg {
-      width: 18px;
-      height: 24px;
-    }
-
-    #tab-files .attc-dropzone .text strong,
-    #tab-accord .attc-dropzone .text strong {
-      font-size: .9rem;
-      /* was 1rem */
-    }
-
-    #tab-files .attc-dropzone .text span,
-    #tab-accord .attc-dropzone .text span {
-      font-size: .8rem;
-      /* was .9rem */
-    }
-
-    #tab-files .attc-dropzone .meta,
-    #tab-accord .attc-dropzone .meta {
-      font-size: .75rem;
-      /* was .8rem */
-    }
-
-
-    /* The little "Selected: filename" line stays with the floating box */
-    #tab-files .attc-file,
-    #tab-accord .attc-file {
-      margin-top: 8px;
-      font-size: 1.1rem;
-    }
-
-    /* Optional: on very small screens, tuck it tighter */
-    @media (max-width: 900px) {
-
-      #tab-files,
-      #tab-accord {
-        padding-right: 0;
-      }
-
-      #tab-files .attc-upload,
-      #tab-accord .attc-upload {
-        position: static;
-        /* drop back into normal flow */
-        width: 100%;
-        margin: 10px 0 16px;
-      }
-    }
-
-
-    /* quick spinner for optimistic rows */
-    .attc-spin {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid #d7c3a6;
-      border-top-color: #ab7d4a;
-      border-radius: 50%;
-      animation: attcspin .6s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-
-    @keyframes attcspin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* Notes input size (fixed, non-resizable) */
-    #noteInput {
-      width: 100%;
-      max-width: 1310px;
-
-      height: 80px;
-      min-height: 80px;
-      max-height: 80px;
-
-      resize: none;
-      /* disable user resizing */
-      overflow: auto;
-      /* show scrollbar instead */
-      box-sizing: border-box;
-      /* keep 80px including padding/border */
-    }
-
-
-    /* ---- Put tabs back in the document flow (not floating) ---- */
-    #customerPage .tabs {
-      position: static !important;
-      top: auto !important;
-      left: auto !important;
-      transform: none !important;
-      z-index: auto !important;
-
-      /* restore original spacing */
-      padding: 0 !important;
-      background: transparent !important;
-    }
-
-    body.is-customer #customerPage .wrap {
-      margin-top: 16px !important;
-    }
-
-    @media (max-width: 900px) {
-      #customerPage .tabs {
-        top: auto !important;
-      }
-
-      body.is-customer #customerPage .wrap {
-        margin-top: 12px !important;
-      }
-    }
-
-    /* Lock the floating "Customer Overview" tab in place */
-    #fixedAddClient {
-      transform: none !important;
-      will-change: auto !important;
-    }
-
-    #fixedAddClient .tab,
-    #fixedAddClient .tab:hover,
-    #fixedAddClient .tab:active {
-      transform: none !important;
-      transition: none !important;
-    }
-
-    /* ===== Tasks Widget ===== */
-    #taskTo {
-      min-width: 180px;
-    }
-
-
-    .tasks-panel {
-      width: min(1250px, 96vw);
-      margin: 10px auto 18px;
-      padding: 12px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
-    }
-
-    .tasks-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    #tasksPanel select,
-    #tasksPanel input {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 1rem;
-      background: #fff;
-    }
-
-    #taskText {
-      flex: 1 1 auto;
-    }
-
-    .tasks-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .tasks-col {
-      background: #fbf7f0;
-      border: 1px solid #eadcc6;
-      border-radius: 12px;
+      flex: 0 0 50%;
+      max-width: 600px;
       padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
     }
 
-    #tasksPanel h4 {
-      margin: 0 0 8px;
-      font-size: 1.2rem;
+    #searchSection button.search-btn {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      margin-left: 20px;
+      background-color: #92e67d;
+      border-radius: 12px;
+      border: none;
     }
 
-    /* Show ~3 tasks; scroll to see the rest */
-    #tasksPanel ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      max-height: 200px;
-      /* ≈ three items tall */
-      overflow-y: auto;
-      /* enables scrolling */
-      padding-right: 8px;
-      /* keeps text clear of scrollbar */
-      scrollbar-gutter: stable;
+    .add-note-btn { background-color: #6934be; color: #fff; }
+    .critical-btn { background-color: #fc933d; color: #fff; }
+
+    .form-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+      justify-content: center;
     }
 
-    /* Optional: keep long task text from making rows too tall */
-    #tasksPanel li strong {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: bold; margin-bottom: 5px; }
+    .form-group input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 175px;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
     }
 
-
-    #tasksPanel li {
+    .button-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 8px 10px;
-      background: #fff;
-      border: 1px solid #ece5d6;
-      border-radius: 10px;
-      margin-bottom: 8px;
+      justify-content: center; /* center the whole bar */
+      margin: 20px 0;
     }
 
-    #tasksPanel .small {
-      font-size: .9rem;
-      color: #6b7280;
+    .button-group.center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: nowrap; /* keep on one line */
     }
 
-    #tasksPanel .pill {
-      border: 1px solid #d1a66e;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-weight: 700;
-    }
-
-    #tasksPanel .done {
-      background: #e7f7ec;
-      border-color: #a7e0b8;
-    }
-
-    #tasksPanel .btn-link {
-      background: none;
-      border: 0;
-      color: #7d2a2a;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    @media(max-width:900px) {
-      .tasks-columns {
-        grid-template-columns: 1fr;
+    /* If the screen is small, allow wrapping (optional) */
+    @media (max-width: 700px) {
+      .button-group.center {
+        flex-wrap: wrap;
+        justify-content: center;
       }
     }
 
-   /* ===== Right-side Reminder Card (pinned to very top) ===== */
-.reminder-card {
-  position: static;
-  right: 12px;
-  top: 64px;
-  /* clears the top-right Customer Overview button */
-  width: 350px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 14px;
-  z-index: 2800;
-  /* below Customer Overview (z=3000), above table */
-}
-
-
-    .reminder-card h4 {
-      margin: 0 0 6px;
-      font-size: 1.2rem;
-      font-weight: 800;
+    .button-group { display: flex; gap: 10px; }
+    .button-group button {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
     }
 
-    .reminder-card .desc {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: .95rem;
-    }
+    .add-btn    { background-color: #003366; }
+    .edit-btn   { background-color: #3399FF; }
+    .clear-btn  { background-color: #66CC66; }
+    .refresh-btn{ background-color: gold; color: black; }
+    .delete-btn { background-color: red; }
 
-    .reminder-card .row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .reminder-card input[type="text"],
-    .reminder-card input[type="datetime-local"] {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 1rem;
-      background: #fff;
-    }
-
-    .reminder-card input[type="text"] {
-      flex: 1 1 auto;
-    }
-
-    .reminder-card .hint {
-      display: block;
-      margin-top: 8px;
-      font-size: .85rem;
-      color: var(--muted);
-    }
-
- 
-/* Mobile: keep it in document flow too */
-@media (max-width: 900px) {
-  .reminder-card {
-    position: static;
-    left: 12px;
-    right: 12px;
-    top: 64px;
-    width: auto;
-    margin: 0;
-  }
-}
-
-
-
-
-    #searchForm {
-      margin-top: 18px;
-      /* ~75% reduction of the previous 70px gap */
-    }
-
-    /* Top-right user widget */
-    /* Top-left user widget (logout) */
-    /* Top-left user widget (logout) – layout handled by the grid at the bottom */
-#userWidget {
-  display: flex;
-  gap: 8px;
-  align-items: center;            /* keep centered vertically */
-  justify-content: flex-start;    /* push the button to the left */
-  width: auto;
-  margin: 0;
-  position: fixed !important;
-  top: 8px !important;
-  left: 12px !important;
-  right: auto !important;
-  z-index: 5000 !important;
-}
-
-
-
-
-    #userWidget .who {
-      font-size: .95rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    #userWidget .who strong {
-      color: var(--ink);
-    }
-
-    /* Keep the modern pill style on the logout button */
-    #logoutBtn.tab {
+    table {
+      margin: 0 auto;
       width: auto;
-      min-width: 140px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-
-    /* Accord editor card: same card/look as the Files area */
-    #accordEditor {
-      margin: 12px 0;
-      border: 1px solid var(--border);
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
       border-radius: 12px;
       overflow: hidden;
-      background: #fff;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, .06);
     }
 
-    /* Gradient bar like your table headers */
-    #accordEditor .bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: linear-gradient(180deg,
-          #d1a66e 0%,
-          #b1874f 20%,
-          #b3803d 45%,
-          #a06e2c 60%,
-          #b3803d 75%,
-          #b1874f 88%,
-          #d1a66e 100%);
+    table th:nth-child(3),
+    table td:nth-child(3) {
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    table th { background-color: #4285F4; color: white; }
+    tr.selected { background-color: rgb(238, 217, 217); }
+
+    /* ========= SAME gradient glow for ALL buttons ========= */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      position: relative;
+      isolation: isolate;
+      z-index: 0;
+    }
+
+    .button-group button::before,
+    #searchSection .search-btn::before,
+    #loginSection .unlock-btn::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(8px);
+      animation: glowRainbow 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      z-index: -1;
+    }
+
+    .button-group button:hover::before,
+    #searchSection .search-btn:hover::before,
+    #loginSection .unlock-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* --- Notes wrapping + scroll + WhatsApp link styling --- */
+    table th:nth-child(7),
+    table td:nth-child(7) { width: 550px; }
+
+    .notes-cell {
+      max-height: 180px;
+      overflow: auto;
+      white-space: normal;
+      line-height: 1.35;
+    }
+
+    .note-entry { margin: 0 0 .55em 0; }
+    .note-entry .ts { font-weight: 100; color: #880000; font-size: 1.05rem; }
+
+    /* 🔴 Critical alert highlight */
+    .note-entry.critical {
+      background: #d93025; /* Google red */
       color: #fff;
-      font-weight: 800;
-      letter-spacing: .06em;
-      border-bottom: 1px solid rgba(0, 0, 0, .08);
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: inline-block;
     }
 
-    #accordEditor .viewer {
-      height: 70vh;
-      background: #fff;
+    .phone-wa a { text-decoration: none; }
+
+    /* Make the Notes input wider */
+    #notes { width: 500px; }
+
+    /* Optional: keep it fluid on small screens */
+    @media (max-width: 600px) {
+      #notes { width: 100%; }
     }
 
-    /* Modern pill button (auto width) */
-    .pill-btn {
-      appearance: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      min-height: 44px;
-      border-radius: 999px;
-      border: 1px solid #8a673c;
-      background: linear-gradient(180deg, #d1a66e 0%, #b1874f 35%, #9c6a33 70%, #7c5b2e 100%);
-      color: #fff;
-      font-weight: 800;
-      font-size: 1.1rem;
-      line-height: 1;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 8px 14px rgba(16, 24, 40, .10);
-      cursor: pointer;
-      text-decoration: none;
+    /* ===== Login-only background (uses bg.jpg) ===== */
+    body.login-bg {
+      min-height: 100vh;
+      background: url('bg.jpg') center / cover no-repeat;
     }
 
-    .pill-btn:hover {
-      transform: translateY(-1px);
-      background: linear-gradient(180deg, #e0be8a 0%, #c39a62 38%, #a5743c 70%, #835829 100%);
-      box-shadow: 0 12px 22px rgba(16, 24, 40, .16);
+    /* subtle dark overlay to boost contrast behind the card */
+    body.login-bg::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      pointer-events: none;
+      z-index: -1;
     }
 
-    .pill-btn:active {
-      transform: none;
-      box-shadow: inset 0 4px 10px rgba(0, 0, 0, .18);
-      background: linear-gradient(180deg, #8a5f2d 0%, #70461b 100%);
+    /* ===== App (2nd page) background ===== */
+    body.app-bg {
+      min-height: 100vh;
+      background: url('pexels-codioful-6985045.jpg') center / cover no-repeat;
     }
 
-    .pill-btn:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(197, 155, 106, .35);
+    /* Hide the app by default; only show it after login when body.app-bg is set */
+    #appSection { display: none; }
+    body.app-bg #appSection { display: block; }
+
+    /* =========================================================
+       ✅ MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)
+       ========================================================= */
+
+    /* Touch targets & smoother taps */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      min-height: 44px;             /* thumb-friendly */
+      will-change: transform;       /* (the line that was cut off) */
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* Ensure no ancestor creates a containing block for fixed elements */
-    #appSection,
-    #customerPage {
-      transform: none !important;
-      filter: none !important;
+    /* Make the table paint faster and scroll nicely on mobile */
+    #dataTable {
+      content-visibility: auto;                 /* paint only when visible */
+      contain-intrinsic-size: 600px 400px;      /* reserve size for faster paint */
     }
 
-    /* Hidden until the user logs in */
-    #userWidget,
-    #fixedAddClient,
-    .reminder-card {
-      display: none;
+    @media (max-width: 900px) {
+      body { margin: 10px; }
+      header img.logo { max-width: 150px; }
     }
 
+    @media (max-width: 768px) {
+      /* Stack the search bar */
+      #searchSection { 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 10px; 
+      }
+      #searchSection input[type="text"] {
+        flex: 1 1 auto;
+        max-width: none;
+        width: 100%;
+      }
+      #searchSection button.search-btn {
+        margin-left: 0;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.05rem;
+      }
 
+      /* Inputs full-width in small screens */
+      .form-group input { width: 100%; }
 
-#fixedAddClient {
-  position: fixed !important;
-  top: 8px !important;
-  right: 12px !important;
-  z-index: 5000 !important;
-}
+      /* Button group wraps nicely */
+      .button-group.center { flex-wrap: wrap; }
+      .button-group.center button {
+        flex: 1 1 48%;
+        padding: 14px 16px;
+        font-size: 1rem;
+      }
 
-
-
- .reminder-card {
-  position: static !important;
-  right: 12px !important;
-  top: 64px !important;
-  width: 350px;
-  z-index: 4800 !important;
-}
-
-
-    /* Mobile: stay fixed at the top, full width */
-@media (max-width: 900px) {
-    #userWidget     { 
-    top: 8px !important; 
-    left: 12px !important; 
-    right: auto !important;
-    z-index: 5000 !important; 
-  }
-
-  #fixedAddClient {
-    position: fixed !important;
-    top: 64px !important;         /* leaves room under the logout button */
-    right: 12px !important;
-    z-index: 5000 !important;
-  }
-
-  /* Put this AFTER any other #fixedAddClient rules */
-#fixedAddClient {
-  position: fixed !important;
-  top: 64px !important;
-  right: 12px !important;
-  z-index: 5000 !important;
-}
-
-
-/* Optional: nudge it down a bit on small screens */
-@media (max-width: 900px) {
-  #fixedAddClient { top: 64px !important; }
-}
-
-
-.reminder-card  { top: 120px !important; width: auto !important; }
-
-      /* Only the little box completes the task */
-#tasksPanel li label { pointer-events: none; }
-#tasksPanel li input[type="checkbox"] { pointer-events: auto; }
+      /* Table horizontal scroll instead of squeezing columns */
+      table { width: 100%; }
+      #dataTable {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #dataTable thead,
+      #dataTable tbody,
+      #dataTable tr,
+      #dataTable th,
+      #dataTable td {
+        white-space: nowrap;
+      }
+      table th:nth-child(7),
+      table td:nth-child(7) { width: auto; }
+      .notes-cell { max-height: 120px; }
     }
 
-    /* Extra breathing room between Customer Overview button and the reminder widget */
-.reminder-card { 
-  top: 76px !important;  /* was 64px */
-}
+    @media (max-width: 480px) {
+      .login-card { width: 100%; padding: 20px 16px; }
+      .button-group.center button { flex-basis: 100%; }
+      h2 { font-size: 1.25rem; }
+    }
 
-@media (max-width: 900px) {
-  .reminder-card { 
-    top: 132px !important; /* was 120px */
-  }
-}
-
-/* Center the Remind me card above Tasks and drop both ~2 inches from the top */
-#reminderCard {
-  position: static !important;
-  top: auto !important;
-  right: auto !important;
-  left: auto !important;
-  margin: 60px auto 12px !important; /* 2in ≈ 192px */
-  width: 350px;
-}
-
-#tasksPanel {
-  margin-top: 0 !important; /* sits directly under the reminder card */
-}
-
-/* Mobile: centered, a bit less offset, full width */
-@media (max-width: 900px) {
-  #reminderCard {
-    margin: 160px auto 12px !important;
-    width: auto !important;
-  }
-}
-
-</style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
+    /* Disable heavy glow/animation on phones & reduced motion for snappier taps */
+    @media (prefers-reduced-motion: reduce), (max-width: 768px) {
+      h2 { animation: none !important; }
+      .button-group button::before,
+      #searchSection .search-btn::before,
+      #loginSection .unlock-btn::before,
+      .login-card::before {
+        display: none !important;   /* remove blurred gradient layer */
+        animation: none !important;
+      }
+    }
+  </style>
 </head>
+
 
 <body>
   <header>
-    <img class="logo"
-      src="https://raw.githubusercontent.com/Domichico20/Best-Turizo-Insurace-Software/11806dd4d5912b98aaba1ae08428968a18b2fa8a/logo.png"
-      alt="Logo" />
-
-
+    <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
+      class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
+      onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
   </header>
 
 
-  <!-- ===== Login (unchanged) ===== -->
+
   <div id="loginSection">
-    <input type="text" id="appUser" placeholder="Enter Username" />
-    <input type="password" id="appPassword" placeholder="Enter Password"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
-    <button onclick="checkPassword()">Unlock</button>
-  </div>
+    <div class="login-card">
+      <h1 class="brand">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+          style="margin-right:4px;color:#2952db">
+          <path
+            d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z" />
+        </svg>
+        Osvaldo Nuñez
+      </h1>
 
-  <div id="appSection" style="display:none;">
-    <div id="fixedAddClient">
-      <button type="button" class="tab" onclick="startAddClient()" style="transform:none; transition:none;">
-        Customer Overview
-      </button>
-    </div>
+      <div class="inputbox">
+        <input type="password" id="appPassword" placeholder=" "
+          onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+        <label for="appPassword">Enter Password</label>
+      </div>
 
- 
-    <div id="userWidget">
-      <button id="logoutBtn" class="tab logout-btn" type="button" onclick="logout()">
-        <span class="icon-box" aria-hidden="true">
-          <!-- Power icon -->
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v10"></path>
-            <path d="M5.5 5.5a7.5 7.5 0 1 0 13 0"></path>
-          </svg>
-        </span>
-        <span class="txt">Log out</span>
-      </button>
-    </div>
-
-
-    <!-- NEW: Right-side reminder card -->
-<aside id="reminderCard" class="reminder-card" aria-label="Reminders">
-  <h4>Remind me</h4>
-  <p class="desc">Create a personal reminder. It will show up in <strong>My Tasks</strong>.</p>
-
-  <div class="row" style="margin-bottom:10px;">
-    <input type="text" id="remText" placeholder="Remind me to…">
-  </div>
-
-  <div class="row">
-    <input type="datetime-local" id="remWhen" title="When" onchange="this.blur()">
-    <button type="button" class="btn primary" onclick="sendReminder()">Remind me</button>
-  </div>
-
-  <small class="hint">All times Eastern (ET)</small>
-</aside>
-
-<!-- ===== Tasks (Sender / Receiver) ===== -->
-<div id="tasksPanel" class="tasks-panel">
-  <h3 id="tasksHeader" style="margin:0 0 8px;">Tasks</h3>
-
-  <!-- Compose to another user -->
-  <div class="tasks-row">
-    <select id="taskTo" title="Send task to"></select>
-    <input type="text" id="taskText" placeholder="Write a task for another user">
-    <button type="button" class="btn primary" onclick="sendTask()">Send</button>
-  </div>
-
-  <!-- Two lists -->
-  <div class="tasks-columns">
-    <div class="tasks-col">
-      <h4>My Tasks</h4>
-      <ul id="tasksReceived"></ul>
-    </div>
-    <div class="tasks-col">
-      <h4>Tasks I Sent</h4>
-      <ul id="tasksSent"></ul>
+      <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
     </div>
   </div>
-</div>
 
-
+  <!-- App UI: hidden by CSS until body gets class 'app-bg' after login -->
+  <div id="appSection">
     <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
       <div id="searchSection">
-        <input type="text" id="searchQuery" placeholder="Search by Policy #, Insurance, Name, Phone, Email, Notes">
+        <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
         <button type="submit" class="search-btn">Search</button>
-        <!-- NEW -->
-        <button type="button" class="search-btn" id="refreshBtn" onclick="refreshData()">Refresh</button>
       </div>
     </form>
 
+    <div class="form-section">
+      <div class="form-group"><label for="username">Username:</label><input type="text" id="username"></div>
+      <div class="form-group"><label for="password">Password:</label><input type="text" id="password"></div>
+      <div class="form-group"><label for="email">Email:</label><input type="text" id="email"></div>
+      <div class="form-group"><label for="phone">Phone #:</label><input type="text" id="phone"></div>
+      <div class="form-group"><label for="server">Server:</label><input type="text" id="server"></div>
+      <div class="form-group"><label for="autoPay">AutoPay:</label><input type="text" id="autoPay"></div>
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <input type="text" id="notes">
+      </div>
+      <input type="hidden" id="rowIndex" />
+    </div>
 
-
-
+    <div class="button-row">
+      <div class="button-group center">
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="confirmEdit()">Edit</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
+        <button class="refresh-btn" onclick="loadData(true)">Refresh</button>
+        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
+        <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
+      </div>
+    </div>
 
 
     <table id="dataTable">
       <thead>
         <tr>
-          <th>Policy #</th>
-          <th>Insurer</th>
-          <th>Effective</th>
-          <th>Expiration</th>
-          <th>Status</th>
-          <th>First</th>
-          <th>Last</th>
-          <th>Address</th>
-          <th>Phone</th>
+          <th>Username</th>
+          <th>Password</th>
           <th>Email</th>
-          <th>Go</th>
+          <th>Phone</th>
+          <th>Server</th>
+          <th>AutoPay</th>
+          <th>Notes</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 
-  <!-- ===== Customer Overview Page ===== -->
-  <div id="customerPage" style="display:none;">
-    <div class="wrap">
-      <div class="topbar">
-        <div class="title" style="margin-right:12px;">Customer Overview</div>
-      </div>
-
-
-      <div class="tabs" role="tablist">
-        <button class="tab" id="tabbtn-main" role="tab" aria-selected="false" onclick="goMainTab()">Main Page</button>
-        <button class="tab" id="tabbtn-info" role="tab" aria-controls="tab-info" aria-selected="true"
-          onclick="switchTab('info')">Customer Info</button>
-        <button class="tab" id="tabbtn-policies" role="tab" aria-controls="tab-policies" aria-selected="false"
-          onclick="switchTab('policies')">Policies</button>
-        <button class="tab" id="tabbtn-files" role="tab" aria-controls="tab-files" aria-selected="false"
-          onclick="switchTab('files')">Files</button>
-        <button class="tab" id="tabbtn-accord" role="tab" aria-controls="tab-accord" aria-selected="false"
-          onclick="switchTab('accord')">Accord</button>
-        <button class="tab" id="tabbtn-notes" role="tab" aria-controls="tab-notes" aria-selected="false"
-          onclick="switchTab('notes')">Notes</button>
-        <button class="tab" id="tabbtn-addclient" type="button" onclick="startAddClient()">Add Client</button>
-        <!-- NEW: only Edwin sees this (we toggle it after login) -->
-        <button class="tab" id="tabbtn-settings" type="button" onclick="openSettings()"
-          style="display:none;">Settings</button>
-      </div>
-
-
-
-      <div class="grid" id="custDetailsGrid"></div>
-
-      <!-- NEW: Settings modal (admins only; opened by the Settings tab button) -->
-      <div id="settingsModal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.40); z-index:4000; align-items:center; justify-content:center;">
-        <div
-          style="background:#fff; border:1px solid var(--border); border-radius:14px; width:min(720px,96vw); padding:16px; box-shadow:var(--shadow);">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-            <h3 style="margin:0">Settings</h3>
-            <button class="btn" type="button" onclick="closeSettings()">Close</button>
-          </div>
-
-          <div style="margin-top:12px;">
-            <h4>Existing Users</h4>
-            <ul id="userList" style="margin:6px 0 14px; padding-left:18px;"></ul>
-          </div>
-
-          <hr>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; margin-top:12px;">
-            <div>
-              <label style="font-weight:700;display:block;margin-bottom:4px;">Add User (username)</label>
-              <input id="addUserName" placeholder="e.g. Maria" />
-            </div>
-            <div>
-              <label style="font-weight:700;display:block;margin-bottom:4px;">Password</label>
-              <input id="addUserPass" type="password" placeholder="Set password" />
-            </div>
-            <button class="btn primary" type="button" onclick="addUser()">Add</button>
-          </div>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; margin-top:12px;">
-            <div>
-              <label style="font-weight:700;display:block;margin-bottom:4px;">Change Password (user)</label>
-              <select id="cpUser"></select>
-            </div>
-            <div>
-              <label style="font-weight:700;display:block;margin-bottom:4px;">New Password</label>
-              <input id="cpPass" type="password" placeholder="New password" />
-            </div>
-            <button class="btn primary" type="button" onclick="setPassword()">Update</button>
-          </div>
-
-          <p class="small" style="margin-top:10px;">
-            Changes are saved to the server if your Apps Script supports it; otherwise they apply for this session.
-          </p>
-        </div>
-      </div>
-
-
-      <!-- Customer Info panel -->
-      <!-- Customer Info panel -->
-      <section id="tab-info" class="tabpanel active" role="tabpanel" aria-labelledby="tabbtn-info">
-        <div class="form" id="custInfoForm">
-          <div class="fg row-3"><label>Policy #</label><input id="ci_policy"></div>
-          <div class="fg row-3"><label>Insurer</label><input id="ci_insurer"></div>
-
-          <!-- Use type="text" so Flatpickr shows the same calendar as Policies -->
-          <div class="fg row-3"><label>Effective</label><input id="ci_effDate" type="text" placeholder="YYYY-MM-DD">
-          </div>
-          <div class="fg row-3"><label>Expiration</label><input id="ci_expDate" type="text" placeholder="YYYY-MM-DD">
-          </div>
-
-          <div class="fg row-3"><label>First Name</label><input id="ci_firstName"></div>
-          <div class="fg row-3"><label>Last Name</label><input id="ci_lastName"></div>
-          <div class="fg row-6"><label>Address</label><input id="ci_address"></div>
-
-          <div class="fg row-3"><label>Phone</label><input id="ci_phone"></div>
-          <div class="fg row-3"><label>Email</label><input id="ci_email" type="email"></div>
-
-          <div class="fg row-3"><label>Year</label><input id="ci_year"></div>
-          <div class="fg row-3"><label>Make</label><input id="ci_make"></div>
-          <div class="fg row-3"><label>Model</label><input id="ci_model"></div>
-          <div class="fg row-3"><label>Vin #</label><input id="ci_vin"></div>
-        </div>
-
-        <div class="actionbar">
-          <button class="btn primary" onclick="saveCustomerInfo()">Save</button>
-          <button class="btn primary" onclick="addCriticalAlert()">Critical Alert</button>
-        </div>
-      </section>
-
-
-      <!-- Policies panel -->
-      <!-- Policies panel -->
-      <section id="tab-policies" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-policies">
-
-        <table class="themed-table" id="policiesTable">
-          <thead>
-            <tr>
-              <th>Line of Business</th>
-              <th>Policy #</th>
-              <th>Carrier</th>
-              <th>Effective</th>
-              <th>Expiration</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-
-        <div class="attc-emptystate" id="policiesEmpty" style="display:none;">No policies found for this contact.</div>
-
-        <div class="actionbar" style="justify-content:flex-start;">
-          <button class="tab" onclick="startAddPolicy()">Add Policy</button>
-          <button class="tab" onclick="startEditPolicy()">Edit Policy</button>
-        </div>
-
-        <!-- Inline editor -->
-        <div id="policyEditor" style="display:none; margin-top:12px;">
-
-          <div class="form">
-            <div class="fg row-3">
-              <label>Line of Business</label>
-              <select id="pe_lob">
-                <option value="">— Select —</option>
-                <option>Home Owners</option>
-                <option>Personal Auto</option>
-                <option>Commercial Auto</option>
-                <option>General Liability</option>
-                <option>Worker's Comp</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div class="fg row-3"><label>Policy #</label><input id="pe_policy"></div>
-            <div class="fg row-3"><label>Insurer</label><input id="pe_insurer"></div>
-            <div class="fg row-3"><label>Effective</label><input id="pe_effDate" type="text" placeholder="YYYY-MM-DD">
-            </div>
-            <div class="fg row-3"><label>Expiration</label><input id="pe_expDate" type="text" placeholder="YYYY-MM-DD">
-            </div>
-
-            <div class="fg row-6"><label>Address</label><input id="pe_address"></div>
-            <div class="fg row-3"><label>Phone</label><input id="pe_phone"></div>
-            <div class="fg row-3"><label>Email</label><input id="pe_email" type="email"></div>
-            <div class="fg row-3"><label>First Name</label><input id="pe_firstName"></div>
-            <div class="fg row-3"><label>Last Name</label><input id="pe_lastName"></div>
-            <div class="fg row-3"><label>Year</label><input id="pe_year"></div>
-            <div class="fg row-3"><label>Make</label><input id="pe_make"></div>
-            <div class="fg row-3"><label>Model</label><input id="pe_model"></div>
-            <div class="fg row-3"><label>Vin #</label><input id="pe_vin"></div>
-          </div>
-          <div class="actionbar">
-            <button class="btn primary" id="pe_save" onclick="savePolicyEditor()">Save Policy</button>
-            <button class="btn primary" onclick="cancelPolicyEditor()">Cancel</button>
-          </div>
-        </div>
-      </section>
-
-
-      <!-- Files -->
-      <section id="tab-files" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-files">
-        <div class="attc-upload">
-          <label for="policyUpload" class="attc-dropzone" id="policyDrop">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M19 15a4 4 0 0 0-3.8-2.99A5 5 0 0 0 6 12a4 4 0 0 0-1 7.87V20h13a3 3 0 0 0 1-5.81zM12 6v8m0 0l-3-3m3 3l3-3"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="text">
-              <strong>Upload PDF</strong>
-              <span>Drag & drop your file or click to browse</span>
-            </div>
-            <div class="meta">PDF only • up to 20MB</div>
-          </label>
-          <input id="policyUpload" class="hid-input" type="file" accept="application/pdf">
-          <div class="attc-file" id="policyFileMeta"></div>
-        </div>
-
-        <table class="themed-table" id="policyTable">
-          <thead>
-            <tr>
-              <th>File Name</th>
-              <th>Date Added</th>
-              <th>Added By</th>
-              <th>Policy #</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="attc-emptystate" id="policyEmpty" style="display:none;">No policy forms uploaded yet.</div>
-      </section>
-
-      <!-- Accord -->
-      <!-- Accord -->
-      <section id="tab-accord" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-accord">
-        <div class="attc-upload">
-          <label for="accordUpload" class="attc-dropzone" id="accordDrop">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M19 15a4 4 0 0 0-3.8-2.99A5 5 0 0 0 6 12a4 4 0 0 0-1 7.87V20h13a3 3 0 0 0 1-5.81zM12 6v8m0 0l-3-3m3 3l3-3"
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="text">
-              <strong>Upload PDF</strong>
-              <span>Drag & drop your file or click to browse</span>
-            </div>
-            <div class="meta">PDF only • up to 20MB</div>
-          </label>
-          <input id="accordUpload" class="hid-input" type="file" accept="application/pdf">
-          <div class="attc-file" id="accordFileMeta"></div>
-        </div>
-
-
-
-        <table class="themed-table" id="accordTable">
-          <thead>
-            <tr>
-              <th>File Name</th>
-              <th>Date Added</th>
-              <th>Added By</th>
-              <th>Policy #</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <div class="attc-emptystate" id="accordEmpty" style="display:none;">No accord forms uploaded yet.</div>
-      </section>
-
-      <!-- Notes -->
-      <section id="tab-notes" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-notes">
-        <div class="form">
-          <div class="fg row-full">
-            <textarea id="noteInput" rows="2" placeholder="Add New Note Here"></textarea>
-          </div>
-        </div>
-        <div class="actionbar">
-          <button class="btn primary" onclick="addNoteFromTab()">Add Note</button>
-        </div>
-
-        <h3>Notes</h3>
-        <div id="notesList" class="notes-list"></div>
-        <!-- pager removed; notes list scrolls -->
-
-      </section>
-    </div>
-  </div>
-
   <script>
+    /* ---------- Login background on first load ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('login-bg');
+    });
 
-
-    // === Eastern Time helpers ===
-    function easternOffsetForYMD(y, m, d) {
-      // midday avoids DST boundary weirdness
-      const probe = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-      const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        timeZoneName: 'shortOffset',
-        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit'
-      }).formatToParts(probe);
-      const tz = (parts.find(p => p.type === 'timeZoneName') || {}).value || 'GMT-05:00';
-      const m2 = tz.match(/GMT([+-]\d{1,2})(?::?(\d{2}))?/);
-      if (!m2) return '-05:00';
-      const sign = m2[1].startsWith('-') ? '-' : '+';
-      const hh = String(Math.abs(parseInt(m2[1], 10))).padStart(2, '0');
-      const mm = m2[2] || '00';
-      return `${sign}${hh}:${mm}`;
-    }
-    // Turn a "YYYY-MM-DDTHH:MM" (from datetime-local) into an ISO string *anchored to Eastern*
-    function toEasternIso(whenRaw) {
-      const [dStr, tStr] = String(whenRaw || '').split('T');
-      if (!dStr || !tStr) return '';
-      const [y, m, d] = dStr.split('-').map(Number);
-      const offset = easternOffsetForYMD(y, m, d);
-      return `${dStr}T${tStr}:00${offset}`; // e.g. 2025-03-10T09:30:00-04:00
-    }
-    // ET "today" at midnight for date comparisons
-    function todayStartET() {
-      const nowET = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-      nowET.setHours(0, 0, 0, 0);
-      return nowET;
-    }
-
-    function doLogout() {
-      // Refresh the browser to reset the app state
-      window.location.reload();
-    }
-    window.logout = doLogout; // keep the button working
-
-    // Hoist fixed UI so they pin to the viewport even if a parent scrolls/transforms
-    function hoistFixedUI() {
-      // no-op: keep widgets where they are so they scroll with content
-
-    }
-
-
-    /* ===== Settings (Edwin only) ===== */
-    function openSettings() {
-      if (sessionUser !== 'Edwin') { alert('Settings are available to Edwin only.'); return; }
-      const m = document.getElementById('settingsModal');
-      if (m) { m.style.display = 'flex'; loadUsersUI(); }
-    }
-    function closeSettings() {
-      const m = document.getElementById('settingsModal');
-      if (m) { m.style.display = 'none'; }
-    }
-    function loadUsersUI() {
-      // Build UI from current USERS map
-      const ul = document.getElementById('userList');
-      const sel = document.getElementById('cpUser');
-      const names = Object.keys(USERS);
-      if (ul) {
-        ul.innerHTML = names.length ? names.map(n => `<li>${esc(n)}</li>`).join('') : '<li>None</li>';
-      }
-      if (sel) {
-        sel.innerHTML = names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
-      }
-    }
-    function addUser() {
-      if (sessionUser !== 'Edwin') { alert('Edwin only'); return; }
-      const name = (document.getElementById('addUserName').value || '').trim();
-      const pass = (document.getElementById('addUserPass').value || '').trim();
-      if (!name || !pass) { alert('Enter username and password'); return; }
-      if (USERS[name]) { alert('User already exists'); return; }
-
-      // Local (immediate) update
-      USERS[name] = pass;
-      loadUsersUI();
-      initTasksUI(); // refresh recipients
-
-      // Try to persist on server (no-op if your Apps Script doesn’t handle it)
-      postToScript({ action: 'userAdd', password: sessionPassword, requester: sessionUser, newUser: name, newPassword: pass })
-        .catch(() => { /* ignore if not implemented */ });
-
-      document.getElementById('addUserName').value = '';
-      document.getElementById('addUserPass').value = '';
-    }
-    function setPassword() {
-      if (sessionUser !== 'Edwin') { alert('Edwin only'); return; }
-      const who = (document.getElementById('cpUser').value || '').trim();
-      const pass = (document.getElementById('cpPass').value || '').trim();
-      if (!who || !pass) { alert('Pick a user and enter a new password'); return; }
-
-      // Local (immediate) update
-      USERS[who] = pass;
-      document.getElementById('cpPass').value = '';
-      alert('Password updated');
-
-      // Try to persist on server
-      postToScript({ action: 'userSetPassword', password: sessionPassword, requester: sessionUser, user: who, newPassword: pass })
-        .catch(() => { /* ignore if not implemented */ });
-    }
-
-
-    function refreshData() {
-      // clear search box
-      const q = document.getElementById('searchQuery');
-      if (q) q.value = '';
-
-      // clear selection highlight on the table
-      const tbody = document.querySelector('#dataTable tbody');
-      if (tbody) tbody.querySelectorAll('tr.selected').forEach(el => el.classList.remove('selected'));
-
-      // forget selected row and reload fresh data (uses your 15-day filter)
-      selectedRowIndex = null;
-
-      // optional quick feedback while reloading
-      if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:12px;">Refreshing…</td></tr>`;
-      }
-
-      // pull again from Sheets and re-render
-      loadData();
-    }
-
-    /* ===== Config / Constants ===== */
+    /* ---------- App constants ---------- */
     const ROW_LIMIT = 25;
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxyahQHU8BNJK6cZyYebKWMuSqSPRLTHI9OaJ-kABn5gxkToGaoaXxkv12syN45MvhF/exec';
-    const sheetId = '1q94KS8Dc2usWKc0h6iQvHP1sDfsPbgcybzXs4zpZANc';
-    const apiKey = 'AIzaSyAhaKX_GIaCIXBsq43J3aMvqtGtFngdzrQ';
-    const range = 'policies!A1:ZZZ'; // pull all columns, incl. Policy/Accord Forms
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+    const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
+    const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
+    const range = 'data!A1:G3000';
 
-    const USERS = { Edwin: 'Insurance2025', Islendy: 'Insurance2026', Penelope: 'Insurance2027' };
+    let sessionPassword = "";
+    let selectedRowIndex = null;   // 1-based sheet row
+    let selectedRawNotes = '';
+    let existingUsernames = [];
+    let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
+    let totalRows = 0;
 
-    function initTasksUI() {
-      const sel = document.getElementById('taskTo');
-      if (!sel) return;
-
-      // clear and add a placeholder
-      sel.innerHTML = '';
-      const ph = document.createElement('option');
-      ph.value = '';
-      ph.textContent = '— Select user —';
-      ph.disabled = true;
-      ph.selected = true;
-      sel.appendChild(ph);
-
-      // add all users except the one who’s logged in
-      Object.keys(USERS).forEach(u => {
-        if (u !== sessionUser) {
-          const opt = document.createElement('option');
-          opt.value = u;
-          opt.textContent = u;
-          sel.appendChild(opt);
-        }
-      });
-
-      // ensure it’s not rendered as a tiny square
-      sel.style.minWidth = '180px';
+    // speed helper: disable/enable a button by selector (prevents double submits)
+    function setBusy(selector, on) {
+      const btn = document.querySelector(selector);
+      if (btn) btn.disabled = !!on;
     }
 
-
-    /* ===== Tasks (sender/receiver) ===== */
-    /* ===== Tasks (sender/receiver) ===== */
-    let tasksReceived = [];
-    let tasksSent = [];
-    let isLoadingTasks = false;     // prevent overlapping fetches
-    let lastTasksSnapshot = '';     // skip rerender if server data didn't change
-
-    function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-    function fmtTs(ts) {
-      if (!ts) return '';
-      let d = ts;
-      if (typeof ts === 'string' || typeof ts === 'number') {
-        const parsed = new Date(ts);
-        if (!isNaN(parsed)) d = parsed;
-      }
-      try {
-        return d.toLocaleString('en-US', {
-          timeZone: 'America/New_York',
-          month: 'short', day: 'numeric', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        });
-      } catch (_) {
-        return String(ts);
-      }
-    }
-
-    function sendTask() {
-      const sel = document.getElementById('taskTo');
-      const to = sel ? (sel.value || '').trim() : '';
-      const text = (document.getElementById('taskText').value || '').trim();
-      if (!to) { alert('Pick who to send it to'); return; }
-      if (!text) { alert('Type the task'); return; }
-
-      postToScript({
-        action: 'taskAdd',
-        password: sessionPassword,
-        from: sessionUser,
-        to,
-        text,
-        reminder: 'false'
-      }).then((txt) => {
-        const resp = JSON.parse(txt || '{}');
-        if (!resp.ok) throw new Error(resp.error || 'Send failed');
-
-        document.getElementById('taskText').value = '';
-
-        const now = new Date();
-        const newTask = {
-          id: resp.id || '',
-          from: sessionUser,
-          to,
-          text,
-          completed: false,
-          createdAt: now,
-          completedAt: '',
-          dueAt: ''
-        };
-        tasksSent = [newTask, ...tasksSent];
-        sortTaskArrays();
-        renderTasks();
-      }).catch(err => alert(err.message || 'Failed to send task'));
-    }
-    
-function sendReminder() {
-  const text = (document.getElementById('remText').value || '').trim();
-  const whenRaw = (document.getElementById('remWhen').value || '').trim(); // "YYYY-MM-DDTHH:MM"
-  if (!text) { alert('Type what to remind you about'); return; }
-  if (!whenRaw) { alert('Pick a date & time'); return; }
-
-  const btn = document.querySelector('#reminderCard .btn.primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-
-  // Anchor to Eastern Time (your existing helper)
-  const dueAt = toEasternIso(whenRaw);
-
-  // 1) Optimistic local insert + schedule now
-  const tempId = 'temp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
-  const tempReminder = {
-    id: tempId,
-    from: sessionUser,
-    to: sessionUser,
-    text,
-    completed: false,
-    createdAt: new Date(),
-    completedAt: '',
-    dueAt,
-    reminder: true
-  };
-  tasksReceived = [tempReminder, ...tasksReceived];
-  sortTaskArrays();
-  renderTasks();
-  scheduleOneReminder(tempReminder);
-
-  // clear inputs instantly
-  document.getElementById('remText').value = '';
-  document.getElementById('remWhen').value = '';
-
-  // 2) Send to server (shorter timeout for responsiveness)
-  postToScript({
-    action: 'taskAdd',
-    password: sessionPassword,
-    from: sessionUser,
-    to: sessionUser,
-    text,
-    dueAt,
-    reminder: 'true'
-  }, 10000 /* 10s timeout */)
-  .then((txt) => {
-    const resp = JSON.parse(txt || '{}');
-    if (!resp.ok) throw new Error(resp.error || 'Failed to add reminder');
-
-    // swap temp id with real id so future actions work
-    const idx = tasksReceived.findIndex(x => x.id === tempId);
-    if (idx >= 0) tasksReceived[idx].id = resp.id || tempId;
-
-    // re-key any scheduled timer we already created
-    const oldKey = tempId + ' @ ' + String(dueAt || '');
-    const newKey = (tasksReceived[idx].id) + ' @ ' + String(dueAt || '');
-    if (scheduledTimers[oldKey]) {
-      scheduledTimers[newKey] = scheduledTimers[oldKey];
-      delete scheduledTimers[oldKey];
-    }
-  })
-  .catch((err) => {
-    // keep the optimistic reminder; show a gentle notice
-    console.error(err);
-    alert('Saved locally. Server was slow/unreachable — it will sync on your next refresh.');
-  })
-  .finally(() => {
-    if (btn) { btn.disabled = false; btn.textContent = 'Remind me'; }
-  });
-}
-
-
-    function taskTime(x) {
-      if (!x) return 0;
-      if (typeof x === 'number') return x;
-      const d = new Date(x);
-      return isNaN(d) ? 0 : d.getTime();
-    }
-    function sortTaskArrays() {
-      tasksReceived.sort((a, b) => taskTime(b.createdAt) - taskTime(a.createdAt));
-      tasksSent.sort((a, b) => taskTime(b.createdAt) - taskTime(a.createdAt));
-    }
-
-    function loadTasks() {
-      if (!sessionUser || isLoadingTasks) return Promise.resolve();
-      isLoadingTasks = true;
-
-      return postToScript({ action: 'taskList', password: sessionPassword, user: sessionUser })
-        .then((txt) => {
-          let resp;
-          try { resp = JSON.parse(txt); } catch (e) {
-            alert('Could not load tasks (server did not return JSON). Check your deployment URL/permissions.');
-            console.error('Raw response for taskList:', txt);
-            return;
-          }
-          if (resp && resp.ok === false) {
-            alert(resp.error || 'Could not load tasks.');
-            return;
-          }
-          const list = Array.isArray(resp.tasks) ? resp.tasks : [];
-
-          // Skip rerender if nothing changed
-          const snap = JSON.stringify(list);
-          if (snap === lastTasksSnapshot) return;
-          lastTasksSnapshot = snap;
-
-          tasksReceived = list.filter(t => String(t.to) === String(sessionUser) && !t.completed);
-          tasksSent = list.filter(t => String(t.from) === String(sessionUser) && !t.reminder);
-
-          sortTaskArrays();
-          renderTasks();
-
-          // NEW: schedule popups for any reminders in "My Tasks"
-          scheduleRemindersFrom(tasksReceived);
-        })
-        .catch(err => alert(err && err.message ? err.message : 'Failed to load tasks'))
-        .finally(() => { isLoadingTasks = false; });
-    }
-
-    /* === Reminder Popup & Scheduler (NEW) — with Snooze & Completed ====== */
-    const REM_LS_KEY = 'firedReminders_v1';
- let firedReminders = {};
-let scheduledTimers = Object.create(null); // id@dueAt -> timeoutId
-let activeReminderTask = null; // currently shown reminder in the popup
-
-
-    (function loadFiredReminders() {
-      try { firedReminders = JSON.parse(localStorage.getItem(REM_LS_KEY) || '{}'); }
-      catch (_) { firedReminders = {}; }
-    })();
-    function markFired(id, dueAt) {
-      if (!id) return;
-      firedReminders[id + ' @ ' + String(dueAt || '')] = Date.now();
-      try { localStorage.setItem(REM_LS_KEY, JSON.stringify(firedReminders)); } catch (_) { }
-    }
-    function hasFired(id, dueAt) {
-      return !!firedReminders[id + ' @ ' + String(dueAt || '')];
-    }
-    function ensureReminderStyles() {
-      if (document.getElementById('reminderPopupStyles')) return;
-      const css = `
-#reminderOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:7000;}
-#reminderOverlay .rem-card{width:min(520px,92vw);background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(16,24,40,.25);padding:18px;text-align:center;}
-#reminderOverlay .rem-card h3{margin:0 0 8px;font-size:1.3rem;}
-#reminderOverlay .rem-card p{margin:6px 0 16px;font-size:1.15rem;}
-#reminderOverlay .rem-card .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-#reminderOverlay .rem-card .actions .btn{min-width:150px;}
-`;
-      const s = document.createElement('style');
-      s.id = 'reminderPopupStyles';
-      s.textContent = css;
-      document.head.appendChild(s);
-    }
-function snoozeReminder(mins){
-  const t = activeReminderTask;
-  if (!t || !mins) { hideReminderPopup(); return; }
-
-  // Compute new due time in ET and make a temp reminder
-  const newDate = new Date(Date.now() + mins*60000);
-  const dueAt = toEasternIsoFromDate(newDate);
-  const tempId = 'temp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
-  const tempReminder = {
-    id: tempId, from: sessionUser, to: sessionUser,
-    text: t.text, completed: false, createdAt: new Date(),
-    completedAt: '', dueAt, reminder: true
-  };
-
-  // Instant UI: swap reminders + schedule new timer
-  tasksReceived = [tempReminder, ...tasksReceived.filter(x => x.id !== t.id)];
-  sortTaskArrays(); renderTasks();
-  scheduleOneReminder(tempReminder);
-  cancelTimerFor(t);
-  hideReminderPopup();
-
-  // Background: create snoozed reminder
-  postToScript({
-    action:'taskAdd',
-    password: sessionPassword,
-    from: sessionUser, to: sessionUser,
-    text: t.text, dueAt, reminder:'true'
-  }, 10000).then(txt => {
-    const resp = JSON.parse(txt || '{}');
-    if (!resp.ok) throw new Error(resp.error || 'add failed');
-
-    // swap temp id for real one and rekey any timer/fired maps
-    const i = tasksReceived.findIndex(x => x.id === tempId);
-    if (i >= 0) tasksReceived[i].id = resp.id || tempId;
-
-    const oldKey = tempId + ' @ ' + String(dueAt || '');
-    const newKey = (resp.id || tempId) + ' @ ' + String(dueAt || '');
-    if (scheduledTimers[oldKey]) { scheduledTimers[newKey] = scheduledTimers[oldKey]; delete scheduledTimers[oldKey]; }
-    if (firedReminders[oldKey]) {
-      firedReminders[newKey] = firedReminders[oldKey];
-      delete firedReminders[oldKey];
-      try { localStorage.setItem(REM_LS_KEY, JSON.stringify(firedReminders)); } catch(_){}
-    }
-  }).catch(err => console.error('snooze add failed:', err));
-
-  // Background: complete the original reminder
-  if (t.id) {
-    postToScript({ action:'taskComplete', password: sessionPassword, id: t.id }, 10000)
-      .catch(err => console.error('complete old failed:', err));
-  }
-}
-
-
-    function showReminderPopup(task) {
-      ensureReminderStyles(); ensureReminderModal();
-      activeReminderTask = task || null;
-
-      const ov = document.getElementById('reminderOverlay');
-      const p = document.getElementById('remMsg');
-      const msg = task && task.text ? String(task.text) : 'Reminder';
-      if (p) p.textContent = msg;
-      if (ov) ov.style.display = 'flex';
-      try {
-        new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=').play().catch(() => { });
-      } catch (_) { }
-    }
-    function hideReminderPopup() {
-      const ov = document.getElementById('reminderOverlay');
-      if (ov) ov.style.display = 'none';
-      activeReminderTask = null;
-    }
-    // Build an ET-anchored ISO string from a JS Date
-    function toEasternIsoFromDate(date) {
-      try {
-        const parts = new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'America/New_York',
-          year: 'numeric', month: '2-digit', day: '2-digit',
-          hour: '2-digit', minute: '2-digit', second: '2-digit',
-          hour12: false
-        }).formatToParts(date);
-        const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-        const y = map.year, m = map.month, d = map.day, h = map.hour, mm = map.minute, ss = map.second || '00';
-        const offset = easternOffsetForYMD(Number(y), Number(m), Number(d));
-        return `${y}-${m}-${d}T${h}:${mm}:${ss}${offset}`;
-      } catch (_) {
-        return new Date(date).toISOString();
-      }
-    }
-   function isReminderTask(t){
-  // Server may omit the 'reminder' flag; if there's a valid dueAt, it's a reminder.
-  return !!(t && t.dueAt && !isNaN(new Date(t.dueAt).getTime()));
-}
-
- function scheduleOneReminder(t){
-  if (!isReminderTask(t)) return;
-  const key = (t.id || (String(t.text || '') + '|' + String(t.dueAt || ''))) + ' @ ' + String(t.dueAt || '');
-  const due = new Date(t.dueAt);
-  if (isNaN(due)) return;
-  if (hasFired(t.id || '', t.dueAt)) return;
-  if (scheduledTimers[key]) return; // already scheduled
-
-  const ms = due.getTime() - Date.now();
-  if (ms <= 0){
-    markFired(t.id || '', t.dueAt);
-    showReminderPopup(t);
-    return;
-  }
-  scheduledTimers[key] = setTimeout(() => {
-    delete scheduledTimers[key];
-    if (!hasFired(t.id || '', t.dueAt)) {
-      markFired(t.id || '', t.dueAt);
-      showReminderPopup(t);
-    }
-  }, Math.min(ms, 2147483647));
-}
-
-
-    function scheduleRemindersFrom(list) {
-      (list || []).forEach(scheduleOneReminder);
-    }
- // No polling needed; schedule when tasks load or are created.
-let remCheckTimer = null;
-function initReminderScheduler(){
-  ensureReminderStyles(); ensureReminderModal();
-  if (remCheckTimer) return;
-  remCheckTimer = true; // mark initialized (no interval)
-  scheduleRemindersFrom(tasksReceived); // schedule once on init
-}
-// Cancel any pending timer for a given task (used by snooze/complete)
-function cancelTimerFor(t){
-  const key = (t.id || (String(t.text || '') + '|' + String(t.dueAt || ''))) + ' @ ' + String(t.dueAt || '');
-  const h = scheduledTimers[key];
-  if (h){ clearTimeout(h); delete scheduledTimers[key]; }
-}
-
-
-    // === Snooze & Complete handlers =======================================
-function snoozeReminder(mins){
-  const t = activeReminderTask;
-  if (!t || !mins) { hideReminderPopup(); return; }
-
-  // Compute new due time in ET and make a temp reminder
-  const newDate = new Date(Date.now() + mins*60000);
-  const dueAt = toEasternIsoFromDate(newDate);
-  const tempId = 'temp_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
-  const tempReminder = {
-    id: tempId, from: sessionUser, to: sessionUser,
-    text: t.text, completed: false, createdAt: new Date(),
-    completedAt: '', dueAt, reminder: true
-  };
-
-  // Instant UI: swap reminders + schedule new timer
-  tasksReceived = [tempReminder, ...tasksReceived.filter(x => x.id !== t.id)];
-  sortTaskArrays(); renderTasks();
-  scheduleOneReminder(tempReminder);
-  cancelTimerFor(t);
-  hideReminderPopup();
-
-  // Background: create snoozed reminder
-  postToScript({
-    action:'taskAdd',
-    password: sessionPassword,
-    from: sessionUser, to: sessionUser,
-    text: t.text, dueAt, reminder:'true'
-  }, 10000).then(txt => {
-    const resp = JSON.parse(txt || '{}');
-    if (!resp.ok) throw new Error(resp.error || 'add failed');
-
-    // swap temp id for real one and rekey any timer/fired maps
-    const i = tasksReceived.findIndex(x => x.id === tempId);
-    if (i >= 0) tasksReceived[i].id = resp.id || tempId;
-
-    const oldKey = tempId + ' @ ' + String(dueAt || '');
-    const newKey = (resp.id || tempId) + ' @ ' + String(dueAt || '');
-    if (scheduledTimers[oldKey]) { scheduledTimers[newKey] = scheduledTimers[oldKey]; delete scheduledTimers[oldKey]; }
-    if (firedReminders[oldKey]) {
-      firedReminders[newKey] = firedReminders[oldKey];
-      delete firedReminders[oldKey];
-      try { localStorage.setItem(REM_LS_KEY, JSON.stringify(firedReminders)); } catch(_){}
-    }
-  }).catch(err => console.error('snooze add failed:', err));
-
-  // Background: complete the original reminder
-  if (t.id) {
-    postToScript({ action:'taskComplete', password: sessionPassword, id: t.id }, 10000)
-      .catch(err => console.error('complete old failed:', err));
-  }
-}
-
-
-function completeReminderNow(){
-  const t = activeReminderTask;
-  if (!t) { hideReminderPopup(); return; }
-
-  // Instant UI
-  cancelTimerFor(t);
-  const idx = tasksReceived.findIndex(x => x.id === t.id);
-  if (idx >= 0) { tasksReceived.splice(idx,1); renderTasks(); }
-  hideReminderPopup();
-
-  // Background: persist completion
-  if (t.id) {
-    postToScript({ action:'taskComplete', password: sessionPassword, id: t.id }, 10000)
-      .catch(err => console.error('taskComplete failed:', err));
-  }
-}
-
-
-
-    /* ===================================================================== */
-
-function renderTasks() {
-  var rUl = document.getElementById('tasksReceived');
-  var sUl = document.getElementById('tasksSent');
-
-  // ----- My Tasks -----
-  if (rUl) {
-    if (!tasksReceived || !tasksReceived.length) {
-      rUl.innerHTML = '<li class="small">No tasks.</li>';
-    } else {
-      var rHtml = '';
-      for (var i = 0; i < tasksReceived.length; i++) {
-        var t = tasksReceived[i];
-        var created = fmtTs(t && t.createdAt);
-        var due = fmtTs(t && t.dueAt);
- var isFutureReminder =
-  t && t.dueAt &&
-  !isNaN(new Date(t.dueAt)) &&
-  (new Date(t.dueAt).getTime() > Date.now());
-
-
-        var cdSpan = '';
-        if (isFutureReminder) {
-          cdSpan = ' • <span class="cd" data-id="' + esc(t.id || '') + '" data-due="' + esc(t.dueAt || '') + '"></span>';
-        }
-
-        var item = '';
-        item += '<li>';
-       item +=   '<div style="flex:1;">';
-        item +=     '<input type="checkbox" onclick="completeTask(\'' + (t.id || '') + '\')" />';
-        item +=     '<strong>' + esc(t.text || '') + '</strong>';
-        item +=     '<span class="small">';
-        item +=       'from ' + esc(t.from || '');
-        item +=       (created ? ' • ' + esc(created) : '');
-        item +=       (due ? ' • Due: ' + esc(due) : '');
-        item +=       cdSpan;
-        item +=     '</span>';
-item +=   '</div>';
-        item += '</li>';
-        rHtml += item;
-      }
-      rUl.innerHTML = rHtml;
-    }
-  }
-
-  // ----- Tasks I Sent -----
-  if (sUl) {
-    if (!tasksSent || !tasksSent.length) {
-      sUl.innerHTML = '<li class="small">No tasks.</li>';
-    } else {
-      var sHtml = '';
-      for (var j = 0; j < tasksSent.length; j++) {
-        var t2 = tasksSent[j];
-        var created2 = fmtTs(t2 && t2.createdAt);
-        var completed2 = fmtTs(t2 && t2.completedAt);
-        var due2 = fmtTs(t2 && t2.dueAt);
-        var status = t2 && t2.completed ? '<span class="pill done">Task Completed</span>' : '<span class="pill">Pending</span>';
-        var delBtn = t2 && t2.completed ? '<button class="btn-link" onclick="deleteTask(\'' + (t2.id || '') + '\')">Delete</button>' : '';
-
-        var sItem = '';
-        sItem += '<li>';
-        sItem +=   '<div style="flex:1;">';
-        sItem +=     '<strong>' + esc(t2.text || '') + '</strong>';
-        sItem +=     '<span class="small">';
-        sItem +=       'to ' + esc(t2.to || '');
-        sItem +=       (created2 ? ' • ' + esc(created2) : '');
-        sItem +=       (due2 ? ' • Due: ' + esc(due2) : '');
-        sItem +=       ((t2 && t2.completed && completed2) ? ' • Completed: ' + esc(completed2) : '');
-        sItem +=     '</span>';
-        sItem +=   '</div>';
-        sItem +=   status + ' ' + delBtn;
-        sItem += '</li>';
-        sHtml += sItem;
-      }
-      sUl.innerHTML = sHtml;
-    }
-  }
-
-  // ===== Countdown (wrapped in try/catch so errors never block login) =====
-  try {
-    var els = document.querySelectorAll('#tasksReceived .cd');
-
-  function fmt(ms){
-  if (ms <= 0) return 'now';
-  var totalSec = Math.floor(ms/1000);
-  var totalMin = Math.floor(totalSec/60);
-  var h = Math.floor(totalMin/60);
-  var m = totalMin % 60;
-  return 'in ' + h + 'h ' + String(m).padStart(2,'0') + 'm';
-}
-
-
-    function tick() {
-      var now = Date.now();
-      var active = 0;
-      for (var k = 0; k < els.length; k++) {
-        var el = els[k];
-        var dueStr = el.getAttribute('data-due') || '';
-        var dueMs = Date.parse(dueStr);
-        if (!isNaN(dueMs)) {
-          active++;
-          el.textContent = fmt(dueMs - now);
-        } else {
-          el.textContent = '';
-        }
-      }
-      if (active === 0 && window.__remCdTick) {
-        clearInterval(window.__remCdTick);
-        window.__remCdTick = null;
-      }
-    }
-
-    if (!window.__remCdTick && els.length) {
-      window.__remCdTick = setInterval(tick, 1000);
-    }
-    if (els.length) tick();
-  } catch (e) { /* swallow to avoid blocking login */ }
-}
-
-    function completeTask(id) {
-      if (!id) return;
-
-      // Optimistic: remove from "My Tasks" immediately
-      const idx = tasksReceived.findIndex(t => t.id === id);
-      let backup = null;
-      if (idx > -1) {
-        backup = tasksReceived[idx];
-        tasksReceived.splice(idx, 1);
-        renderTasks();
-      }
-
-      postToScript({ action: 'taskComplete', password: sessionPassword, id })
-        .then(() => loadTasks())
-        .catch(err => {
-          // Revert on failure
-          if (backup) {
-            tasksReceived.splice(idx, 0, backup);
-            renderTasks();
-          }
-          alert(err && err.message ? err.message : 'Failed to complete task');
-        });
-    }
-    window.completeTask = completeTask;
-
-    function deleteTask(id) {
-      if (!id) return;
-      if (!confirm('Delete this task from your sent list?')) return;
-
-      // Optimistic: remove from "Tasks I Sent" immediately
-      const i = tasksSent.findIndex(t => t.id === id);
-      let back = null;
-      if (i > -1) {
-        back = tasksSent[i];
-        tasksSent.splice(i, 1);
-        renderTasks();
-      }
-
-      postToScript({ action: 'taskDelete', password: sessionPassword, id })
-        .then(() => loadTasks())
-        .catch(err => {
-          // Revert on failure
-          if (back) {
-            tasksSent.splice(i, 0, back);
-            renderTasks();
-          }
-          alert(err && err.message ? err.message : 'Delete failed');
-        });
-    }
-    window.deleteTask = deleteTask;
-
-
-    // ⬇️ Put your Accord template PDF URL here (kept visible for editing in the Accord tab)
-    const ACCORD_TEMPLATE_URL = ""; // e.g. "https://your-domain.com/forms/ACORD-25.pdf"
-
-    const PDF_ICON_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="PDF"><rect x="3" y="2" width="18" height="20" rx="2" fill="#e53935"/><polygon points="16,2 21,2 21,7" fill="#ffffff" opacity="0.9"/><text x="12" y="16" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="8" font-weight="700" fill="#ffffff">PDF</text></svg>`;
-    // Cache header names and per-row objects so we don't refetch on "GO"
-    let headers = [];
-    const rowCache = new Map(); // key: sheet row number, value: object keyed by header
-
-    function rowToObj(arr) {
-      const o = {};
-      headers.forEach((h, i) => (o[h] = arr[i] ?? ''));
-      return o;
-    }
-
-
-
-    // session state
-    let sessionPassword = "", sessionUser = "", selectedRowIndex = null; // sheet row number (1-based)
-    let allDataRows = []; // [{r:[], sheetRow:n}]
-
-    // Notes pagination state
-    let notesArray = [];
-
-    /* ===== Utilities ===== */
-    function setZoomLevel() { document.body.style.zoom = '100%'; }
-    document.addEventListener('DOMContentLoaded', setZoomLevel);
-
-    // WhatsApp helpers (click-to-chat everywhere we display a phone)
-    function digitsOnly(s) { return String(s || "").replace(/\D/g, ""); }
-    function phoneLinkHTML(raw) {
-      const d = digitsOnly(raw);
-      if (!d) return "";
-      const wa = d.length === 10 ? ("1" + d) : (d.length === 11 && d.startsWith("1") ? d : d);
-      const text = raw || d;
-      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener">${text}</a>`;
-    }
-
-    // Gmail “compose” link for one or more emails
-    function emailLinkHTML(raw) {
-      const s = String(raw || '').trim();
-      if (!s) return '';
-      const parts = s.split(/[\s,;]+/).map(x => x.trim()).filter(Boolean);
-      const emails = parts.filter(x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
-      if (!emails.length) return esc(s); // show as plain text if it doesn't look like an email
-      const to = encodeURIComponent(emails.join(','));
-      const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}`;
-      return `<a href="${url}" target="_blank" rel="noopener">${esc(s)}</a>`;
-    }
-    // Make a Gmail compose URL from a freeform email string
-    function gmailComposeUrl(raw) {
-      const s = String(raw || '').trim();
-      if (!s) return '';
-      const parts = s.split(/[\s,;]+/).map(x => x.trim()).filter(Boolean);
-      const emails = parts.filter(x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
-      return emails.length ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emails.join(','))}` : '';
-    }
-// Build the popup markup once
-function ensureReminderModal(){
-  if (document.getElementById('reminderOverlay')) return;
-
-  const ov = document.createElement('div');
-  ov.id = 'reminderOverlay';
-  ov.innerHTML = `
-    <div class="rem-card" role="dialog" aria-modal="true" aria-labelledby="remTitle">
-      <h3 id="remTitle">Reminder</h3>
-      <p id="remMsg" style="margin-bottom:14px;">Reminder</p>
-      <div class="actions">
-        <button class="btn primary" type="button" onclick="completeReminderNow()">Completed</button>
-        <button class="btn" type="button" onclick="snoozeReminder(5)">Snooze 5m</button>
-        <button class="btn" type="button" onclick="snoozeReminder(10)">Snooze 10m</button>
-        <button class="btn" type="button" onclick="snoozeReminder(60)">Snooze 1h</button>
-      </div>
-    </div>`;
-  document.body.appendChild(ov);
-
-  // click outside to dismiss
-  ov.addEventListener('click', (e) => { if (e.target === ov) hideReminderPopup(); });
-}
-    // Create/refresh a small "Compose" link next to an <input> by id
-    function ensureComposeLinkForInput(inputId) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-
-      // make (or find) the link immediately after the input
-      let a = input.nextElementSibling;
-      const needsNew = !(a && a.classList && a.classList.contains('email-compose-link'));
-      if (needsNew) {
-        a = document.createElement('a');
-        a.className = 'email-compose-link';
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.style.marginLeft = '8px';
-        a.style.fontWeight = '800';
-        a.textContent = 'Compose in Gmail';
-        input.insertAdjacentElement('afterend', a);
-
-        // live-update the link as the user types
-        input.addEventListener('input', () => updateComposeLink(input, a));
-      }
-      updateComposeLink(input, a);
-
-      function updateComposeLink(inp, anchor) {
-        const url = gmailComposeUrl(inp.value);
-        if (url) {
-          anchor.href = url;
-          anchor.style.pointerEvents = 'auto';
-          anchor.style.opacity = '1';
-          anchor.title = 'Open Gmail compose';
-        } else {
-          anchor.removeAttribute('href');
-          anchor.style.pointerEvents = 'none';
-          anchor.style.opacity = '0.6';
-          anchor.title = 'Enter a valid email';
-        }
-      }
-    }
-
-    // Refresh both places we have email inputs
-    function refreshComposeLinks() {
-      ensureComposeLinkForInput('ci_email'); // Customer Info
-      ensureComposeLinkForInput('pe_email'); // Policies editor
-    }
-
-    async function postToScript(params, timeoutMs = 60000) {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort('timeout'), timeoutMs);
-      try {
-        const res = await fetch(scriptURL, {
-          method: 'POST',
-          body: new URLSearchParams(params),
-          signal: ctrl.signal,
-        });
-        const text = await res.text();
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`);
-        return text;
-      } finally {
-        clearTimeout(t);
-      }
-    }
-
-
-    window.checkPassword = function () {
-      const userEl = document.getElementById('appUser');
-      const passEl = document.getElementById('appPassword');
-      const loginEl = document.getElementById('loginSection');
-      const appEl = document.getElementById('appSection');
-
-      const u = (userEl?.value || '').trim();
-      const p = (passEl?.value || '').trim();
-
-      if (USERS[u] === p) {
-        sessionUser = u;
-        sessionPassword = p;
-
-        // show app, hide login
-        loginEl.style.display = 'none';
-appEl.style.display = 'block';
-document.body.classList.add('logged-in');
-
-        hoistFixedUI();
-
-        // show widgets only after login
-        const userWidget = document.getElementById('userWidget');
-        const addClientBtn = document.getElementById('fixedAddClient');
-        const reminderCard = document.getElementById('reminderCard');
-        if (userWidget) userWidget.style.display = 'block';
-        if (addClientBtn) addClientBtn.style.display = 'block';
-        if (reminderCard) reminderCard.style.display = 'block';
-
-        // data/tasks
+    /* ---------- Login ---------- */
+    function checkPassword() {
+      const pass = document.getElementById('appPassword').value.trim();
+      if (pass === 'Google#2020') {
+        sessionPassword = pass;
+        document.body.classList.remove('login-bg');
+        document.body.classList.add('app-bg');
+        document.getElementById('loginSection').style.display = 'none';
         loadData();
-        initTasksUI();
-        loadTasks();
-
-        // NEW: start local reminder scheduler
-        initReminderScheduler();
-
-        // Settings for Edwin only
-        const sb = document.getElementById('tabbtn-settings');
-        if (sb) sb.style.display = (sessionUser === 'Edwin') ? 'inline-flex' : 'none';
-
-        // “<user>’s Tasks” header
-        const th = document.getElementById('tasksHeader');
-        if (th) th.textContent = `${sessionUser}'s Tasks`;
-
-        // Optional: show name if you add an element with id="userName"
-        const userNameEl = document.getElementById('userName');
-        if (userNameEl) userNameEl.textContent = sessionUser;
-
-        setTimeout(setZoomLevel, 100);
-        return true;
-      }
-
-      alert('Incorrect username or password');
-      return false;
-    };
-
-
-
-
-    // Dates / status helpers
-    function parseExpDate(v) { if (!v) return null; const d = new Date(String(v).trim()); return isNaN(d.getTime()) ? null : d; }
-    function compareByExpiration(a, b) { const da = parseExpDate(a.r[3]); const db = parseExpDate(b.r[3]); if (da && db) return da - db; if (da && !db) return -1; if (!da && db) return 1; return 0; }
-    function computeStatus(exp) { const d = parseExpDate(exp); if (!d) return 'Inactive'; const today = new Date(); today.setHours(0, 0, 0, 0); return (d >= today) ? 'Active' : 'Inactive'; }
-    function statusBadge(status) { const cls = status === 'Active' ? 'active' : 'inactive'; return `<span class="badge ${cls}">${status}</span>`; }
-    // Normalize any sheet date string to "YYYY-MM-DD" for <input type="date">
-    function toYMD(v) {
-      if (!v) return '';
-      const d1 = new Date(String(v));
-      if (!isNaN(d1.getTime())) {
-        const y = d1.getFullYear();
-        const m = String(d1.getMonth() + 1).padStart(2, '0');
-        const d = String(d1.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      }
-      const m = String(v).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-      if (m) {
-        const y = m[3].length === 2 ? (Number(m[3]) + 2000) : Number(m[3]);
-        return `${y}-${String(m[1]).padStart(2, '0')}-${String(m[2]).padStart(2, '0')}`;
-      }
-      return '';
-    }
-
-    // helper to read a sheet cell by case/space-insensitive aliases
-    // helper to read a sheet cell by case/space-insensitive aliases
-    // helper to read a sheet cell by case/space-insensitive aliases (also strips zero-width spaces)
-    function getCell(row, ...aliases) {
-      const norm = s => String(s).toLowerCase().replace(/[\s\u200B-\u200D\uFEFF]/g, '');
-      const keys = Object.keys(row || {});
-      for (const k of keys) {
-        if (aliases.some(a => norm(k) === norm(a))) return row[k];
-      }
-      return '';
-    }
-
-
-    // Robust reader for "Line of Business" that tries row object first,
-    // then falls back to the raw array using the header index.
-    // Robust reader for "Line of Business":
-    // 1) read by common header names; 2) fallback by header index; 3) fallback from Notes tag: "LOB: ...".
-    function readLOBForRow(rowObj, rowArray) {
-      // 1) object by aliases
-      const fromObj = getCell(
-        rowObj,
-        'Line of Business',
-        'LineOfBusiness',
-        'Business Line',
-        'BusinessLine',
-        'LOB',
-        'businessLine',
-        'line_of_business',
-        'lineofbusiness',
-        'line-of-business'
-      );
-      if (fromObj) return fromObj;
-
-      // 2) header index fallback
-      try {
-        const norm = s => String(s || '').toLowerCase().replace(/[\s\u200B-\u200D\uFEFF]/g, '');
-        const target = 'lineofbusiness';
-        const idx = headers.findIndex(h => norm(h) === target);
-        if (idx >= 0 && rowArray && rowArray[idx] != null) return rowArray[idx];
-      } catch (_) { }
-
-      // 3) parse Notes tag "LOB: ..."
-      const notes = getCell(rowObj, 'Notes', 'Note', 'Notes Log');
-      const m = String(notes || '').match(/(?:^|\n)\s*(?:LOB|Line\s*of\s*Business)\s*:\s*([^\n]+)/i);
-      if (m) return m[1].trim();
-
-      return '';
-    }
-
-
-
-
-
-    function loadData() {
-      return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}&fields=values`)
-        .then(res => res.json())
-        .then(data => {
-          const rows = data.values || [];
-          headers = rows[0] || [];
-          const body = rows.slice(1).map((r, idx) => {
-            const rowNum = idx + 2;                // 1-based in sheet
-            rowCache.set(rowNum, rowToObj(r));     // cache as object for instant use later
-            return { r, sheetRow: rowNum };
-          });
-
-          allDataRows = body;
-
-          // show from 15 days prior onward (fewer rows = faster)
-          const cutoff = new Date();
-          cutoff.setDate(cutoff.getDate() - 15);
-          cutoff.setHours(0, 0, 0, 0);
-
-          const visible = body.filter(o => {
-            const d = parseExpDate(o.r[3]);
-            return d && d >= cutoff;
-          });
-
-          visible.sort(compareByExpiration);
-
-          document.getElementById('searchQuery').value = '';
-          renderTable(visible.slice(0, ROW_LIMIT));
-        })
-        .catch(err => {
-          console.error(err);
-          alert('Could not load data. Check API key, sheetId, and sharing.');
-        });
-    }
-
-
-
-    function renderTable(rows) {
-      const tbody = document.querySelector('#dataTable tbody');
-      let html = '';
-      for (const o of rows) {
-        const r = o.r;
-        const status = computeStatus(r[3]);
-        const phoneHTML = phoneLinkHTML(r[7] ?? '');
-        const emailHTML = emailLinkHTML(r[8] ?? '');
-        html += `
-      <tr data-row="${o.sheetRow}">
-        <td>${r[0] ?? ''}</td>
-        <td>${r[1] ?? ''}</td>
-        <td>${r[2] ?? ''}</td>
-        <td>${r[3] ?? ''}</td>
-        <td>${statusBadge(status)}</td>
-        <td>${r[4] ?? ''}</td>
-        <td>${r[5] ?? ''}</td>
-        <td>${r[6] ?? ''}</td>
-        <td>${phoneHTML}</td>
-        <td>${emailHTML}</td>
-        <td><button class="go-btn" data-row="${o.sheetRow}">Go</button></td>
-      </tr>`;
-      }
-      tbody.innerHTML = html;
-    }
-
-
-    function searchData() {
-      const q = document.getElementById('searchQuery').value.toLowerCase().trim();
-      if (!q) { renderTable(allDataRows.slice(0, ROW_LIMIT)); return; }
-
-      const filtered = allDataRows.filter(o => (o.r.join(' ') || '').toLowerCase().includes(q));
-      filtered.sort(compareByExpiration);
-      renderTable(filtered);
-    }
-    let custRowNum = null, custRowObj = null; // current row in overview
-    let peMode = 'add', peEditRow = null;     // policies editor state
-    let isAddingClient = false;               // add-client mode
-    let selectedPolicyRow = null;             // highlighted policy row
-
-
-
-    function openCustomerPage(openTab = 'info', addMode = false, explicitRow = null) {
-      isAddingClient = false;
-
-      // leaving "add client" mode -> ensure the flag is removed
-      const cp = document.getElementById('customerPage');
-      if (cp) cp.classList.remove('adding-client');
-
-      const rowNum = explicitRow ?? selectedRowIndex;
-      if (!rowNum) { alert('Select a row first.'); return; }
-      custRowNum = rowNum;
-      toggleAddClientFields(false);  // show fields for existing clients
-
-      // Use cached data immediately (no network)
-      custRowObj = rowCache.get(rowNum) || {};
-      renderCustomerHeader(custRowObj);
-      fillCustomerInfo(custRowObj);
-
-      // Related policies from the already loaded table
-      renderPoliciesOfContact();
-
-      // Show the page right away
-      showPage('customer');
-      switchTab(addMode ? 'policies' : openTab);
-      if (addMode) startAddPolicy(true);
-
-      // Notes immediately; defer heavy attachments
-      rebuildNotes(custRowObj['Notes'] || custRowObj['Note'] || custRowObj['Notes Log'] || '');
-
-      if (custRowObj['Policy Forms'] || custRowObj['Accord Forms']) {
-        renderAttachmentTable('policy', custRowObj['Policy Forms'] || '[]');
-        renderAttachmentTable('accord', custRowObj['Accord Forms'] || '[]');
       } else {
-        postToScript({ action: 'getRow', password: sessionPassword, row: custRowNum })
-          .then(txt => {
-            const p = JSON.parse(txt);
-            if (p && p.ok) {
-              custRowObj = p.row;
-            }
-          })
-          .finally(() => {
-            renderAttachmentTable('policy', custRowObj['Policy Forms'] || '[]');
-            renderAttachmentTable('accord', custRowObj['Accord Forms'] || '[]');
-          });
-      }
-
-      // 🔴 If there’s a critical alert, prompt with Keep/Delete
-      promptCriticalAlertIfAny(custRowObj);
-    }
-
-
-
-    function closeCustomerPage() { showPage('app'); setTimeout(setZoomLevel, 50); }
-    function goMainTab() { closeCustomerPage(); }   // used by the "Main Page" tab
-
-    // Start a brand-new client (clears form; Save will ADD)
-    function startAddClient() {
-      isAddingClient = true;
-      selectedRowIndex = null;
-      custRowNum = null;
-      custRowObj = {};
-
-      showPage('customer');
-      // mark page as "adding-client" so CSS shows First/Last/Address/Phone/Email on top
-      const cp = document.getElementById('customerPage');
-      if (cp) cp.classList.add('adding-client');
-
-      switchTab('info');
-      toggleAddClientFields(true);  // hide 7 inputs while adding a client
-
-      // Clear the editable form (bottom section)
-      document.querySelectorAll('#custInfoForm input').forEach(el => el.value = '');
-
-      // Clear the summary cards (top section)
-      renderCustomerHeader({});   // draws empty cards
-
-      // Hide & clear the policy editor
-      const pe = document.getElementById('policyEditor');
-      if (pe) pe.style.display = 'none';
-      ['pe_lob', 'pe_policy', 'pe_insurer', 'pe_effDate', 'pe_expDate', 'pe_address', 'pe_phone', 'pe_email', 'pe_firstName', 'pe_lastName', 'pe_year', 'pe_make', 'pe_model', 'pe_vin']
-        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-
-      // Clear policies table
-      const ptb = document.querySelector('#policiesTable tbody');
-      if (ptb) ptb.innerHTML = '';
-      const pempty = document.getElementById('policiesEmpty');
-      if (pempty) pempty.style.display = 'block';
-
-      // Clear files/accord lists
-      renderAttachmentTable('policy', '[]');
-      renderAttachmentTable('accord', '[]');
-
-      // Clear notes (incl. any critical banner)
-      rebuildNotes('');
-    }
-
-
-
-    function showPage(which) {
-      document.getElementById('appSection').style.display = (which === 'app') ? 'block' : 'none';
-      document.getElementById('customerPage').style.display = (which === 'customer') ? 'block' : 'none';
-
-      // Show the logo only on Login + Main (list) pages
-      document.body.classList.toggle('is-customer', which === 'customer');
-
-    }
-    function switchTab(name) {
-      ['info', 'policies', 'files', 'accord', 'notes'].forEach(n => {
-        const el = document.getElementById(`tab-${n}`);
-        const btn = document.getElementById(`tabbtn-${n}`);
-        if (el) el.classList.toggle('active', n === name);
-        if (btn) btn.setAttribute('aria-selected', n === name ? 'true' : 'false');
-      });
-
-      // Mark which tab is active for CSS (info-active, policies-active, files-active, accord-active, notes-active)
-      const cp = document.getElementById('customerPage');
-      if (cp) {
-        cp.classList.remove('info-active', 'policies-active', 'files-active', 'accord-active', 'notes-active');
-        cp.classList.add(`${name}-active`);
+        alert('Incorrect password');
       }
     }
+    window.checkPassword = checkPassword; // keep inline onclick working
 
+    /* ---------- Helpers (formatting + search) ---------- */
+    const TS_REGEX = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)/;
 
-
-
-    // header summary grid (Email + Phone are clickable)
-    function renderCustomerHeader(row) {
-      const grid = document.getElementById('custDetailsGrid');
-
-      const fields = [
-        ['Policy #', () => getCell(row, 'Policy #')],
-        ['Insurer', () => getCell(row, 'Insurer')],
-        ['Effective', () => getCell(row, 'Effective Date', 'Effective')],
-        ['Expiration', () => getCell(row, 'Expiration Date', 'Expiration')],
-        ['First', () => getCell(row, 'First Name', 'First')],
-        ['Last', () => getCell(row, 'Last Name', 'Last')],
-        ['Address', () => getCell(row, 'Address')],
-        ['Phone', () => getCell(row, 'Phone')],
-        ['Email', () => getCell(row, 'Email')]
-      ];
-
-      const list = isAddingClient
-        ? fields.filter(([label]) => !(['Policy #', 'Insurer', 'Effective', 'Expiration'].includes(label)))
-        : fields;
-
-      grid.innerHTML = '';
-      list.forEach(([label, getter]) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const lab = document.createElement('div');
-        lab.className = 'label';
-        lab.textContent = label;
-
-        const val = document.createElement('div');
-        val.className = 'value';
-        const v = getter() || '';
-
-        if (label === 'Phone' && v) {
-          val.innerHTML = phoneLinkHTML(v);
-        } else if (label === 'Email' && v) {
-          val.innerHTML = emailLinkHTML(v);
-        } else {
-          val.textContent = v;
-        }
-
-        card.append(lab, val);
-        grid.append(card);
-      });
+    function parseLastEditMs(notesCell) {
+      if (!notesCell) return 0;
+      const firstLine = String(notesCell).split('\n')[0].trim();
+      const m = firstLine.match(TS_REGEX);
+      if (!m) return 0;
+      const ms = Date.parse(m[0]);
+      return isNaN(ms) ? 0 : ms;
     }
 
-
-
-    /* ===== Customer Info ===== */
-    function fillCustomerInfo(row) {
-      const g = id => document.getElementById(id);
-      g('ci_policy').value = row['Policy #'] || '';
-      g('ci_insurer').value = row['Insurer'] || '';
-      g('ci_effDate').value = toYMD(getCell(row, 'Effective Date', 'Effective'));
-      g('ci_expDate').value = toYMD(getCell(row, 'Expiration Date', 'Expiration'));
-      g('ci_firstName').value = row['First Name'] || row['First'] || '';
-      g('ci_lastName').value = row['Last Name'] || row['Last'] || '';
-      g('ci_address').value = row['Address'] || '';
-      g('ci_phone').value = row['Phone'] || '';
-      g('ci_email').value = row['Email'] || '';
-      g('ci_year').value = row['Year'] || '';
-      g('ci_make').value = row['Make'] || '';
-      g('ci_model').value = row['Model'] || '';
-      g('ci_vin').value = row['Vin #'] || '';
-    }
-    function toggleAddClientFields(hide) {
-      const ids = ['ci_policy', 'ci_insurer', 'ci_effDate', 'ci_expDate', 'ci_year', 'ci_make', 'ci_model', 'ci_vin'];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        const fg = el ? el.closest('.fg') : null;
-        if (fg) fg.style.display = hide ? 'none' : '';
-      });
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
-    function saveCustomerInfo() {
-      const g = id => document.getElementById(id).value.trim();
-      const payload = {
-        policy: g('ci_policy'), insurer: g('ci_insurer'),
-        effDate: g('ci_effDate'), expDate: g('ci_expDate'),
-        firstName: g('ci_firstName'), lastName: g('ci_lastName'),
-        address: g('ci_address'), phone: g('ci_phone'), email: g('ci_email'),
-        year: g('ci_year'), make: g('ci_make'), model: g('ci_model'), vin: g('ci_vin'),
-        notes: custRowObj ? (custRowObj['Notes'] || '') : ''
-      };
-
-      if (isAddingClient || !custRowNum) {
-        // ADD new client, but stay on the page and show in the header
-        postToScript({ action: 'add', password: sessionPassword, ...payload })
-          .then(() => {
-            alert('Client added');
-            isAddingClient = false;
-            toggleAddClientFields(false);  // reveal fields after client is created
-
-
-            // Update top cards immediately from what we just saved
-            custRowObj = {
-              'Policy #': payload.policy,
-              'Insurer': payload.insurer,
-              'Effective Date': payload.effDate,
-              'Expiration Date': payload.expDate,
-              'First Name': payload.firstName,
-              'Last Name': payload.lastName,
-              'Address': payload.address,
-              'Phone': payload.phone,
-              'Email': payload.email,
-              'Year': payload.year,
-              'Make': payload.make,
-              'Model': payload.model,
-              'Vin #': payload.vin,
-              'Notes': payload.notes
-            };
-            renderCustomerHeader(custRowObj);
-            fillCustomerInfo(custRowObj);
-
-            // Reload data and try to locate the new sheet row so future "Save" does EDIT
-            return loadData().then(() => {
-              const match = allDataRows.find(o => {
-                const r = o.r;
-                return (String(r[0] || '').trim() === payload.policy) &&
-                  (String(r[8] || '').trim() === payload.email) &&
-                  (String(r[4] || '').trim().toLowerCase() === String(payload.firstName || '').toLowerCase()) &&
-                  (String(r[5] || '').trim().toLowerCase() === String(payload.lastName || '').toLowerCase());
-              });
-              if (match) {
-                custRowNum = match.sheetRow;
-                custRowObj = rowCache.get(custRowNum) || custRowObj;
-                renderCustomerHeader(custRowObj);
-              }
-            });
-          })
-          .catch(err => alert(err.message));
-      } else {
-        // EDIT existing
-        postToScript({ action: 'edit', password: sessionPassword, row: custRowNum, ...payload })
-          .then(() => {
-            alert('Saved');
-            return loadData().then(() => openCustomerPage('info', false, custRowNum));
-          })
-          .catch(err => alert(err.message));
-      }
+    function normalizePhone(s) {
+      const d = (s || '').replace(/\D/g, '');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1'))
+        return d.replace(/^1(\d{3})(\d{3})(\d{4})/, '1 ($1) $2-$3');
+      return s || '';
     }
 
+    function digitsOnly(s) { return (s || '').replace(/\D/g, ''); }
 
-    function renderPoliciesOfContact() {
-      const tbody = document.querySelector('#policiesTable tbody');
-      const empty = document.getElementById('policiesEmpty');
-      tbody.innerHTML = '';
-      selectedPolicyRow = null;
-
-      if (!custRowObj) { empty.style.display = 'block'; return; }
-
-      const first = (custRowObj['First Name'] || custRowObj['First'] || '').toLowerCase();
-      const last = (custRowObj['Last Name'] || custRowObj['Last'] || '').toLowerCase();
-      const phone = (custRowObj['Phone'] || '').replace(/\D/g, '');
-
-      const matches = allDataRows.filter(o => {
-        const r = o.r;
-        const f = (r[4] || '').toLowerCase();
-        const l = (r[5] || '').toLowerCase();
-        const p = (r[7] || '').replace(/\D/g, '');
-        return (f === first && l === last) || (p && phone && p === phone);
-      });
-
-      if (!matches.length) { empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
-
-      matches.forEach(o => {
-        const r = o.r;
-        const rObj = rowCache.get(o.sheetRow) || {};
-        const lob = readLOBForRow(rObj, r);
-        const st = computeStatus(r[3]);
-
-        const tr = document.createElement('tr');
-        tr.dataset.row = o.sheetRow;
-
-        // click to select + highlight this row
-        tr.addEventListener('click', () => {
-          selectedPolicyRow = o.sheetRow;
-          const tb = tr.parentElement;
-          if (tb) tb.querySelectorAll('tr.selected').forEach(el => el.classList.remove('selected'));
-          tr.classList.add('selected');
-        });
-
-        [lob, r[0] || '', r[1] || '', r[2] || '', r[3] || '', statusBadge(st)].forEach(v => {
-          const td = document.createElement('td');
-          td.innerHTML = v;
-          tr.appendChild(td);
-        });
-
-        tbody.appendChild(tr);
-      });
+    function phoneLink(s) {
+      const d = digitsOnly(s);
+      if (!d) return '';
+      const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+      const display = normalizePhone(s);
+      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${escapeHTML(display)} 📲</a>`;
     }
 
-
-
-    function startAddPolicy(preselect = true) {
-      peMode = 'add';
-      peEditRow = null;
-      document.getElementById('policyEditor').style.display = 'block';
-
-      // clear all policy editor fields
-      ['pe_lob', 'pe_policy', 'pe_insurer', 'pe_effDate', 'pe_expDate', 'pe_address', 'pe_phone', 'pe_email', 'pe_firstName', 'pe_lastName', 'pe_year', 'pe_make', 'pe_model', 'pe_vin']
-        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-
-      // optional prefill from current contact
-      if (preselect && custRowObj) {
-        const g = id => document.getElementById(id);
-        g('pe_firstName').value = custRowObj['First Name'] || custRowObj['First'] || '';
-        g('pe_lastName').value = custRowObj['Last Name'] || custRowObj['Last'] || '';
-        g('pe_address').value = custRowObj['Address'] || '';
-        g('pe_phone').value = custRowObj['Phone'] || '';
-        g('pe_email').value = custRowObj['Email'] || '';
-      }
-    }
-
-
-    function cancelPolicyEditor() { document.getElementById('policyEditor').style.display = 'none'; }
-
-    // ✅ NEW: populate inline editor from the selected policy row
-    function startEditPolicy() {
-      const row = selectedPolicyRow;
-      if (!row) { alert('Click a policy row first'); return; }
-
-      const rowObj = rowCache.get(row) || {};
-      const arrMatch = allDataRows.find(o => o.sheetRow === row);
-      const rowArr = arrMatch ? arrMatch.r : [];
-
-      peMode = 'edit';
-      peEditRow = row;
-      document.getElementById('policyEditor').style.display = 'block';
-
-      const g = id => document.getElementById(id);
-      g('pe_lob').value = readLOBForRow(rowObj, rowArr) || '';
-      g('pe_policy').value = rowObj['Policy #'] || '';
-      g('pe_insurer').value = rowObj['Insurer'] || '';
-      g('pe_effDate').value = toYMD(getCell(rowObj, 'Effective Date', 'Effective'));
-      g('pe_expDate').value = toYMD(getCell(rowObj, 'Expiration Date', 'Expiration'));
-      g('pe_address').value = rowObj['Address'] || '';
-      g('pe_phone').value = rowObj['Phone'] || '';
-      g('pe_email').value = rowObj['Email'] || '';
-      g('pe_firstName').value = rowObj['First Name'] || rowObj['First'] || '';
-      g('pe_lastName').value = rowObj['Last Name'] || rowObj['Last'] || '';
-      g('pe_year').value = rowObj['Year'] || '';
-      g('pe_make').value = rowObj['Make'] || '';
-      g('pe_model').value = rowObj['Model'] || '';
-      g('pe_vin').value = rowObj['Vin #'] || '';
-    }
-
-    function savePolicyEditor() {
-      const g = id => document.getElementById(id).value.trim();
-      const lobVal = g('pe_lob');
-
-      // Build notes that keep any existing notes but ensure a single "LOB: <value>" line at the top.
-      let existingNotes = '';
-      if (peMode === 'edit') {
-        const ro = rowCache.get(peEditRow) || {};
-        existingNotes = ro['Notes'] || ro['Note'] || ro['Notes Log'] || '';
-      } else {
-        existingNotes = (custRowObj && (custRowObj['Notes'] || custRowObj['Note'] || custRowObj['Notes Log'])) || '';
-      }
-      const withoutOldLOB = String(existingNotes)
-        .split('\n')
-        .filter(line => !/^\s*(?:LOB|Line\s*of\s*Business)\s*:/i.test(line))
-        .join('\n')
+    function canonicalEmail(s) {
+      return (s || '')
+        .toLowerCase()
+        .replace(/^mailto:\s*/, '')
+        .replace(/^mail\s*to:\s*/, '')
+        .replace(/\s+/g, '')
         .trim();
-      const notesWithLOB = lobVal ? (`LOB: ${lobVal}` + (withoutOldLOB ? `\n${withoutOldLOB}` : '')) : withoutOldLOB;
-
-      const payload = {
-        policy: g('pe_policy'),
-        insurer: g('pe_insurer'),
-        effDate: g('pe_effDate'),
-        expDate: g('pe_expDate'),
-        firstName: g('pe_firstName'),
-        lastName: g('pe_lastName'),
-        address: g('pe_address'),
-        phone: g('pe_phone'),
-        email: g('pe_email'),
-        year: g('pe_year'),
-        make: g('pe_make'),
-        model: g('pe_model'),
-        vin: g('pe_vin'),
-
-        // Send every common alias for LOB (for whatever your Apps Script expects)
-        lineOfBusiness: lobVal,
-        LineOfBusiness: lobVal,
-        'Line of Business': lobVal,
-        'Business Line': lobVal,
-        lob: lobVal,
-        businessLine: lobVal,
-        line_of_business: lobVal,
-
-        // Persist LOB even if backend doesn't have a LOB column yet
-        notes: notesWithLOB
-      };
-
-      const refreshAll = () =>
-        loadData().then(() => {
-          if (custRowNum) openCustomerPage('policies', false, custRowNum);
-          else switchTab('policies');
-        });
-
-      if (peMode === 'add') {
-        if (!payload.policy) { alert('Policy # is required'); return; }
-
-        const existing = allDataRows.find(o => {
-          const policyMatch = String(o.r[0] || '').trim().toLowerCase() === payload.policy.trim().toLowerCase();
-          const carrierMatch = String(o.r[1] || '').trim().toLowerCase() === payload.insurer.trim().toLowerCase();
-          return policyMatch && carrierMatch;
-        });
-
-        const apply = (action, extra = {}) => postToScript({ action, password: sessionPassword, ...extra, ...payload });
-
-        (existing ? apply('edit', { row: existing.sheetRow }) : apply('add'))
-          .then(() => {
-            alert(existing ? 'Policy updated' : 'Policy added');
-            document.getElementById('policyEditor').style.display = 'none';
-            return refreshAll();
-          })
-          .catch(err => alert(err.message));
-      } else {
-        postToScript({ action: 'edit', password: sessionPassword, row: peEditRow, ...payload })
-          .then(() => {
-            alert('Policy updated');
-            document.getElementById('policyEditor').style.display = 'none';
-            return refreshAll();
-          })
-          .catch(err => alert(err.message));
-      }
     }
 
-    function deletePolicy() {
-      const row = selectedPolicyRow;
-      if (!row) { alert('Click a policy row to delete'); return; }
-      if (!confirm('Delete this policy permanently?')) return;
+    function formatNotes(cell) {
+      const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+      if (!stripped) return '';
 
-      postToScript({ action: 'delete', password: sessionPassword, row })
-        .then(() => { alert('Policy deleted'); loadData(); renderPoliciesOfContact(); })
-        .catch(async (err) => {
-          try {
-            await postToScript({ action: 'deleteRow', password: sessionPassword, row });
-            alert('Policy deleted');
-            loadData();
-            renderPoliciesOfContact();
-          } catch (e) {
-            alert((err && err.message) || (e && e.message) || 'Delete failed');
+      // Render line by line so we can style CRITICAL alerts too
+      const lines = stripped.split('\n');
+      return lines
+        .map(line => {
+          // 🔴 Critical alert line
+          const c = line.match(/^\[CRITICAL_ALERT\]\s*(.*)$/);
+          if (c) {
+            const msg = c[1] || '';
+            return `<div class="note-entry critical">CRITICAL ALERT: ${escapeHTML(msg)}</div>`;
           }
-        });
+
+          // Normal timestamped note line
+          const m = line.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+          if (!m) return `<div class="note-entry"><span class="txt">${escapeHTML(line)}</span></div>`;
+          return `<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span>: <span class="txt">${escapeHTML(m[2])}</span></div>`;
+        })
+        .join('');
     }
 
-
-
-
-    /* ===== Files / Accord ===== */
-    function renderAttachmentTable(kind, jsonCell) {
-      const isPolicy = (kind === 'policy');
-      const tbody = document.getElementById(isPolicy ? 'policyTable' : 'accordTable').querySelector('tbody');
-      const empty = document.getElementById(isPolicy ? 'policyEmpty' : 'accordEmpty');
-      let items = []; try { items = jsonCell ? JSON.parse(jsonCell) : []; } catch (e) { items = []; }
-      tbody.innerHTML = ''; if (!items.length) { empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
-      items.forEach(meta => {
-        const tr = document.createElement('tr');
-        ['name', 'addedAt', 'addedBy', 'policyNumber'].forEach(key => {
-          const td = document.createElement('td'); td.textContent = meta[key] || ''; tr.appendChild(td);
-        });
-        const viewTd = document.createElement('td');
-        const url = typeof meta.url === 'string' ? meta.url : '';
-        if (url) {
-          const a = document.createElement('a');
-          a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.className = 'attc-icon'; a.innerHTML = PDF_ICON_SVG;
-          viewTd.appendChild(a);
-        }
-        tr.appendChild(viewTd);
-        tbody.appendChild(tr);
-      });
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onload = () => {
-          const s = String(fr.result || '');
-          const i = s.indexOf(',');
-          resolve(i >= 0 ? s.slice(i + 1) : s);
-        };
-        fr.onerror = () => reject(fr.error || new Error('File read failed'));
-        fr.readAsDataURL(file);
-      });
-    }
-
-
-    // Insert an optimistic "uploading..." row and return a handle we can replace
-    function addOptimisticRow(kind, meta) {
-      const isPolicy = (kind === 'policy');
-      const table = document.getElementById(isPolicy ? 'policyTable' : 'accordTable');
-      const tbody = table.querySelector('tbody');
-      document.getElementById(isPolicy ? 'policyEmpty' : 'accordEmpty').style.display = 'none';
-
-      const tr = document.createElement('tr');
-      tr.dataset.optimistic = '1';
-      const cells = [
-        `${meta.name} (pending)`,
-        meta.addedAt,
-        meta.addedBy,
-        meta.policyNumber,
-        `<span class="attc-spin"></span>Uploading…`
-      ];
-      cells.forEach(html => {
-        const td = document.createElement('td');
-        td.innerHTML = html;
-        tr.appendChild(td);
-      });
-      // Put new item on top for snappy feedback
-      tbody.insertBefore(tr, tbody.firstChild || null);
-      return tr;
-    }
-
-    function replaceOptimisticWithReal(kind, optimisticTr, items) {
-      const isPolicy = (kind === 'policy');
-      // Only re-render the target table (faster than drawing both)
-      renderAttachmentTable(kind, JSON.stringify(items || []));
-      if (optimisticTr && optimisticTr.parentNode) {
-        optimisticTr.remove(); // already re-rendered list includes the real row
-      }
-    }
-
-    // NEW: much faster handler with optimistic UI + chunked encoding
-    // NEW: much faster handler with optimistic UI + chunked encoding
-    async function handleAttachmentUpload(kind) {
-      if (!custRowNum) { alert('Open a customer first'); return; }
-      const input = document.getElementById(kind === 'policy' ? 'policyUpload' : 'accordUpload');
-      const metaBox = document.getElementById(kind === 'policy' ? 'policyFileMeta' : 'accordFileMeta');
-      const file = input.files && input.files[0];
-      if (!file) return;
-      if (file.type !== 'application/pdf') { alert('Please choose a PDF.'); input.value = ''; return; }
-
-      // Show immediate feedback in the table
-      const quickMeta = {
-        name: file.name,
-        addedAt: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
-        addedBy: sessionUser || '',
-        policyNumber: (custRowObj && custRowObj['Policy #']) || ''
-      };
-      const optimisticTr = addOptimisticRow(kind, quickMeta);
-      metaBox.textContent = `Uploading ${file.name}…`;
-
-      try {
-        const b64 = await fileToBase64(file);
-
-        // POST only once and only re-render the target table
-        const text = await postToScript({
-          action: 'uploadAttachment',
-          password: sessionPassword,
-          row: custRowNum,
-          policyNumber: quickMeta.policyNumber,
-          kind,
-          fileName: file.name,
-          fileB64: b64,
-          addedBy: sessionUser
-        });
-
-        const resp = JSON.parse(text);
-        if (!resp || !resp.ok) throw new Error(resp && resp.error ? resp.error : 'Upload failed');
-
-        // Update our local cache so we don't need an extra fetch later
-        if (!custRowObj) custRowObj = {};
-        if (kind === 'policy') {
-          custRowObj['Policy Forms'] = JSON.stringify(resp.policyForms || []);
-          replaceOptimisticWithReal('policy', optimisticTr, resp.policyForms);
-        } else {
-          custRowObj['Accord Forms'] = JSON.stringify(resp.accordForms || []);
-          replaceOptimisticWithReal('accord', optimisticTr, resp.accordForms);
-        }
-
-        metaBox.textContent = `Uploaded ${file.name}`;
-      } catch (err) {
-        console.error(err);
-        metaBox.textContent = '';
-        alert(err.message || 'Upload failed');
-        // Clean up the optimistic row on error
-        if (optimisticTr && optimisticTr.parentNode) optimisticTr.remove();
-      } finally {
-        input.value = '';
-      }
-    }
-
-    // ⬇️ Helper to save the user-edited Accord PDF as a new form (keeps template visible)
-    async function uploadEditedAccord() {
-      if (!custRowNum) { alert('Open a customer first'); return; }
-      const input = document.getElementById('accordEditedFile');
-      const file = input.files && input.files[0];
-      if (!file) { alert('Choose the edited PDF first.'); return; }
-      if (file.type !== 'application/pdf') { alert('Please choose a PDF.'); return; }
-
-      // Reuse the same uploader pathway as normal Accord uploads
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      const proxy = document.getElementById('accordUpload');
-      proxy.files = dt.files;
-
-      // Shows an optimistic row + persists via Apps Script
-      await handleAttachmentUpload('accord');
-
-      // keep viewer as-is (template remains editable)
-    }
-
-
-
-    /* ===== Notes Tab (latest 3 + pagination) ===== */
-    // keep this near your notes state
-    /* ===== Notes Tab (latest 3 + pagination) ===== */
-    // keep this near your notes state
-    let criticalBannerText = '';
-
-    function parseNotesToArray(cell = '') {
-      const all = String(cell).replace(/#\d+:\s*/g, '').split('\n').map(s => s.trim()).filter(Boolean);
-      const crit = all.find(l => l.startsWith('[CRITICAL_ALERT]'));
-      criticalBannerText = crit ? crit.replace('[CRITICAL_ALERT]', '').trim() : '';
-      return all.filter(l => !l.startsWith('[CRITICAL_ALERT]'));
-    }
-
-    // ✅ restore: updates the notes array and re-renders
-    function rebuildNotes(cell = '') {
-      notesArray = parseNotesToArray(cell);
-      renderNotesPage();
-    }
-
-    function renderNotesPage() {
-      const list = document.getElementById('notesList');
-      list.innerHTML = '';
-
-      if (criticalBannerText) {
-        const badge = document.createElement('span');
-        badge.className = 'note-entry critical';
-        badge.textContent = criticalBannerText;
-        list.appendChild(badge);
-      }
-
-      if (!notesArray.length) {
-        const empty = document.createElement('div');
-        empty.className = 'note-card';
-        empty.textContent = 'No notes yet.';
-        list.appendChild(empty);
-        list.scrollTop = 0;
-        return;
-      }
-
-      notesArray.forEach(raw => {
-        const card = document.createElement('div');
-        card.className = 'note-card';
-        const m = raw.match(/^User:\s([^—]+)\s—\s([^—]+)\s—\s([\s\S]*)$/);
-        if (m) {
-          const meta = document.createElement('div');
-          meta.className = 'note-meta';
-          meta.textContent = `${m[1].trim()} • ${m[2].trim()}`;
-          const text = document.createElement('div');
-          text.className = 'note-text';
-          text.textContent = m[3].trim();
-          card.append(meta, text);
-        } else {
-          card.textContent = raw;
-        }
-        list.appendChild(card);
-      });
-      list.scrollTop = 0;
-    }
-
-
-    // --- Critical Alert helpers ---
-    function ensureCriticalAtTop(notes) {
-      const lines = String(notes || '').split('\n');
-      const critical = lines.find(l => l.startsWith('[CRITICAL_ALERT]')) || '';
-      const rest = lines.filter(l => !l.startsWith('[CRITICAL_ALERT]')).join('\n').trim();
-      return (critical ? `${critical}\n` : '') + rest;
-    }
-
-    function promptCriticalAlertIfAny(rowObj) {
-      const noteCell = (rowObj && (rowObj['Notes'] || rowObj['Note'] || rowObj['Notes Log'])) || '';
-      const m = String(noteCell || '').match(/^\[CRITICAL_ALERT\]\s*(.+)$/m);
+    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
+    function promptCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
       if (!m) return;
+
       const message = m[1].trim();
+      // OK = Keep Alert, Cancel = Delete Alert
       setTimeout(() => {
         const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
         if (!keep) {
-          const cleaned = String(noteCell || '')
+          const cleaned = (noteCell || '')
             .split('\n')
             .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-            .join('\n')
-            .trim();
-          const finalNotes = cleaned; // removed alert
+            .join('\n');
 
-          // persist + refresh notes
-          postToScript({
-            action: 'edit', password: sessionPassword, row: custRowNum,
-            policy: rowObj['Policy #'] || '', insurer: rowObj['Insurer'] || '',
-            effDate: rowObj['Effective Date'] || rowObj['Effective'] || '',
-            expDate: rowObj['Expiration Date'] || rowObj['Expiration'] || '',
-            firstName: rowObj['First Name'] || rowObj['First'] || '',
-            lastName: rowObj['Last Name'] || rowObj['Last'] || '',
-            address: rowObj['Address'] || '', phone: rowObj['Phone'] || '',
-            email: rowObj['Email'] || '', year: rowObj['Year'] || '',
-            make: rowObj['Make'] || '', model: rowObj['Model'] || '',
-            vin: rowObj['Vin #'] || '', notes: finalNotes
-          }).then(() => {
-            custRowObj['Notes'] = finalNotes;
-            rebuildNotes(finalNotes);
-            alert('Critical alert removed.');
-          }).catch(err => alert('Failed to update alert: ' + err));
+          const row = rec.row;
+          const params = new URLSearchParams({
+            action: 'edit',
+            password: sessionPassword,
+            row: rec.sheetRow,
+            username: row[0] || '',
+            passwordField: row[1] || '',
+            email: row[2] || '',
+            phone: normalizePhone(row[3] || ''),
+            server: row[4] || '',
+            autoPay: row[5] || '',
+            notes: cleaned
+          });
+
+          fetch(scriptURL, { method: 'POST', body: params })
+            .then(r => r.text())
+            .then(() => { alert('Critical alert removed.'); loadData(); })
+            .catch(err => alert('Failed to update alert: ' + err));
         }
       }, 0);
     }
 
-    function addCriticalAlert() {
-      const msg = prompt('Enter the CRITICAL ALERT message:');
-      if (msg === null) return;
-      const trimmed = String(msg || '').trim();
-      if (!trimmed) { alert('Alert message cannot be empty.'); return; }
 
-      const existing = (custRowObj && (custRowObj['Notes'] || custRowObj['Note'] || custRowObj['Notes Log'] || '')) || '';
-      const cleaned = existing
-        .split('\n')
-        .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-        .join('\n')
-        .trim();
-      const combined = ensureCriticalAtTop(`[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : ''));
-
-      // Update UI immediately
-      custRowObj = custRowObj || {};
-      custRowObj['Notes'] = combined;
-      rebuildNotes(combined);
-
-      // Persist
-      if (!custRowNum) {
-        alert('Critical Note Has Been Added. Click "Save" to persist it.');
-        return;
-      }
-
-      postToScript({
-        action: 'edit', password: sessionPassword, row: custRowNum,
-        policy: custRowObj['Policy #'] || '', insurer: custRowObj['Insurer'] || '',
-        effDate: custRowObj['Effective Date'] || custRowObj['Effective'] || '',
-        expDate: custRowObj['Expiration Date'] || custRowObj['Expiration'] || '',
-        firstName: custRowObj['First Name'] || custRowObj['First'] || '',
-        lastName: custRowObj['Last Name'] || custRowObj['Last'] || '',
-        address: custRowObj['Address'] || '', phone: custRowObj['Phone'] || '',
-        email: custRowObj['Email'] || '', year: custRowObj['Year'] || '',
-        make: custRowObj['Make'] || '', model: custRowObj['Model'] || '',
-        vin: custRowObj['Vin #'] || '', notes: combined
-      })
-        .then(() => { alert('Critical Note Has Been Added'); })
-        .catch(err => alert(err.message));
+    /* ---------- Table cell renderer (restores your look) ---------- */
+    function tdHTML(row) {
+      return row.map((cell, ci) => {
+        if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
+        if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone
+        return '<td>' + escapeHTML(cell) + '</td>';
+      }).join('');
     }
+    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
+    function promptCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
+      if (!m) return;
 
+      const message = m[1].trim();
+      // OK = Keep Alert, Cancel = Delete Alert
+      setTimeout(() => {
+        const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
+        if (!keep) {
+          const cleaned = (noteCell || '')
+            .split('\n')
+            .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+            .join('\n');
 
-    function addNoteFromTab() {
-      const raw = (document.getElementById('noteInput').value || '').trim();
-      if (!raw) { alert('Type a note first'); return; }
+          const row = rec.row;
+          const params = new URLSearchParams({
+            action: 'edit',
+            password: sessionPassword,
+            row: rec.sheetRow,
+            username: row[0] || '',
+            passwordField: row[1] || '',
+            email: row[2] || '',
+            phone: normalizePhone(row[3] || ''),
+            server: row[4] || '',
+            autoPay: row[5] || '',
+            notes: cleaned
+          });
 
-      const existingRaw = ((custRowObj && (custRowObj['Notes'] || custRowObj['Note'] || custRowObj['Notes Log'] || '')) || '');
-      const lines = existingRaw.split('\n');
-      const criticalLine = lines.find(l => l.startsWith('[CRITICAL_ALERT]')) || '';
-      const withoutCritical = lines.filter(l => !l.startsWith('[CRITICAL_ALERT]')).join('\n').replace(/#\d+:\s*/g, '').trim();
-
-      const ts = new Date().toLocaleString('en-US', {
-        timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-      const newUserLine = `User: ${sessionUser} — ${ts} — ${raw}`;
-      const body = newUserLine + (withoutCritical ? `\n${withoutCritical}` : '');
-      const combined = (criticalLine ? `${criticalLine}\n` : '') + body;
-
-      custRowObj = custRowObj || {};
-      custRowObj['Notes'] = combined;
-      document.getElementById('noteInput').value = '';
-      rebuildNotes(combined);
-
-      // Persist only if editing an existing row; otherwise it will be saved when you click "Save"
-      if (!custRowNum) return;
-
-      postToScript({
-        action: 'edit', password: sessionPassword, row: custRowNum,
-        policy: custRowObj['Policy #'] || '', insurer: custRowObj['Insurer'] || '',
-        effDate: custRowObj['Effective Date'] || custRowObj['Effective'] || '',
-        expDate: custRowObj['Expiration Date'] || custRowObj['Expiration'] || '',
-        firstName: custRowObj['First Name'] || custRowObj['First'] || '',
-        lastName: custRowObj['Last Name'] || custRowObj['Last'] || '',
-        address: custRowObj['Address'] || '', phone: custRowObj['Phone'] || '',
-        email: custRowObj['Email'] || '', year: custRowObj['Year'] || '',
-        make: custRowObj['Make'] || '', model: custRowObj['Model'] || '',
-        vin: custRowObj['Vin #'] || '', notes: combined
-      }).catch(err => alert(err.message));
-    }
-
-
-
-    // ---- Drop-zone wiring: click + drag&drop -> handleAttachmentUpload(kind)
-    function initDropZone(kind) {
-      const dz = document.getElementById(kind + 'Drop');
-      const input = document.getElementById(kind + 'Upload');
-      const meta = document.getElementById(kind + 'FileMeta');
-
-      if (!dz || !input) return;
-
-      // When user picks a file via the dialog
-      input.addEventListener('change', () => {
-        const f = input.files && input.files[0];
-        meta.innerHTML = f ? `Selected: <span class="name">${f.name}</span>` : '';
-        if (f) handleAttachmentUpload(kind);
-      });
-
-      // Drag & drop visuals
-      ['dragenter', 'dragover'].forEach(ev => {
-        dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover'); });
-      });
-      ['dragleave', 'drop'].forEach(ev => {
-        dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover'); });
-      });
-
-      // Handle a dropped file
-      dz.addEventListener('drop', e => {
-        const file = e.dataTransfer?.files?.[0];
-        if (!file) return;
-        if (file.type !== 'application/pdf') { alert('Please choose a PDF.'); return; }
-
-        // Put dropped file into the hidden input so your existing uploader runs
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        input.files = dt.files;
-
-        meta.innerHTML = `Selected: <span class="name">${file.name}</span>`;
-        handleAttachmentUpload(kind);
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // hoist AFTER login only
-      initDropZone('policy');
-      refreshComposeLinks();
-      initDropZone('accord');
-
-
-
-      // Handle "Go" buttons and row selection on the main table
-      document.addEventListener('click', (e) => {
-        const go = e.target.closest('button.go-btn');
-        if (go) {
-          const rn = parseInt(go.dataset.row, 10);
-          if (rn) { openCustomerPage('info', false, rn); }
-          return;
+          fetch(scriptURL, { method: 'POST', body: params })
+            .then(r => r.text())
+            .then(() => { alert('Critical alert removed.'); loadData(); })
+            .catch(err => alert('Failed to update alert: ' + err));
         }
-        const row = e.target.closest('#dataTable tbody tr');
-        if (row) {
-          selectedRowIndex = parseInt(row.dataset.row, 10);
-          const tbody = document.querySelector('#dataTable tbody');
-          if (tbody) { tbody.querySelectorAll('tr.selected').forEach(el => el.classList.remove('selected')); }
-          row.classList.add('selected');
-        }
+      }, 0);
+    }
+
+    /* ---------- Data load + render ---------- */
+    function renderTable(records){
+  const tbody = document.querySelector('#dataTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  records.forEach(rec => {
+    const row = rec.row;
+    const tr = document.createElement('tr');
+    tr.innerHTML = tdHTML(row);
+
+    tr.addEventListener('click', () => {
+      selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
+      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+      tr.classList.add('selected');
+
+      ['username','password','email','phone','server','autoPay'].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el) el.value = row[idx] || '';
       });
 
-      // Mount Accord template viewer if a URL is provided
-      const wrap = document.getElementById('accordViewerWrap');
-      if (wrap && ACCORD_TEMPLATE_URL) {
-        wrap.innerHTML = `<iframe src="${ACCORD_TEMPLATE_URL}#toolbar=1&navpanes=0"
-        style="width:100%;height:100%;border:0;" title="Accord PDF"></iframe>`;
+      selectedRawNotes = row[6] || '';
+      const notesEl = document.getElementById('notes');
+      if (notesEl) notesEl.value = '';
+      const idxEl = document.getElementById('rowIndex');
+      if (idxEl) idxEl.value = selectedRowIndex;
+
+      // Prompt critical alert (guarded)
+      if (typeof promptCriticalAlert === 'function') {
+        try { promptCriticalAlert(rec); } catch (e) { console.warn('Alert prompt error:', e); }
       }
     });
-  </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
- 
- <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!window.flatpickr) return;
-
-    // Policies tab
-    flatpickr("#pe_effDate", { dateFormat: "Y-m-d", allowInput: true });
-    flatpickr("#pe_expDate", { dateFormat: "Y-m-d", allowInput: true });
-
-    // Add Client / Customer Info tab
-    flatpickr("#ci_effDate", { dateFormat: "Y-m-d", allowInput: true });
-    flatpickr("#ci_expDate", { dateFormat: "Y-m-d", allowInput: true });
-
-    // Reminder field: enable time and close as soon as a value is chosen
-    flatpickr("#remWhen", 
-      enableTime: true,
-      dateFormat: "Y-m-d\\TH:i",   // literal T
-      time_24hr: false,
-      minuteIncrement: 1,
-      allowInput: true,
-      onChange: function (selDates, _str, instance) {
-        if (selDates && selDates.length) instance._input.blur();
-        });
+    frag.appendChild(tr);
   });
 
-</script>
+  tbody.appendChild(frag);
+}
+
+    function loadData(onlySelected = false) {
+  // If called with true (Refresh button), update ONLY the selected row,
+  // then resort by latest change (any field) — no full table reload.
+  if (onlySelected) {
+    if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+    setBusy('.refresh-btn', true);
+
+    const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+        const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+        // Update in-memory selection + notes cache
+        selectedRawNotes = newRow[6] || '';
+
+        // Update the matched record
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        if (rec) {
+          rec.row = newRow;
+          rec.lastEditMs = Date.now(); // ► treat this as the latest change (any field)
+        }
+
+        // Update the visible selected table row immediately
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+
+        // Resort by latest change and re-render the visible chunk (no full reload)
+        allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+        renderTable(allRecords.slice(0, ROW_LIMIT));
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Failed to refresh the selected row from Google Sheets.');
+      })
+      .finally(() => setBusy('.refresh-btn', false));
+
+    return; // stop here; no full reload
+  }
+
+  // Original full reload (used elsewhere in the app)
+  setBusy('.refresh-btn', true);
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`)
+    .then(r => r.json())
+    .then(data => {
+      const rows = data.values || [];
+      totalRows = rows.length;
+      const dataRows = rows.slice(1); // skip header
+      existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+      allRecords = dataRows.map((row, idx) => ({
+        row,
+        sheetRow: idx + 2,                 // 1-based, +1 header
+        lastEditMs: parseLastEditMs(row[6] || '')
+      }));
+
+      // Most recently edited first; tie-break by newest sheet row
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+
+      // Reset search box, render the top chunk
+      const q = document.getElementById('searchQuery');
+      if (q) q.value = '';
+      const tbody = document.querySelector('#dataTable tbody');
+      if (tbody) { tbody.innerHTML = ''; }
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Failed to load data from Google Sheets.');
+    })
+    .finally(() => setBusy('.refresh-btn', false));
+}
+
+window.loadData = loadData;
+
+    /* ---------- Search (keeps your phone/email smarts) ---------- */
+function searchData() {
+  const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
+  if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }
+
+  const qDigits = (raw.match(/\d/g) || []).join('');
+  const qEmail = canonicalEmail(raw);
+  const hasPhoneQuery = qDigits.length >= 7;
+  const hasEmailQuery = qEmail.includes('@');
+
+  const filtered = allRecords.filter(rec => {
+    const row = rec.row;
+    const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+    let phoneMatch = false;
+    if (hasPhoneQuery) {
+      const rp = (row[3] || '').replace(/\D/g, '');
+      const last10 = s => s.slice(-10);
+      if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
+    }
+
+    let emailMatch = false;
+    if (hasEmailQuery) {
+      const re = canonicalEmail(row[2] || '');
+      emailMatch = re.includes(qEmail);
+    }
+
+    return baseMatch || phoneMatch || emailMatch;
+  });
+
+  renderTable(filtered.slice(0, ROW_LIMIT));
+
+  // If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately
+  // After rendering, if any matching row has a CRITICAL alert, prompt once.
+  const alertRec = filtered.find(r => /\[CRITICAL_ALERT\]/.test((r.row[6] || '')));
+  if (alertRec) { promptCriticalAlert(alertRec); }
+}
+window.searchData = searchData;
+
+
+
+      /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
+      function clearForm() {
+        ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
+          .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        selectedRowIndex = null;
+      }
+      window.clearForm = clearForm;
+
+      function confirmDelete() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        if (!confirm('Delete selected row?')) return;
+
+        setBusy('.delete-btn', true);
+        fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({ action: 'delete', password: sessionPassword, row: selectedRowIndex })
+        })
+          .then(res => res.text())
+          .then(() => { selectedRowIndex = null; loadData(); })
+          .catch(err => alert('Delete failed: ' + err))
+          .finally(() => setBusy('.delete-btn', false));
+      }
 
 
 
 
-</script>
+      window.confirmDelete = confirmDelete;
+
+      function confirmEdit() {
+        if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+        if (!confirm('Save changes to this row?')) return;
+        editRow();
+      }
+      window.confirmEdit = confirmEdit;
+
+      function editRow() {
+  setBusy('.edit-btn', true);
+
+  function gi(id) { return document.getElementById(id).value.trim(); }
+  const rawNew = gi('notes');
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+
+  let combined = existing;
+  if (rawNew) {
+    const ts = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago', // match server timezone used on Adds
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    combined = `${ts}: ${rawNew}` + (existing ? `\n${existing}` : '');
+  }
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: gi('username'),
+    passwordField: gi('password'),
+    email: gi('email'),
+    phone: normalizePhone(gi('phone')),
+    server: gi('server'),
+    autoPay: gi('autoPay'),
+    notes: combined
+  });
+
+  // ✅ Post the edit, then refresh THIS row from Google Sheets (server truth),
+  // ✅ mark it as latest change, resort, and re-render.
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+      return fetch(url).then(res => res.json());
+    })
+    .then(data => {
+      const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+      const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+      // Update local cache with server-updated row (including any server timestamps)
+      selectedRawNotes = newRow[6] || '';
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this edit as latest change
+      }
+
+      // Update the currently selected table row in place
+      const selectedTr = document.querySelector('#dataTable tr.selected');
+      if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+
+      // Resort by last change and re-render the visible chunk
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Edit failed: ' + err))
+    .finally(() => setBusy('.edit-btn', false));
+}
+
+
+      function addNewNote() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        const note = document.getElementById('notes').value.trim();
+        if (!note) { alert('Type a note in the Notes box first.'); return; }
+        editRow(); // will timestamp & prepend
+      }
+      window.addNewNote = addNewNote;
+
+          function addRow() {
+        setBusy('.add-btn', true);
+
+        function gi(id) { return document.getElementById(id).value.trim(); }
+        const username = gi('username');
+        if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
+        if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
+
+        const data = {
+          action: 'add',
+          password: sessionPassword,
+          username: username,
+          passwordField: gi('password'),
+          email: gi('email'),
+          phone: normalizePhone(gi('phone')),
+          server: gi('server'),
+          autoPay: gi('autoPay'),
+          notes: gi('notes') ? `${gi('notes')}` : ''
+        };
+
+        // 1) Save to Apps Script
+        fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
+          .then(r => r.text())
+          .then(() => {
+            // 2) Refresh JUST the newly added row from Google Sheets
+            //    First get the Username column to find the new row index.
+            const usernamesRange = 'data!A2:A3000';
+            const urlA = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(usernamesRange)}?key=${apiKey}`;
+            return fetch(urlA).then(res => res.json()).then(col => {
+              const arr = (col && col.values) ? col.values.map(v => (v[0] || '')) : [];
+              const target = username.toLowerCase();
+              let foundIndex = -1;
+              for (let i = arr.length - 1; i >= 0; i--) {
+                if ((arr[i] || '').toLowerCase() === target) { foundIndex = i; break; }
+              }
+              if (foundIndex === -1) {
+                // Fallback: full reload if we can't find it for any reason.
+                loadData();
+                clearForm();
+                return null;
+              }
+              const sheetRow = 2 + foundIndex; // because A2 is index 0
+
+              const singleRange = `data!A${sheetRow}:G${sheetRow}`;
+              const urlRow = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+              return fetch(urlRow).then(r2 => r2.json()).then(data2 => {
+                const row = (data2 && data2.values && data2.values[0]) ? data2.values[0] : [];
+                const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+                // 3) Update local caches and sort by latest change (this row)
+                existingUsernames.push(username.toLowerCase());
+                totalRows = Math.max(totalRows, sheetRow);
+
+                const rec = {
+                  row: newRow,
+                  sheetRow: sheetRow,
+                  lastEditMs: Date.now() // treat this add as the latest change
+                };
+                allRecords.push(rec);
+
+                allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+                renderTable(allRecords.slice(0, ROW_LIMIT));
+
+                clearForm();
+                return null;
+              });
+            });
+          })
+          .catch(err => { console.error(err); alert('Error saving row.'); })
+          .finally(() => setBusy('.add-btn', false));
+      }
+
+
+
+      window.addRow = addRow;
+      function addCriticalAlert() {
+  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+
+  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
+  if (msg === null) return;                 // user canceled
+  const trimmed = msg.trim();
+  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
+
+  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  const cleaned = existing
+    .split('\n')
+    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+    .join('\n');
+
+  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: document.getElementById('username').value.trim(),
+    passwordField: document.getElementById('password').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: normalizePhone(document.getElementById('phone').value.trim()),
+    server: document.getElementById('server').value.trim(),
+    autoPay: document.getElementById('autoPay').value.trim(),
+    notes: combined
+  });
+
+  // ✅ No page refresh: update UI + local cache, then resort by last change
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      alert('Critical alert saved.');
+
+      // Update our in-memory state + row UI
+      selectedRawNotes = combined;
+
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        const newRow = [
+          document.getElementById('username').value.trim(),
+          document.getElementById('password').value.trim(),
+          document.getElementById('email').value.trim(),
+          normalizePhone(document.getElementById('phone').value.trim()),
+          document.getElementById('server').value.trim(),
+          document.getElementById('autoPay').value.trim(),
+          combined
+        ];
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this as latest change
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+      }
+
+      // Resort by last change and re-render the visible chunk (no network)
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Failed to save critical alert: ' + err));
+}
+window.addCriticalAlert = addCriticalAlert;
+
+  </script>
+
 
 
 </body>
-
-
 
 </html>
