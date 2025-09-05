@@ -826,18 +826,15 @@ function sortByRecent(a, b) {
   return (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow);
 }
 
-// Build the inner <td> HTML for a row (reuse your existing impl if present)
+// Build the inner <td> HTML for a row (preserve WhatsApp link + notes formatting)
 function tdHTML(rowArr) {
-  // col order: A..G -> adjust to your headers if needed
-  return `
-    <td>${rowArr[0] || ''}</td>
-    <td>${rowArr[1] || ''}</td>
-    <td>${rowArr[2] || ''}</td>
-    <td>${rowArr[3] || ''}</td>
-    <td>${rowArr[4] || ''}</td>
-    <td>${rowArr[5] || ''}</td>
-    <td>${rowArr[6] || ''}</td>`;
+  return rowArr.map((cell, ci) => {
+    if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
+    if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone -> WhatsApp link
+    return '<td>' + escapeHTML(cell) + '</td>';
+  }).join('');
 }
+
 
 // Fetch and update a set of sheet rows via one batchGet
 async function refreshRowsBatch(sheetRowNums) {
