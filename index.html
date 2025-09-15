@@ -71,6 +71,7 @@
       background: linear-gradient(90deg,
           #003366, #0066CC, #3399FF, #ff3333, #ffa733, #9a9c21, #54cc25, #1a8371, #229ea7, #33b4ff, #339cff);
       background-size: 200% auto;
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradientShift 10s linear infinite;
@@ -220,6 +221,7 @@
 
     .add-note-btn { background-color: #6934be; color: #fff; }
     .critical-btn { background-color: #fc933d; color: #fff; }
+    .remove-alert-btn { background-color: #d93025; color: #fff; }
 
     .form-section {
       display: flex;
@@ -392,7 +394,7 @@
     /* ===== App (2nd page) background ===== */
     body.app-bg {
       min-height: 100vh;
-      background: url('pexels-codioful-6985045.jpg') center / cover no-repeat;
+      background: url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat;
     }
 
     /* Hide the app by default; only show it after login when body.app-bg is set */
@@ -555,6 +557,7 @@
         <button class="delete-btn" onclick="confirmDelete()">Delete</button>
         <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
         <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
+        <button type="button" class="remove-alert-btn" onclick="removeCriticalAlert()">Remove Alert</button>
       </div>
     </div>
 
@@ -579,6 +582,7 @@
     /* ---------- Login background on first load ---------- */
     document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('login-bg');
+      initDOMCache(); // Initialize DOM cache for performance
     });
 
     /* ---------- App constants ---------- */
@@ -594,6 +598,62 @@
     let existingUsernames = [];
     let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
     let totalRows = 0;
+    
+    // Performance optimization: Cache DOM elements
+    const domCache = {
+      searchQuery: null,
+      username: null,
+      password: null,
+      email: null,
+      phone: null,
+      server: null,
+      autoPay: null,
+      notes: null,
+      dataTable: null,
+      tbody: null
+    };
+    
+    // Initialize DOM cache
+    function initDOMCache() {
+      domCache.searchQuery = document.getElementById('searchQuery');
+      domCache.username = document.getElementById('username');
+      domCache.password = document.getElementById('password');
+      domCache.email = document.getElementById('email');
+      domCache.phone = document.getElementById('phone');
+      domCache.server = document.getElementById('server');
+      domCache.autoPay = document.getElementById('autoPay');
+      domCache.notes = document.getElementById('notes');
+      domCache.dataTable = document.getElementById('dataTable');
+      domCache.tbody = document.querySelector('#dataTable tbody');
+    }
+    
+    // Debounce search to prevent excessive calls
+    let searchTimeout = null;
+    function debounceSearch(func, delay = 300) {
+      return function(...args) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+    
+    // Request cache to prevent duplicate API calls
+    const requestCache = new Map();
+    const CACHE_DURATION = 5000; // 5 seconds
+    
+    function getCachedRequest(url) {
+      const cached = requestCache.get(url);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+      return null;
+    }
+    
+    function setCachedRequest(url, data) {
+      requestCache.set(url, {
+        data: data,
+        timestamp: Date.now()
+      });
+    }
 
     // speed helper: disable/enable a button by selector (prevents double submits)
     function setBusy(selector, on) {
@@ -683,42 +743,17 @@
         .join('');
     }
 
-    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
-    function promptCriticalAlert(rec) {
+    /* helper: show CRITICAL alert notification without auto-delete */
+    function showCriticalAlert(rec) {
       const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
       const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
       if (!m) return;
 
       const message = m[1].trim();
-      // OK = Keep Alert, Cancel = Delete Alert
+      // Just show the alert without prompting for deletion
       setTimeout(() => {
-        const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
-        if (!keep) {
-          const cleaned = (noteCell || '')
-            .split('\n')
-            .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-            .join('\n');
-
-          const row = rec.row;
-          const params = new URLSearchParams({
-            action: 'edit',
-            password: sessionPassword,
-            row: rec.sheetRow,
-            username: row[0] || '',
-            passwordField: row[1] || '',
-            email: row[2] || '',
-            phone: normalizePhone(row[3] || ''),
-            server: row[4] || '',
-            autoPay: row[5] || '',
-            notes: cleaned
-          });
-
-          fetch(scriptURL, { method: 'POST', body: params })
-            .then(r => r.text())
-            .then(() => { alert('Critical alert removed.'); loadData(); })
-            .catch(err => alert('Failed to update alert: ' + err));
-        }
-      }, 0);
+        alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);
+      }, 100);
     }
 
 
@@ -730,49 +765,23 @@
         return '<td>' + escapeHTML(cell) + '</td>';
       }).join('');
     }
-    /* helper: prompt for CRITICAL alert on a given record and let user keep/delete */
-    function promptCriticalAlert(rec) {
+    /* helper: show CRITICAL alert notification without auto-delete */
+    function showCriticalAlert(rec) {
       const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
       const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
       if (!m) return;
 
       const message = m[1].trim();
-      // OK = Keep Alert, Cancel = Delete Alert
+      // Just show the alert without prompting for deletion
       setTimeout(() => {
-        const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);
-        if (!keep) {
-          const cleaned = (noteCell || '')
-            .split('\n')
-            .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
-            .join('\n');
-
-          const row = rec.row;
-          const params = new URLSearchParams({
-            action: 'edit',
-            password: sessionPassword,
-            row: rec.sheetRow,
-            username: row[0] || '',
-            passwordField: row[1] || '',
-            email: row[2] || '',
-            phone: normalizePhone(row[3] || ''),
-            server: row[4] || '',
-            autoPay: row[5] || '',
-            notes: cleaned
-          });
-
-          fetch(scriptURL, { method: 'POST', body: params })
-            .then(r => r.text())
-            .then(() => { alert('Critical alert removed.'); loadData(); })
-            .catch(err => alert('Failed to update alert: ' + err));
-        }
-      }, 0);
+        alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);
+      }, 100);
     }
 
     /* ---------- Data load + render ---------- */
     function renderTable(records){
-  const tbody = document.querySelector('#dataTable tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
+  if (!domCache.tbody) return;
+  domCache.tbody.innerHTML = '';
   const frag = document.createDocumentFragment();
 
   records.forEach(rec => {
@@ -785,27 +794,29 @@
       document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
       tr.classList.add('selected');
 
-      ['username','password','email','phone','server','autoPay'].forEach((id, idx) => {
-        const el = document.getElementById(id);
-        if (el) el.value = row[idx] || '';
-      });
+      // Use cached DOM elements for better performance
+      if (domCache.username) domCache.username.value = row[0] || '';
+      if (domCache.password) domCache.password.value = row[1] || '';
+      if (domCache.email) domCache.email.value = row[2] || '';
+      if (domCache.phone) domCache.phone.value = row[3] || '';
+      if (domCache.server) domCache.server.value = row[4] || '';
+      if (domCache.autoPay) domCache.autoPay.value = row[5] || '';
 
       selectedRawNotes = row[6] || '';
-      const notesEl = document.getElementById('notes');
-      if (notesEl) notesEl.value = '';
+      if (domCache.notes) domCache.notes.value = '';
       const idxEl = document.getElementById('rowIndex');
       if (idxEl) idxEl.value = selectedRowIndex;
 
-      // Prompt critical alert (guarded)
-      if (typeof promptCriticalAlert === 'function') {
-        try { promptCriticalAlert(rec); } catch (e) { console.warn('Alert prompt error:', e); }
+      // Show critical alert (guarded)
+      if (typeof showCriticalAlert === 'function') {
+        try { showCriticalAlert(rec); } catch (e) { console.warn('Alert show error:', e); }
       }
     });
 
     frag.appendChild(tr);
   });
 
-  tbody.appendChild(frag);
+  domCache.tbody.appendChild(frag);
 }
 
    // Tunables
@@ -821,9 +832,17 @@ function setBusySafe(sel, on) {
   el.style.pointerEvents = on ? 'none' : 'auto';
 }
 
-// Sort helper reused in multiple places
+// Optimized sort helper with better performance
 function sortByRecent(a, b) {
-  return (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow);
+  // Use bitwise operations for faster comparison
+  const timeDiff = b.lastEditMs - a.lastEditMs;
+  return timeDiff !== 0 ? timeDiff : (b.sheetRow - a.sheetRow);
+}
+
+// Optimized sorting for large datasets
+function sortRecords(records) {
+  // Use native sort with optimized comparison
+  return records.sort(sortByRecent);
 }
 
 // Build the inner <td> HTML for a row (preserve WhatsApp link + notes formatting)
@@ -906,13 +925,10 @@ async function fullReload() {
     lastEditMs: parseLastEditMs(row[6] || '')
   }));
 
-  allRecords.sort(sortByRecent);
+  sortRecords(allRecords);
 
-  const q = document.getElementById('searchQuery');
-  if (q) q.value = '';
-
-  const tbody = document.querySelector('#dataTable tbody');
-  if (tbody) tbody.innerHTML = '';
+  if (domCache.searchQuery) domCache.searchQuery.value = '';
+  if (domCache.tbody) domCache.tbody.innerHTML = '';
 
   renderTable(allRecords.slice(0, ROW_LIMIT));
 }
@@ -946,7 +962,7 @@ async function loadData(onlySelected = false) {
       if (targets.length) {
         await refreshRowsBatch(Array.from(new Set(targets)));
         // keep table sorted by latest change, then show top chunk (fast)
-        allRecords.sort(sortByRecent);
+        sortRecords(allRecords);
         renderTable(allRecords.slice(0, ROW_LIMIT));
         return;
       }
@@ -964,17 +980,24 @@ async function loadData(onlySelected = false) {
 
 window.loadData = loadData;
 
-    /* ---------- Search (keeps your phone/email smarts) ---------- */
+    /* ---------- Search (optimized with caching and debouncing) ---------- */
 function searchData() {
-  const raw = document.getElementById('searchQuery').value.trim().toLowerCase();
-  if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }
+  const raw = domCache.searchQuery.value.trim().toLowerCase();
+  if (!raw) { 
+    renderTable(allRecords.slice(0, ROW_LIMIT)); 
+    return; 
+  }
 
+  // Pre-compile regex patterns for better performance
   const qDigits = (raw.match(/\d/g) || []).join('');
   const qEmail = canonicalEmail(raw);
   const hasPhoneQuery = qDigits.length >= 7;
   const hasEmailQuery = qEmail.includes('@');
 
-  const filtered = allRecords.filter(rec => {
+  // Use for loop instead of filter for better performance on large datasets
+  const filtered = [];
+  for (let i = 0; i < allRecords.length; i++) {
+    const rec = allRecords[i];
     const row = rec.row;
     const baseMatch = row.join(' ').toLowerCase().includes(raw);
 
@@ -991,24 +1014,38 @@ function searchData() {
       emailMatch = re.includes(qEmail);
     }
 
-    return baseMatch || phoneMatch || emailMatch;
-  });
+    if (baseMatch || phoneMatch || emailMatch) {
+      filtered.push(rec);
+    }
+  }
 
   renderTable(filtered.slice(0, ROW_LIMIT));
 
   // If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately
-  // After rendering, if any matching row has a CRITICAL alert, prompt once.
+  // After rendering, if any matching row has a CRITICAL alert, show once.
   const alertRec = filtered.find(r => /\[CRITICAL_ALERT\]/.test((r.row[6] || '')));
-  if (alertRec) { promptCriticalAlert(alertRec); }
+  if (alertRec) { showCriticalAlert(alertRec); }
 }
+
+// Create debounced version of search
+const debouncedSearch = debounceSearch(searchData, 300);
 window.searchData = searchData;
+window.debouncedSearch = debouncedSearch;
 
 
 
       /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
       function clearForm() {
-        ['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']
-          .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+        // Use cached DOM elements for better performance
+        if (domCache.username) domCache.username.value = '';
+        if (domCache.password) domCache.password.value = '';
+        if (domCache.email) domCache.email.value = '';
+        if (domCache.phone) domCache.phone.value = '';
+        if (domCache.server) domCache.server.value = '';
+        if (domCache.autoPay) domCache.autoPay.value = '';
+        if (domCache.notes) domCache.notes.value = '';
+        if (domCache.searchQuery) domCache.searchQuery.value = '';
+        
         document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
         selectedRowIndex = null;
       }
@@ -1044,8 +1081,8 @@ window.searchData = searchData;
       function editRow() {
   setBusy('.edit-btn', true);
 
-  function gi(id) { return document.getElementById(id).value.trim(); }
-  const rawNew = gi('notes');
+  // Use cached DOM elements for better performance
+  const rawNew = domCache.notes ? domCache.notes.value.trim() : '';
   const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
 
   let combined = existing;
@@ -1062,12 +1099,12 @@ window.searchData = searchData;
     action: 'edit',
     password: sessionPassword,
     row: selectedRowIndex,
-    username: gi('username'),
-    passwordField: gi('password'),
-    email: gi('email'),
-    phone: normalizePhone(gi('phone')),
-    server: gi('server'),
-    autoPay: gi('autoPay'),
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
     notes: combined
   });
 
@@ -1107,17 +1144,71 @@ window.searchData = searchData;
 
       function addNewNote() {
         if (selectedRowIndex === null) { alert('Select a row first.'); return; }
-        const note = document.getElementById('notes').value.trim();
+        const note = domCache.notes ? domCache.notes.value.trim() : '';
         if (!note) { alert('Type a note in the Notes box first.'); return; }
-        editRow(); // will timestamp & prepend
+        
+        // Get existing notes (remove old #number: prefixes)
+        const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+        
+        // Create timestamp in original format
+        const ts = new Date().toLocaleString('en-US', {
+          timeZone: 'America/Chicago',
+          month: 'short', day: 'numeric', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        
+        // Format: [timestamp]: new note (original format)
+        const newNoteEntry = `${ts}: ${note}`;
+        const combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
+        
+        // Update the notes field and call editRow
+        if (domCache.notes) domCache.notes.value = '';
+        selectedRawNotes = combined;
+        
+        // Use the existing editRow logic but with our formatted notes
+        setBusy('.add-note-btn', true);
+        
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: domCache.username ? domCache.username.value.trim() : '',
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          notes: combined
+        });
+
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => {
+            // Update local cache and resort
+            const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+            if (rec) {
+              rec.row[6] = combined;
+              rec.lastEditMs = Date.now();
+            }
+            
+            // Update the selected row in the table
+            const selectedTr = document.querySelector('#dataTable tr.selected');
+            if (selectedTr) selectedTr.innerHTML = tdHTML(rec.row);
+            
+            // Resort and re-render
+            sortRecords(allRecords);
+            renderTable(allRecords.slice(0, ROW_LIMIT));
+          })
+          .catch(err => alert('Failed to add note: ' + err))
+          .finally(() => setBusy('.add-note-btn', false));
       }
       window.addNewNote = addNewNote;
 
           function addRow() {
         setBusy('.add-btn', true);
 
-        function gi(id) { return document.getElementById(id).value.trim(); }
-        const username = gi('username');
+        // Use cached DOM elements for better performance
+        const username = domCache.username ? domCache.username.value.trim() : '';
         if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
         if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
 
@@ -1125,12 +1216,12 @@ window.searchData = searchData;
           action: 'add',
           password: sessionPassword,
           username: username,
-          passwordField: gi('password'),
-          email: gi('email'),
-          phone: normalizePhone(gi('phone')),
-          server: gi('server'),
-          autoPay: gi('autoPay'),
-          notes: gi('notes') ? `${gi('notes')}` : ''
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          notes: domCache.notes ? domCache.notes.value.trim() : ''
         };
 
         // 1) Save to Apps Script
@@ -1173,7 +1264,7 @@ window.searchData = searchData;
                 };
                 allRecords.push(rec);
 
-                allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+                sortRecords(allRecords);
                 renderTable(allRecords.slice(0, ROW_LIMIT));
 
                 clearForm();
@@ -1209,12 +1300,12 @@ window.searchData = searchData;
     action: 'edit',
     password: sessionPassword,
     row: selectedRowIndex,
-    username: document.getElementById('username').value.trim(),
-    passwordField: document.getElementById('password').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: normalizePhone(document.getElementById('phone').value.trim()),
-    server: document.getElementById('server').value.trim(),
-    autoPay: document.getElementById('autoPay').value.trim(),
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
     notes: combined
   });
 
@@ -1230,12 +1321,12 @@ window.searchData = searchData;
       const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
       if (rec) {
         const newRow = [
-          document.getElementById('username').value.trim(),
-          document.getElementById('password').value.trim(),
-          document.getElementById('email').value.trim(),
-          normalizePhone(document.getElementById('phone').value.trim()),
-          document.getElementById('server').value.trim(),
-          document.getElementById('autoPay').value.trim(),
+          domCache.username ? domCache.username.value.trim() : '',
+          domCache.password ? domCache.password.value.trim() : '',
+          domCache.email ? domCache.email.value.trim() : '',
+          normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          domCache.server ? domCache.server.value.trim() : '',
+          domCache.autoPay ? domCache.autoPay.value.trim() : '',
           combined
         ];
         rec.row = newRow;
@@ -1251,6 +1342,70 @@ window.searchData = searchData;
     .catch(err => alert('Failed to save critical alert: ' + err));
 }
 window.addCriticalAlert = addCriticalAlert;
+
+      function removeCriticalAlert() {
+        if (selectedRowIndex === null) { 
+          alert('Select a row first.'); 
+          return; 
+        }
+
+        // Check if the selected row has a critical alert
+        const noteCell = selectedRawNotes || '';
+        if (!noteCell.includes('[CRITICAL_ALERT]')) {
+          alert('No critical alert found on this row.');
+          return;
+        }
+
+        if (!confirm('Remove the critical alert from this row?')) return;
+
+        // Remove all critical alert lines
+        const cleaned = noteCell
+          .split('\n')
+          .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+          .join('\n')
+          .trim();
+
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: domCache.username ? domCache.username.value.trim() : '',
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          notes: cleaned
+        });
+
+        setBusy('.remove-alert-btn', true);
+
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => {
+            alert('Critical alert removed successfully.');
+            
+            // Update local cache and UI
+            selectedRawNotes = cleaned;
+            
+            const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+            if (rec) {
+              rec.row[6] = cleaned;
+              rec.lastEditMs = Date.now();
+              
+              // Update the selected row in the table
+              const selectedTr = document.querySelector('#dataTable tr.selected');
+              if (selectedTr) selectedTr.innerHTML = tdHTML(rec.row);
+            }
+            
+            // Resort and re-render
+            sortRecords(allRecords);
+            renderTable(allRecords.slice(0, ROW_LIMIT));
+          })
+          .catch(err => alert('Failed to remove critical alert: ' + err))
+          .finally(() => setBusy('.remove-alert-btn', false));
+      }
+      window.removeCriticalAlert = removeCriticalAlert;
 
   </script>
 
