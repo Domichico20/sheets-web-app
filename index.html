@@ -992,6 +992,9 @@ function searchData() {
   if (domCache.server) domCache.server.value = '';
   if (domCache.autoPay) domCache.autoPay.value = '';
   if (domCache.notes) domCache.notes.value = '';
+  // Also clear password input box
+  const passwordInput = document.getElementById('passwordInput');
+  if (passwordInput) passwordInput.value = '';
   
   const raw = domCache.searchQuery.value.trim().toLowerCase();
   if (!raw) { 
@@ -1032,10 +1035,7 @@ function searchData() {
 
   renderTable(filtered.slice(0, ROW_LIMIT));
 
-  // If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately
-  // After rendering, if any matching row has a CRITICAL alert, show once.
-  const alertRec = filtered.find(r => /\[CRITICAL_ALERT\]/.test((r.row[6] || '')));
-  if (alertRec) { showCriticalAlert(alertRec); }
+  // Critical alerts only show when row is selected, not during search
 }
 
 // Create debounced version of search
@@ -1066,6 +1066,18 @@ window.debouncedSearch = debouncedSearch;
         if (selectedRowIndex === null) { alert('Select a row first.'); return; }
         if (!confirm('Delete selected row?')) return;
 
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          passwordField: domCache.passwordField ? domCache.passwordField.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('delete', currentData);
+
         setBusy('.delete-btn', true);
         fetch(scriptURL, {
           method: 'POST',
@@ -1091,6 +1103,18 @@ window.debouncedSearch = debouncedSearch;
 
       function editRow() {
   setBusy('.edit-btn', true);
+
+  // Save undo state before making changes
+  const currentData = {
+    username: domCache.username ? domCache.username.value : '',
+    passwordField: domCache.passwordField ? domCache.passwordField.value : '',
+    email: domCache.email ? domCache.email.value : '',
+    phone: domCache.phone ? domCache.phone.value : '',
+    server: domCache.server ? domCache.server.value : '',
+    autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+    notes: domCache.notes ? domCache.notes.value : ''
+  };
+  saveUndoState('edit', currentData);
 
   // Use cached DOM elements for better performance
   const rawNew = domCache.notes ? domCache.notes.value.trim() : '';
@@ -1174,10 +1198,10 @@ window.debouncedSearch = debouncedSearch;
         // Keep critical alert at the top if it exists
         let combined;
         if (existing.includes('🚨 CRITICAL ALERT')) {
-          const criticalMatch = existing.match(/🚨 CRITICAL ALERT: .+?(?=\n\n|\n|$)/);
+          const criticalMatch = existing.match(/🚨 CRITICAL ALERT: .+?(?=\n|$)/);
           if (criticalMatch) {
             const criticalAlert = criticalMatch[0];
-            const otherNotes = existing.replace(/🚨 CRITICAL ALERT: .+?(?=\n\n|\n|$)/, '').trim();
+            const otherNotes = existing.replace(/🚨 CRITICAL ALERT: .+?(?=\n|$)/, '').trim();
             combined = criticalAlert + '\n\n' + newNoteEntry + (otherNotes ? '\n\n' + otherNotes : '');
           } else {
             combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
@@ -1231,6 +1255,18 @@ window.debouncedSearch = debouncedSearch;
 
           function addRow() {
         setBusy('.add-btn', true);
+
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          passwordField: domCache.passwordField ? domCache.passwordField.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('add', currentData);
 
         // Use cached DOM elements for better performance
         const username = domCache.username ? domCache.username.value.trim() : '';
