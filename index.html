@@ -15,7 +15,6 @@
   <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
   <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
 
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -24,7 +23,6 @@
   <link rel="dns-prefetch" href="https://sheets.googleapis.com">
   <link rel="preconnect" href="https://script.google.com" crossorigin>
   <link rel="dns-prefetch" href="https://script.google.com">
-
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -232,13 +230,17 @@
       color: white;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.1s ease;
       font-size: 14px;
     }
 
     button:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: scale(0.98);
     }
 
     button:disabled {
@@ -366,15 +368,6 @@
         transform: translateX(0);
         opacity: 1;
       }
-    }
-
-    /* Button performance optimization */
-    button {
-      transition: all 0.1s ease;
-    }
-
-    button:active {
-      transform: scale(0.98);
     }
 
     @media (max-width: 768px) {
@@ -688,7 +681,7 @@
       document.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
       event.currentTarget.classList.add('selected');
       
-      // Show critical alert if present
+      // Show critical alert only when row is selected
       if (rowData[6] && rowData[6].includes('🚨 CRITICAL ALERT')) {
         const alertMatch = rowData[6].match(/🚨 CRITICAL ALERT: (.+?)(?=\n|$)/);
         if (alertMatch) {
@@ -765,17 +758,6 @@
       }
 
       renderTable(filtered.slice(0, ROW_LIMIT));
-
-      // Show critical alert only if row is selected
-      if (selectedRowIndex !== null) {
-        const selectedRecord = allRecords.find(r => r.sheetRow === selectedRowIndex);
-        if (selectedRecord && selectedRecord.row[6] && selectedRecord.row[6].includes('🚨 CRITICAL ALERT')) {
-          const alertMatch = selectedRecord.row[6].match(/🚨 CRITICAL ALERT: (.+?)(?=\n|$)/);
-          if (alertMatch) {
-            showModernAlert(alertMatch[1], 'critical');
-          }
-        }
-      }
     }
 
     // Create debounced version of search
@@ -858,18 +840,6 @@
         showModernAlert('Please enter a note', 'warning'); 
         return; 
       }
-      
-      // Save undo state before making changes
-      const currentData = {
-        username: domCache.username ? domCache.username.value : '',
-        passwordField: domCache.passwordField ? domCache.passwordField.value : '',
-        email: domCache.email ? domCache.email.value : '',
-        phone: domCache.phone ? domCache.phone.value : '',
-        server: domCache.server ? domCache.server.value : '',
-        autoPay: domCache.autoPay ? domCache.autoPay.value : '',
-        notes: domCache.notes ? domCache.notes.value : ''
-      };
-      saveUndoState('edit', currentData);
       
       const timestamp = new Date().toLocaleString('en-US', {
         month: 'short', day: 'numeric', year: 'numeric',
@@ -954,18 +924,6 @@
         showModernAlert('Please enter an alert message', 'warning');
         return;
       }
-      
-      // Save undo state before making changes
-      const currentData = {
-        username: domCache.username ? domCache.username.value : '',
-        passwordField: domCache.passwordField ? domCache.passwordField.value : '',
-        email: domCache.email ? domCache.email.value : '',
-        phone: domCache.phone ? domCache.phone.value : '',
-        server: domCache.server ? domCache.server.value : '',
-        autoPay: domCache.autoPay ? domCache.autoPay.value : '',
-        notes: domCache.notes ? domCache.notes.value : ''
-      };
-      saveUndoState('edit', currentData);
       
       const criticalAlert = `🚨 CRITICAL ALERT: ${alertText}`;
       const currentNotes = domCache.notes ? domCache.notes.value : '';
@@ -1125,7 +1083,7 @@
       }
     }
     
-    // Override original functions to use modern alerts
+    // Override original alert function to use modern alerts
     const originalAlert = window.alert;
     window.alert = function(message) {
       if (message.includes('CRITICAL ALERT')) {
