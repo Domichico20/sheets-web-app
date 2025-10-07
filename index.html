@@ -601,6 +601,61 @@
     let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
     let totalRows = 0;
     
+    // Undo functionality
+    let undoStack = [];
+    let maxUndoSteps = 10;
+    
+    function saveUndoState(action, data) {
+      console.log('Saving undo state for action:', action);
+      undoStack.push({
+        action: action,
+        data: data,
+        timestamp: Date.now()
+      });
+      
+      // Keep only last N undo steps
+      if (undoStack.length > maxUndoSteps) {
+        undoStack.shift();
+      }
+    }
+    
+    function undoLastChange() {
+      console.log('Undo button clicked, undoStack length:', undoStack.length);
+      if (undoStack.length === 0) {
+        alert('No changes to undo');
+        return;
+      }
+      
+      const lastChange = undoStack.pop();
+      
+      switch (lastChange.action) {
+        case 'add':
+          alert('Cannot undo add operation automatically. Please delete the row manually.');
+          break;
+        case 'edit':
+          if (lastChange.data && selectedRowIndex) {
+            restoreRowData(lastChange.data);
+            alert('Row data restored');
+          }
+          break;
+        case 'delete':
+          alert('Cannot undo delete operation automatically. Please add the row back manually.');
+          break;
+        default:
+          alert('Unknown operation type');
+      }
+    }
+    
+    function restoreRowData(data) {
+      if (domCache.username) domCache.username.value = data.username || '';
+      if (domCache.passwordField) domCache.passwordField.value = data.passwordField || '';
+      if (domCache.email) domCache.email.value = data.email || '';
+      if (domCache.phone) domCache.phone.value = data.phone || '';
+      if (domCache.server) domCache.server.value = data.server || '';
+      if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
+      if (domCache.notes) domCache.notes.value = data.notes || '';
+    }
+    
     // Performance optimization: Cache DOM elements
     const domCache = {
       searchQuery: null,
@@ -766,18 +821,6 @@
         if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone
         return '<td>' + escapeHTML(cell) + '</td>';
       }).join('');
-    }
-    /* helper: show CRITICAL alert notification without auto-delete */
-    function showCriticalAlert(rec) {
-      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
-      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
-      if (!m) return;
-
-      const message = m[1].trim();
-      // Just show the alert without prompting for deletion
-      setTimeout(() => {
-        alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);
-      }, 100);
     }
 
     /* ---------- Data load + render ---------- */
@@ -1470,61 +1513,6 @@ window.addCriticalAlert = addCriticalAlert;
       }
       window.removeCriticalAlert = removeCriticalAlert;
 
-      // Undo functionality
-      let undoStack = [];
-      let maxUndoSteps = 10;
-      
-      function saveUndoState(action, data) {
-        console.log('Saving undo state for action:', action);
-        undoStack.push({
-          action: action,
-          data: data,
-          timestamp: Date.now()
-        });
-        
-        // Keep only last N undo steps
-        if (undoStack.length > maxUndoSteps) {
-          undoStack.shift();
-        }
-      }
-      
-      function undoLastChange() {
-        console.log('Undo button clicked, undoStack length:', undoStack.length);
-        if (undoStack.length === 0) {
-          alert('No changes to undo');
-          return;
-        }
-        
-        const lastChange = undoStack.pop();
-        
-        switch (lastChange.action) {
-          case 'add':
-            alert('Cannot undo add operation automatically. Please delete the row manually.');
-            break;
-          case 'edit':
-            if (lastChange.data && selectedRowIndex) {
-              restoreRowData(lastChange.data);
-              alert('Row data restored');
-            }
-            break;
-          case 'delete':
-            alert('Cannot undo delete operation automatically. Please add the row back manually.');
-            break;
-          default:
-            alert('Unknown operation type');
-        }
-      }
-      
-      function restoreRowData(data) {
-        if (domCache.username) domCache.username.value = data.username || '';
-        if (domCache.passwordField) domCache.passwordField.value = data.passwordField || '';
-        if (domCache.email) domCache.email.value = data.email || '';
-        if (domCache.phone) domCache.phone.value = data.phone || '';
-        if (domCache.server) domCache.server.value = data.server || '';
-        if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
-        if (domCache.notes) domCache.notes.value = data.notes || '';
-      }
-      
       window.undoLastChange = undoLastChange;
 
   </script>
