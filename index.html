@@ -993,7 +993,7 @@ function searchData() {
   if (domCache.autoPay) domCache.autoPay.value = '';
   if (domCache.notes) domCache.notes.value = '';
   // Also clear password input box
-  const passwordInput = document.getElementById('passwordInput');
+  const passwordInput = document.getElementById('appPassword');
   if (passwordInput) passwordInput.value = '';
   
   const raw = domCache.searchQuery.value.trim().toLowerCase();
@@ -1198,11 +1198,16 @@ window.debouncedSearch = debouncedSearch;
         // Keep critical alert at the top if it exists
         let combined;
         if (existing.includes('🚨 CRITICAL ALERT')) {
-          const criticalMatch = existing.match(/🚨 CRITICAL ALERT: .+?(?=\n|$)/);
-          if (criticalMatch) {
-            const criticalAlert = criticalMatch[0];
-            const otherNotes = existing.replace(/🚨 CRITICAL ALERT: .+?(?=\n|$)/, '').trim();
-            combined = criticalAlert + '\n\n' + newNoteEntry + (otherNotes ? '\n\n' + otherNotes : '');
+          // Find the critical alert line
+          const lines = existing.split('\n');
+          const criticalLine = lines.find(line => line.includes('🚨 CRITICAL ALERT'));
+          const otherLines = lines.filter(line => !line.includes('🚨 CRITICAL ALERT'));
+          
+          if (criticalLine) {
+            combined = criticalLine + '\n\n' + newNoteEntry;
+            if (otherLines.length > 0) {
+              combined += '\n\n' + otherLines.join('\n');
+            }
           } else {
             combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
           }
