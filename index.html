@@ -278,6 +278,7 @@
     .clear-btn  { background-color: #66CC66; }
     .refresh-btn{ background-color: gold; color: black; }
     .delete-btn { background-color: red; }
+    .undo-btn { background-color: #FF6B35; }
 
     table {
       margin: 0 auto;
@@ -555,6 +556,7 @@
         <button class="clear-btn" onclick="clearForm()">Clear</button>
         <button class="refresh-btn" onclick="loadData(true)">Refresh</button>
         <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button class="undo-btn" onclick="undoLastChange()">UNDO</button>
         <button type="button" class="add-note-btn" onclick="addNewNote()">Add New Note</button>
         <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
         <button type="button" class="remove-alert-btn" onclick="removeCriticalAlert()">Remove Alert</button>
@@ -982,6 +984,15 @@ window.loadData = loadData;
 
     /* ---------- Search (optimized with caching and debouncing) ---------- */
 function searchData() {
+  // Clear input boxes when search is performed
+  if (domCache.username) domCache.username.value = '';
+  if (domCache.passwordField) domCache.passwordField.value = '';
+  if (domCache.email) domCache.email.value = '';
+  if (domCache.phone) domCache.phone.value = '';
+  if (domCache.server) domCache.server.value = '';
+  if (domCache.autoPay) domCache.autoPay.value = '';
+  if (domCache.notes) domCache.notes.value = '';
+  
   const raw = domCache.searchQuery.value.trim().toLowerCase();
   if (!raw) { 
     renderTable(allRecords.slice(0, ROW_LIMIT)); 
@@ -1159,7 +1170,21 @@ window.debouncedSearch = debouncedSearch;
         
         // Format: [timestamp]: new note (original format)
         const newNoteEntry = `${ts}: ${note}`;
-        const combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
+        
+        // Keep critical alert at the top if it exists
+        let combined;
+        if (existing.includes('🚨 CRITICAL ALERT')) {
+          const criticalMatch = existing.match(/🚨 CRITICAL ALERT: .+?(?=\n\n|\n|$)/);
+          if (criticalMatch) {
+            const criticalAlert = criticalMatch[0];
+            const otherNotes = existing.replace(/🚨 CRITICAL ALERT: .+?(?=\n\n|\n|$)/, '').trim();
+            combined = criticalAlert + '\n\n' + newNoteEntry + (otherNotes ? '\n\n' + otherNotes : '');
+          } else {
+            combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
+          }
+        } else {
+          combined = existing ? `${newNoteEntry}\n${existing}` : newNoteEntry;
+        }
         
         // Update the notes field and call editRow
         if (domCache.notes) domCache.notes.value = '';
@@ -1406,6 +1431,61 @@ window.addCriticalAlert = addCriticalAlert;
           .finally(() => setBusy('.remove-alert-btn', false));
       }
       window.removeCriticalAlert = removeCriticalAlert;
+
+      // Undo functionality
+      let undoStack = [];
+      let maxUndoSteps = 10;
+      
+      function saveUndoState(action, data) {
+        undoStack.push({
+          action: action,
+          data: data,
+          timestamp: Date.now()
+        });
+        
+        // Keep only last N undo steps
+        if (undoStack.length > maxUndoSteps) {
+          undoStack.shift();
+        }
+      }
+      
+      function undoLastChange() {
+        if (undoStack.length === 0) {
+          alert('No changes to undo');
+          return;
+        }
+        
+        const lastChange = undoStack.pop();
+        
+        switch (lastChange.action) {
+          case 'add':
+            alert('Cannot undo add operation automatically. Please delete the row manually.');
+            break;
+          case 'edit':
+            if (lastChange.data && selectedRowIndex) {
+              restoreRowData(lastChange.data);
+              alert('Row data restored');
+            }
+            break;
+          case 'delete':
+            alert('Cannot undo delete operation automatically. Please add the row back manually.');
+            break;
+          default:
+            alert('Unknown operation type');
+        }
+      }
+      
+      function restoreRowData(data) {
+        if (domCache.username) domCache.username.value = data.username || '';
+        if (domCache.passwordField) domCache.passwordField.value = data.passwordField || '';
+        if (domCache.email) domCache.email.value = data.email || '';
+        if (domCache.phone) domCache.phone.value = data.phone || '';
+        if (domCache.server) domCache.server.value = data.server || '';
+        if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
+        if (domCache.notes) domCache.notes.value = data.notes || '';
+      }
+      
+      window.undoLastChange = undoLastChange;
 
   </script>
 
