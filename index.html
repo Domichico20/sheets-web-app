@@ -809,10 +809,7 @@
       const idxEl = document.getElementById('rowIndex');
       if (idxEl) idxEl.value = selectedRowIndex;
 
-      // Show critical alert (guarded)
-      if (typeof showCriticalAlert === 'function') {
-        try { showCriticalAlert(rec); } catch (e) { console.warn('Alert show error:', e); }
-      }
+      // Critical alerts only show when row is selected, not during search
     });
 
     frag.appendChild(tr);
@@ -1227,7 +1224,7 @@ window.debouncedSearch = debouncedSearch;
           password: sessionPassword,
           row: selectedRowIndex,
           username: domCache.username ? domCache.username.value.trim() : '',
-          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          passwordField: domCache.passwordField ? domCache.passwordField.value.trim() : '',
           email: domCache.email ? domCache.email.value.trim() : '',
           phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           server: domCache.server ? domCache.server.value.trim() : '',
@@ -1478,6 +1475,7 @@ window.addCriticalAlert = addCriticalAlert;
       let maxUndoSteps = 10;
       
       function saveUndoState(action, data) {
+        console.log('Saving undo state for action:', action);
         undoStack.push({
           action: action,
           data: data,
@@ -1491,6 +1489,7 @@ window.addCriticalAlert = addCriticalAlert;
       }
       
       function undoLastChange() {
+        console.log('Undo button clicked, undoStack length:', undoStack.length);
         if (undoStack.length === 0) {
           alert('No changes to undo');
           return;
