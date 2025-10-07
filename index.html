@@ -9,7 +9,6 @@
   <style type="text/css">
     p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
     p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    span.s1 {font: 12.0px 'Apple Color Emoji'}
   </style>
 </head>
 <body>
@@ -108,11 +107,11 @@
 <p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
 <p class="p1"><span class="Apple-converted-space">      </span>justify-content: center;</p>
 <p class="p1"><span class="Apple-converted-space">      </span>align-items: flex-start;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>/* <span class="s1">⬅️</span> no vertical centering */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>/* ⬅️ no vertical centering */</p>
 <p class="p1"><span class="Apple-converted-space">      </span>padding: 8px 16px 40px;</p>
 <p class="p1"><span class="Apple-converted-space">      </span>/* small top padding only */</p>
 <p class="p1"><span class="Apple-converted-space">      </span>min-height: auto;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>/* <span class="s1">⬅️</span> remove forced height */</p>
+<p class="p1"><span class="Apple-converted-space">      </span>/* ⬅️ remove forced height */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">    </span>.login-card { margin-top: 4px; }</p>
@@ -370,7 +369,7 @@
 <p class="p1"><span class="Apple-converted-space">    </span>.note-entry { margin: 0 0 .55em 0; }</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.note-entry .ts { font-weight: 100; color: #880000; font-size: 1.05rem; }</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* <span class="s1">🔴</span> Critical alert highlight */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* 🔴 Critical alert highlight */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.note-entry.critical {</p>
 <p class="p1"><span class="Apple-converted-space">      </span>background: #d93025; /* Google red */</p>
 <p class="p1"><span class="Apple-converted-space">      </span>color: #fff;</p>
@@ -409,6 +408,7 @@
 <p class="p1"><span class="Apple-converted-space">    </span>/* ===== App (2nd page) background ===== */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>body.app-bg {</p>
 <p class="p1"><span class="Apple-converted-space">      </span>min-height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: url('pexels-codioful-6985045.jpg') center / cover no-repeat;</p>
 <p class="p1"><span class="Apple-converted-space">      </span>background: url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat;</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
@@ -417,7 +417,7 @@
 <p class="p1"><span class="Apple-converted-space">    </span>body.app-bg #appSection { display: block; }</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* =========================================================</p>
-<p class="p1"><span class="Apple-converted-space">       </span><span class="s1">✅</span> MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)</p>
+<p class="p1"><span class="Apple-converted-space">       </span>✅ MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)</p>
 <p class="p1"><span class="Apple-converted-space">       </span>========================================================= */</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* Touch targets &amp; smoother taps */</p>
@@ -723,7 +723,7 @@
 <p class="p1"><span class="Apple-converted-space">      </span>if (!d) return '';</p>
 <p class="p1"><span class="Apple-converted-space">      </span>const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 &amp;&amp; d.startsWith('1') ? d : d);</p>
 <p class="p1"><span class="Apple-converted-space">      </span>const display = normalizePhone(s);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>return `&lt;a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp"&gt;${escapeHTML(display)} <span class="s1">📲</span>&lt;/a&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return `&lt;a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp"&gt;${escapeHTML(display)} 📲&lt;/a&gt;`;</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">    </span>function canonicalEmail(s) {</p>
@@ -743,7 +743,7 @@
 <p class="p1"><span class="Apple-converted-space">      </span>const lines = stripped.split('\n');</p>
 <p class="p1"><span class="Apple-converted-space">      </span>return lines</p>
 <p class="p1"><span class="Apple-converted-space">        </span>.map(line =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>// <span class="s1">🔴</span> Critical alert line</p>
+<p class="p1"><span class="Apple-converted-space">          </span>// 🔴 Critical alert line</p>
 <p class="p1"><span class="Apple-converted-space">          </span>const c = line.match(/^\[CRITICAL_ALERT\]\s*(.*)$/);</p>
 <p class="p1"><span class="Apple-converted-space">          </span>if (c) {</p>
 <p class="p1"><span class="Apple-converted-space">            </span>const msg = c[1] || '';</p>
@@ -758,6 +758,8 @@
 <p class="p1"><span class="Apple-converted-space">        </span>.join('');</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* helper: prompt for CRITICAL alert on a given record and let user keep/delete */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function promptCriticalAlert(rec) {</p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* helper: show CRITICAL alert notification without auto-delete */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>function showCriticalAlert(rec) {</p>
 <p class="p1"><span class="Apple-converted-space">      </span>const noteCell = (rec &amp;&amp; rec.row &amp;&amp; rec.row[6]) ? rec.row[6] : '';</p>
@@ -765,9 +767,37 @@
 <p class="p1"><span class="Apple-converted-space">      </span>if (!m) return;</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">      </span>const message = m[1].trim();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// OK = Keep Alert, Cancel = Delete Alert</p>
 <p class="p1"><span class="Apple-converted-space">      </span>// Just show the alert without prompting for deletion</p>
 <p class="p1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>alert(`<span class="s1">⚠️</span> CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!keep) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const cleaned = (noteCell || '')</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.split('\n')</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.filter(line =&gt; !line.startsWith('[CRITICAL_ALERT]'))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.join('\n');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const row = rec.row;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const params = new URLSearchParams({</p>
+<p class="p1"><span class="Apple-converted-space">            </span>action: 'edit',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>password: sessionPassword,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>row: rec.sheetRow,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>username: row[0] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>passwordField: row[1] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>email: row[2] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>phone: normalizePhone(row[3] || ''),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>server: row[4] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>autoPay: row[5] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>notes: cleaned</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>fetch(scriptURL, { method: 'POST', body: params })</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.then(r =&gt; r.text())</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.then(() =&gt; { alert('Critical alert removed.'); loadData(); })</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.catch(err =&gt; alert('Failed to update alert: ' + err));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}, 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);</p>
 <p class="p1"><span class="Apple-converted-space">      </span>}, 100);</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
@@ -780,6 +810,8 @@
 <p class="p1"><span class="Apple-converted-space">        </span>return '&lt;td&gt;' + escapeHTML(cell) + '&lt;/td&gt;';</p>
 <p class="p1"><span class="Apple-converted-space">      </span>}).join('');</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* helper: prompt for CRITICAL alert on a given record and let user keep/delete */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function promptCriticalAlert(rec) {</p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* helper: show CRITICAL alert notification without auto-delete */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>function showCriticalAlert(rec) {</p>
 <p class="p1"><span class="Apple-converted-space">      </span>const noteCell = (rec &amp;&amp; rec.row &amp;&amp; rec.row[6]) ? rec.row[6] : '';</p>
@@ -787,14 +819,45 @@
 <p class="p1"><span class="Apple-converted-space">      </span>if (!m) return;</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">      </span>const message = m[1].trim();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>// OK = Keep Alert, Cancel = Delete Alert</p>
 <p class="p1"><span class="Apple-converted-space">      </span>// Just show the alert without prompting for deletion</p>
 <p class="p1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>alert(`<span class="s1">⚠️</span> CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const keep = confirm(`⚠️ CRITICAL ALERT\n\n${message}\n\nOK = Keep Alert\nCancel = Delete Alert`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!keep) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const cleaned = (noteCell || '')</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.split('\n')</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.filter(line =&gt; !line.startsWith('[CRITICAL_ALERT]'))</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.join('\n');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>const row = rec.row;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const params = new URLSearchParams({</p>
+<p class="p1"><span class="Apple-converted-space">            </span>action: 'edit',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>password: sessionPassword,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>row: rec.sheetRow,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>username: row[0] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>passwordField: row[1] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>email: row[2] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>phone: normalizePhone(row[3] || ''),</p>
+<p class="p1"><span class="Apple-converted-space">            </span>server: row[4] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>autoPay: row[5] || '',</p>
+<p class="p1"><span class="Apple-converted-space">            </span>notes: cleaned</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>fetch(scriptURL, { method: 'POST', body: params })</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.then(r =&gt; r.text())</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.then(() =&gt; { alert('Critical alert removed.'); loadData(); })</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.catch(err =&gt; alert('Failed to update alert: ' + err));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}, 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);</p>
 <p class="p1"><span class="Apple-converted-space">      </span>}, 100);</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* ---------- Data load + render ---------- */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>function renderTable(records){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tbody = document.querySelector('#dataTable tbody');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!tbody) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.innerHTML = '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>if (!domCache.tbody) return;</p>
 <p class="p1"><span class="Apple-converted-space">  </span>domCache.tbody.innerHTML = '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const frag = document.createDocumentFragment();</p>
@@ -809,6 +872,10 @@
 <p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('#dataTable tr.selected').forEach(r =&gt; r.classList.remove('selected'));</p>
 <p class="p1"><span class="Apple-converted-space">      </span>tr.classList.add('selected');</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>['username','password','email','phone','server','autoPay'].forEach((id, idx) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const el = document.getElementById(id);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (el) el.value = row[idx] || '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
 <p class="p1"><span class="Apple-converted-space">      </span>// Use cached DOM elements for better performance</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (domCache.username) domCache.username.value = row[0] || '';</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (domCache.password) domCache.password.value = row[1] || '';</p>
@@ -818,10 +885,15 @@
 <p class="p1"><span class="Apple-converted-space">      </span>if (domCache.autoPay) domCache.autoPay.value = row[5] || '';</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">      </span>selectedRawNotes = row[6] || '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const notesEl = document.getElementById('notes');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (notesEl) notesEl.value = '';</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (domCache.notes) domCache.notes.value = '';</p>
 <p class="p1"><span class="Apple-converted-space">      </span>const idxEl = document.getElementById('rowIndex');</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (idxEl) idxEl.value = selectedRowIndex;</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// Prompt critical alert (guarded)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (typeof promptCriticalAlert === 'function') {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>try { promptCriticalAlert(rec); } catch (e) { console.warn('Alert prompt error:', e); }</p>
 <p class="p1"><span class="Apple-converted-space">      </span>// Show critical alert (guarded)</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (typeof showCriticalAlert === 'function') {</p>
 <p class="p1"><span class="Apple-converted-space">        </span>try { showCriticalAlert(rec); } catch (e) { console.warn('Alert show error:', e); }</p>
@@ -831,6 +903,7 @@
 <p class="p1"><span class="Apple-converted-space">    </span>frag.appendChild(tr);</p>
 <p class="p1"><span class="Apple-converted-space">  </span>});</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>tbody.appendChild(frag);</p>
 <p class="p1"><span class="Apple-converted-space">  </span>domCache.tbody.appendChild(frag);</p>
 <p class="p1">}</p>
 <p class="p2"><br></p>
@@ -847,8 +920,10 @@
 <p class="p1"><span class="Apple-converted-space">  </span>el.style.pointerEvents = on ? 'none' : 'auto';</p>
 <p class="p1">}</p>
 <p class="p2"><br></p>
+<p class="p1">// Sort helper reused in multiple places</p>
 <p class="p1">// Optimized sort helper with better performance</p>
 <p class="p1">function sortByRecent(a, b) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow);</p>
 <p class="p1"><span class="Apple-converted-space">  </span>// Use bitwise operations for faster comparison</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const timeDiff = b.lastEditMs - a.lastEditMs;</p>
 <p class="p1"><span class="Apple-converted-space">  </span>return timeDiff !== 0 ? timeDiff : (b.sheetRow - a.sheetRow);</p>
@@ -940,8 +1015,14 @@
 <p class="p1"><span class="Apple-converted-space">    </span>lastEditMs: parseLastEditMs(row[6] || '')</p>
 <p class="p1"><span class="Apple-converted-space">  </span>}));</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>allRecords.sort(sortByRecent);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const q = document.getElementById('searchQuery');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (q) q.value = '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>sortRecords(allRecords);</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const tbody = document.querySelector('#dataTable tbody');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (tbody) tbody.innerHTML = '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>if (domCache.searchQuery) domCache.searchQuery.value = '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>if (domCache.tbody) domCache.tbody.innerHTML = '';</p>
 <p class="p2"><br></p>
@@ -977,6 +1058,7 @@
 <p class="p1"><span class="Apple-converted-space">      </span>if (targets.length) {</p>
 <p class="p1"><span class="Apple-converted-space">        </span>await refreshRowsBatch(Array.from(new Set(targets)));</p>
 <p class="p1"><span class="Apple-converted-space">        </span>// keep table sorted by latest change, then show top chunk (fast)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>allRecords.sort(sortByRecent);</p>
 <p class="p1"><span class="Apple-converted-space">        </span>sortRecords(allRecords);</p>
 <p class="p1"><span class="Apple-converted-space">        </span>renderTable(allRecords.slice(0, ROW_LIMIT));</p>
 <p class="p1"><span class="Apple-converted-space">        </span>return;</p>
@@ -995,8 +1077,11 @@
 <p class="p2"><br></p>
 <p class="p1">window.loadData = loadData;</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ---------- Search (keeps your phone/email smarts) ---------- */</p>
 <p class="p1"><span class="Apple-converted-space">    </span>/* ---------- Search (optimized with caching and debouncing) ---------- */</p>
 <p class="p1">function searchData() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const raw = document.getElementById('searchQuery').value.trim().toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!raw) { renderTable(allRecords.slice(0, ROW_LIMIT)); return; }</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const raw = domCache.searchQuery.value.trim().toLowerCase();</p>
 <p class="p1"><span class="Apple-converted-space">  </span>if (!raw) {<span class="Apple-converted-space"> </span></p>
 <p class="p1"><span class="Apple-converted-space">    </span>renderTable(allRecords.slice(0, ROW_LIMIT));<span class="Apple-converted-space"> </span></p>
@@ -1009,6 +1094,7 @@
 <p class="p1"><span class="Apple-converted-space">  </span>const hasPhoneQuery = qDigits.length &gt;= 7;</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const hasEmailQuery = qEmail.includes('@');</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const filtered = allRecords.filter(rec =&gt; {</p>
 <p class="p1"><span class="Apple-converted-space">  </span>// Use for loop instead of filter for better performance on large datasets</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const filtered = [];</p>
 <p class="p1"><span class="Apple-converted-space">  </span>for (let i = 0; i &lt; allRecords.length; i++) {</p>
@@ -1029,6 +1115,8 @@
 <p class="p1"><span class="Apple-converted-space">      </span>emailMatch = re.includes(qEmail);</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>return baseMatch || phoneMatch || emailMatch;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
 <p class="p1"><span class="Apple-converted-space">    </span>if (baseMatch || phoneMatch || emailMatch) {</p>
 <p class="p1"><span class="Apple-converted-space">      </span>filtered.push(rec);</p>
 <p class="p1"><span class="Apple-converted-space">    </span>}</p>
@@ -1037,8 +1125,10 @@
 <p class="p1"><span class="Apple-converted-space">  </span>renderTable(filtered.slice(0, ROW_LIMIT));</p>
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">  </span>// If the search narrows to exactly one row and it has a CRITICAL alert, show it immediately</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// After rendering, if any matching row has a CRITICAL alert, prompt once.</p>
 <p class="p1"><span class="Apple-converted-space">  </span>// After rendering, if any matching row has a CRITICAL alert, show once.</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const alertRec = filtered.find(r =&gt; /\[CRITICAL_ALERT\]/.test((r.row[6] || '')));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (alertRec) { promptCriticalAlert(alertRec); }</p>
 <p class="p1"><span class="Apple-converted-space">  </span>if (alertRec) { showCriticalAlert(alertRec); }</p>
 <p class="p1">}</p>
 <p class="p2"><br></p>
@@ -1051,6 +1141,8 @@
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">      </span>/* ---------- Add/Edit/Delete (same behavior as before) ---------- */</p>
 <p class="p1"><span class="Apple-converted-space">      </span>function clearForm() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>['username', 'password', 'email', 'phone', 'server', 'autoPay', 'notes', 'searchQuery']</p>
+<p class="p1"><span class="Apple-converted-space">          </span>.forEach(id =&gt; { const e = document.getElementById(id); if (e) e.value = ''; });</p>
 <p class="p1"><span class="Apple-converted-space">        </span>// Use cached DOM elements for better performance</p>
 <p class="p1"><span class="Apple-converted-space">        </span>if (domCache.username) domCache.username.value = '';</p>
 <p class="p1"><span class="Apple-converted-space">        </span>if (domCache.password) domCache.password.value = '';</p>
@@ -1096,6 +1188,8 @@
 <p class="p1"><span class="Apple-converted-space">      </span>function editRow() {</p>
 <p class="p1"><span class="Apple-converted-space">  </span>setBusy('.edit-btn', true);</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function gi(id) { return document.getElementById(id).value.trim(); }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const rawNew = gi('notes');</p>
 <p class="p1"><span class="Apple-converted-space">  </span>// Use cached DOM elements for better performance</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const rawNew = domCache.notes ? domCache.notes.value.trim() : '';</p>
 <p class="p1"><span class="Apple-converted-space">  </span>const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();</p>
@@ -1114,6 +1208,12 @@
 <p class="p1"><span class="Apple-converted-space">    </span>action: 'edit',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>password: sessionPassword,</p>
 <p class="p1"><span class="Apple-converted-space">    </span>row: selectedRowIndex,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>username: gi('username'),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>passwordField: gi('password'),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>email: gi('email'),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phone: normalizePhone(gi('phone')),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>server: gi('server'),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>autoPay: gi('autoPay'),</p>
 <p class="p1"><span class="Apple-converted-space">    </span>username: domCache.username ? domCache.username.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>passwordField: domCache.password ? domCache.password.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>email: domCache.email ? domCache.email.value.trim() : '',</p>
@@ -1123,8 +1223,8 @@
 <p class="p1"><span class="Apple-converted-space">    </span>notes: combined</p>
 <p class="p1"><span class="Apple-converted-space">  </span>});</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// <span class="s1">✅</span> Post the edit, then refresh THIS row from Google Sheets (server truth),</p>
-<p class="p1"><span class="Apple-converted-space">  </span>// <span class="s1">✅</span> mark it as latest change, resort, and re-render.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ✅ Post the edit, then refresh THIS row from Google Sheets (server truth),</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ✅ mark it as latest change, resort, and re-render.</p>
 <p class="p1"><span class="Apple-converted-space">  </span>fetch(scriptURL, { method: 'POST', body: params })</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.then(r =&gt; r.text())</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.then(() =&gt; {</p>
@@ -1159,8 +1259,10 @@
 <p class="p2"><br></p>
 <p class="p1"><span class="Apple-converted-space">      </span>function addNewNote() {</p>
 <p class="p1"><span class="Apple-converted-space">        </span>if (selectedRowIndex === null) { alert('Select a row first.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const note = document.getElementById('notes').value.trim();</p>
 <p class="p1"><span class="Apple-converted-space">        </span>const note = domCache.notes ? domCache.notes.value.trim() : '';</p>
 <p class="p1"><span class="Apple-converted-space">        </span>if (!note) { alert('Type a note in the Notes box first.'); return; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>editRow(); // will timestamp &amp; prepend</p>
 <p class="p2"><span class="Apple-converted-space">        </span></p>
 <p class="p1"><span class="Apple-converted-space">        </span>// Get existing notes (remove old #number: prefixes)</p>
 <p class="p1"><span class="Apple-converted-space">        </span>const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();</p>
@@ -1222,6 +1324,8 @@
 <p class="p1"><span class="Apple-converted-space">          </span>function addRow() {</p>
 <p class="p1"><span class="Apple-converted-space">        </span>setBusy('.add-btn', true);</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function gi(id) { return document.getElementById(id).value.trim(); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const username = gi('username');</p>
 <p class="p1"><span class="Apple-converted-space">        </span>// Use cached DOM elements for better performance</p>
 <p class="p1"><span class="Apple-converted-space">        </span>const username = domCache.username ? domCache.username.value.trim() : '';</p>
 <p class="p1"><span class="Apple-converted-space">        </span>if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }</p>
@@ -1231,6 +1335,12 @@
 <p class="p1"><span class="Apple-converted-space">          </span>action: 'add',</p>
 <p class="p1"><span class="Apple-converted-space">          </span>password: sessionPassword,</p>
 <p class="p1"><span class="Apple-converted-space">          </span>username: username,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>passwordField: gi('password'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>email: gi('email'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>phone: normalizePhone(gi('phone')),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>server: gi('server'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>autoPay: gi('autoPay'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>notes: gi('notes') ? `${gi('notes')}` : ''</p>
 <p class="p1"><span class="Apple-converted-space">          </span>passwordField: domCache.password ? domCache.password.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">          </span>email: domCache.email ? domCache.email.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">          </span>phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),</p>
@@ -1279,6 +1389,7 @@
 <p class="p1"><span class="Apple-converted-space">                </span>};</p>
 <p class="p1"><span class="Apple-converted-space">                </span>allRecords.push(rec);</p>
 <p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>allRecords.sort((a, b) =&gt; (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));</p>
 <p class="p1"><span class="Apple-converted-space">                </span>sortRecords(allRecords);</p>
 <p class="p1"><span class="Apple-converted-space">                </span>renderTable(allRecords.slice(0, ROW_LIMIT));</p>
 <p class="p2"><br></p>
@@ -1315,6 +1426,12 @@
 <p class="p1"><span class="Apple-converted-space">    </span>action: 'edit',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>password: sessionPassword,</p>
 <p class="p1"><span class="Apple-converted-space">    </span>row: selectedRowIndex,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>username: document.getElementById('username').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>passwordField: document.getElementById('password').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>email: document.getElementById('email').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phone: normalizePhone(document.getElementById('phone').value.trim()),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>server: document.getElementById('server').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">    </span>autoPay: document.getElementById('autoPay').value.trim(),</p>
 <p class="p1"><span class="Apple-converted-space">    </span>username: domCache.username ? domCache.username.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>passwordField: domCache.password ? domCache.password.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">    </span>email: domCache.email ? domCache.email.value.trim() : '',</p>
@@ -1324,7 +1441,7 @@
 <p class="p1"><span class="Apple-converted-space">    </span>notes: combined</p>
 <p class="p1"><span class="Apple-converted-space">  </span>});</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>// <span class="s1">✅</span> No page refresh: update UI + local cache, then resort by last change</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ✅ No page refresh: update UI + local cache, then resort by last change</p>
 <p class="p1"><span class="Apple-converted-space">  </span>fetch(scriptURL, { method: 'POST', body: params })</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.then(r =&gt; r.text())</p>
 <p class="p1"><span class="Apple-converted-space">    </span>.then(() =&gt; {</p>
@@ -1336,6 +1453,12 @@
 <p class="p1"><span class="Apple-converted-space">      </span>const rec = allRecords.find(r =&gt; r.sheetRow === selectedRowIndex);</p>
 <p class="p1"><span class="Apple-converted-space">      </span>if (rec) {</p>
 <p class="p1"><span class="Apple-converted-space">        </span>const newRow = [</p>
+<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('username').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('password').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('email').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>normalizePhone(document.getElementById('phone').value.trim()),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('server').value.trim(),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('autoPay').value.trim(),</p>
 <p class="p1"><span class="Apple-converted-space">          </span>domCache.username ? domCache.username.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">          </span>domCache.password ? domCache.password.value.trim() : '',</p>
 <p class="p1"><span class="Apple-converted-space">          </span>domCache.email ? domCache.email.value.trim() : '',</p>
@@ -1427,7 +1550,5 @@
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p1">&lt;/body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;/html&gt;</p>
 </body>
 </html>
