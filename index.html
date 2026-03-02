@@ -1,1 +1,1819 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#3b82f6"/><meta name="description" content="TaskTackle - A modern task management application inspired by Todoist"/><link rel="apple-touch-icon" href="/tasktackle-logo.svg"/><link rel="manifest" href="/manifest.json"/><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><title>TaskTackle - Task Management Made Simple</title><script defer="defer" src="/static/js/main.146a3fda.js"></script><link href="/static/css/main.21423270.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Sheets Manager</title>
+  <!-- Preload login background -->
+  <link rel="preload" as="image" href="bg.jpg">
+  <!-- Preload app background -->
+  <link rel="preload" as="image"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg">
+
+
+  <link rel="preload" as="image" href="logo.png">
+  <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
+  <link rel="icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="shortcut icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
+
+
+
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- speed: warm up API connections -->
+  <link rel="preconnect" href="https://sheets.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sheets.googleapis.com">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://script.google.com">
+
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    body {
+      margin: 20px;
+      background-color: #f0f0f0;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    header img.logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    h2 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg,
+          #003366, #0066CC, #3399FF, #ff3333, #ffa733, #9a9c21, #54cc25, #1a8371, #229ea7, #33b4ff, #339cff);
+      background-size: 200% auto;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 10s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      h2 {
+        animation: none;
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* --- Login section as a centered card --- */
+    #loginSection {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      /* ⬅️ no vertical centering */
+      padding: 8px 16px 40px;
+      /* small top padding only */
+      min-height: auto;
+      /* ⬅️ remove forced height */
+    }
+
+    .login-card { margin-top: 4px; }
+
+    .login-card {
+      position: relative;
+      width: min(420px, 92vw);
+      padding: 28px 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+      backdrop-filter: blur(6px);
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(14px);
+      z-index: -1;
+      opacity: .30;
+      animation: glowRainbow 20s linear infinite;
+    }
+
+    .login-card .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+      color: #003366;
+    }
+
+    .inputbox { position: relative; margin: 12px 0 6px; }
+
+    .inputbox input {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 1rem; /* >=16px on most browsers => no iOS zoom */
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .inputbox label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      padding: 0 6px;
+      color: #666;
+      pointer-events: none;
+      transition: .18s ease;
+    }
+
+    .inputbox input:focus+label,
+    .inputbox input:not(:placeholder-shown)+label {
+      top: 0;
+      font-size: .8rem;
+      color: #003366;
+    }
+
+    /* ========= Shared glow animation ========= */
+    @keyframes glowRainbow {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* Unlock button base */
+    #loginSection .unlock-btn {
+      margin-left: 0;
+      padding: 15px 40px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      border-radius: 12px;
+      background-color: #2952db;
+      color: #FFF;
+      font-size: 1.1rem;
+      isolation: isolate;
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    /* ====== Rest of your styles (unchanged) ====== */
+    #searchSection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #searchSection input[type="text"] {
+      flex: 0 0 50%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+    }
+
+    #searchSection button.search-btn,
+    #searchSection button.add-reminder-btn {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      margin-left: 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+    }
+    #searchSection button.search-btn { background-color: #92e67d; }
+    #searchSection button.add-reminder-btn { background-color: #003366; color: white; }
+    #searchSection button.add-reminder-btn:hover { background-color: #004080; }
+
+    .critical-btn { background-color: #fc933d; color: #fff; }
+    .remove-alert-btn { background-color: #d93025; color: #fff; }
+
+    .form-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: bold; margin-bottom: 5px; }
+    .form-group input {
+      padding: 10px;
+      font-size: 1rem;
+      width: 175px;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* center the whole bar */
+      margin: 20px 0;
+    }
+
+    .button-group.center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap; /* all buttons on one line */
+    }
+    .button-group.center button {
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+
+    /* If the screen is small, allow wrapping (optional) */
+    @media (max-width: 700px) {
+      .button-group.center {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    .button-group { display: flex; gap: 10px; }
+    .button-group button {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .add-btn    { background-color: #003366; }
+    .edit-btn   { background-color: #3399FF; }
+    .clear-btn  { background-color: #66CC66; }
+    .refresh-btn{ background-color: gold; color: black; }
+    .delete-btn { background-color: red; }
+    .undo-btn { background-color: #FF6B35; }
+
+    table {
+      margin: 0 auto;
+      width: auto;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table th:nth-child(3),
+    table td:nth-child(3) {
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    table th { background-color: #4285F4; color: white; }
+    tr.selected { background-color: rgb(238, 217, 217); }
+
+    /* ========= SAME gradient glow for ALL buttons ========= */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      position: relative;
+      isolation: isolate;
+      z-index: 0;
+    }
+
+    .button-group button::before,
+    #searchSection .search-btn::before,
+    #loginSection .unlock-btn::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(8px);
+      animation: glowRainbow 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      z-index: -1;
+    }
+
+    .button-group button:hover::before,
+    #searchSection .search-btn:hover::before,
+    #loginSection .unlock-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* --- Notes wrapping + scroll + WhatsApp link styling --- */
+    table th:nth-child(7),
+    table td:nth-child(7) { width: 550px; }
+
+    .notes-cell {
+      max-height: 180px;
+      overflow: auto;
+      white-space: normal;
+      line-height: 1.35;
+    }
+
+    .note-entry { margin: 0 0 .55em 0; }
+    .note-entry .ts { font-weight: 100; color: #880000; font-size: 1.05rem; }
+
+    /* 🔴 Critical alert highlight */
+    .note-entry.critical {
+      background: #d93025; /* Google red */
+      color: #fff;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: inline-block;
+    }
+
+    .phone-wa a { text-decoration: none; }
+
+    /* Make the Notes input wider */
+    #notes { width: 500px; }
+
+    /* Optional: keep it fluid on small screens */
+    @media (max-width: 600px) {
+      #notes { width: 100%; }
+    }
+
+    /* ===== Login-only background (uses bg.jpg) ===== */
+    body.login-bg {
+      min-height: 100vh;
+      background: url('bg.jpg') center / cover no-repeat;
+    }
+
+    /* subtle dark overlay to boost contrast behind the card */
+    body.login-bg::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* ===== App (2nd page) background ===== */
+    body.app-bg {
+      min-height: 100vh;
+      background: url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat;
+    }
+
+    /* Hide the app by default; only show it after login when body.app-bg is set */
+    #appSection { display: none; }
+    body.app-bg #appSection { display: block; }
+
+    /* =========================================================
+       ✅ MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)
+       ========================================================= */
+
+    /* Touch targets & smoother taps */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      min-height: 44px;             /* thumb-friendly */
+      will-change: transform;       /* (the line that was cut off) */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Make the table paint faster and scroll nicely on mobile */
+    #dataTable {
+      content-visibility: auto;                 /* paint only when visible */
+      contain-intrinsic-size: 600px 400px;      /* reserve size for faster paint */
+    }
+
+    @media (max-width: 900px) {
+      body { margin: 10px; }
+      header img.logo { max-width: 150px; }
+    }
+
+    @media (max-width: 768px) {
+      /* Stack the search bar */
+      #searchSection { 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 10px; 
+      }
+      #searchSection input[type="text"] {
+        flex: 1 1 auto;
+        max-width: none;
+        width: 100%;
+      }
+      #searchSection button.search-btn,
+      #searchSection button.add-reminder-btn {
+        margin-left: 0;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.05rem;
+      }
+
+      /* Inputs full-width in small screens */
+      .form-group input { width: 100%; }
+
+      /* Button group wraps nicely */
+      .button-group.center { flex-wrap: wrap; }
+      .button-group.center button {
+        flex: 1 1 48%;
+        padding: 14px 16px;
+        font-size: 1rem;
+      }
+
+      /* Table horizontal scroll instead of squeezing columns */
+      table { width: 100%; }
+      #dataTable {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #dataTable thead,
+      #dataTable tbody,
+      #dataTable tr,
+      #dataTable th,
+      #dataTable td {
+        white-space: nowrap;
+      }
+      table th:nth-child(7),
+      table td:nth-child(7) { width: auto; }
+      .notes-cell { max-height: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .login-card { width: 100%; padding: 20px 16px; }
+      .button-group.center button { flex-basis: 100%; }
+      h2 { font-size: 1.25rem; }
+    }
+
+    /* Disable heavy glow/animation on phones & reduced motion for snappier taps */
+    @media (prefers-reduced-motion: reduce), (max-width: 768px) {
+      h2 { animation: none !important; }
+      .button-group button::before,
+      #searchSection .search-btn::before,
+      #loginSection .unlock-btn::before,
+      .login-card::before {
+        display: none !important;   /* remove blurred gradient layer */
+        animation: none !important;
+      }
+    }
+
+    /* Reminder modal */
+    .reminder-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .reminder-modal-overlay.open {
+      display: flex;
+      pointer-events: auto;
+    }
+    .reminder-modal {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      min-width: 360px;
+      max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      pointer-events: auto;
+    }
+    .reminder-modal h3 { margin-bottom: 16px; color: #003366; font-size: 1.2rem; }
+    .reminder-modal .field { margin-bottom: 16px; }
+    .reminder-modal .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .reminder-modal .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d6d6d6;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .reminder-modal .field input[readonly] { background: #f5f5f5; color: #333; }
+    .reminder-modal .field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d6d6d6;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .reminder-modal #reminderText {
+      min-height: 160px;
+      resize: vertical;
+    }
+    .reminder-modal .actions { display: flex; gap: 12px; margin-top: 20px; }
+    .reminder-modal .actions button { padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer; font-size: 1rem; }
+    .reminder-modal .actions .save-btn { background: #003366; color: white; }
+    .reminder-modal .actions .cancel-btn { background: #ccc; color: #333; }
+    .reminder-modal .user-reminders { margin-top: 16px; max-height: 160px; overflow-y: auto; }
+    .reminder-modal .user-reminders h4 { font-size: 0.95rem; margin-bottom: 8px; color: #555; }
+    .reminder-modal .reminder-chip {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 4px;
+      background: #e8f0fe;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* Reminder notification popup */
+    .reminder-notification-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .reminder-notification-overlay.open {
+      display: flex;
+    }
+    .reminder-notification-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 20px;
+      min-width: 420px;
+      max-width: 520px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .reminder-notification-header {
+      background: linear-gradient(135deg, #003366 0%, #004080 100%);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .reminder-notification-header .icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .reminder-notification-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .reminder-notification-header .sub {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+    .reminder-notification-body {
+      padding: 24px;
+    }
+    .reminder-notification-body .message {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #1a1a2e;
+      margin-bottom: 20px;
+    }
+    .reminder-notification-body .username-tag {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #e8f0fe;
+      color: #1967d2;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .reminder-notification-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .reminder-notification-actions button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .reminder-notification-actions button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .reminder-notification-actions button:active {
+      transform: translateY(0);
+    }
+    .reminder-btn-done {
+      background: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+      color: white;
+    }
+    .reminder-btn-snooze {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .reminder-btn-snooze:hover { background: #e2e8f0; }
+  </style>
+</head>
+
+
+<body>
+  <header>
+    <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
+      class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
+      onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
+  </header>
+
+
+
+  <div id="loginSection">
+    <div class="login-card">
+      <h1 class="brand">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+          style="margin-right:4px;color:#2952db">
+          <path
+            d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z" />
+        </svg>
+        Osvaldo Nuñez
+      </h1>
+
+      <div class="inputbox">
+        <input type="password" id="appPassword" placeholder=" "
+          onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+        <label for="appPassword">Enter Password</label>
+      </div>
+
+      <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
+    </div>
+  </div>
+
+  <!-- App UI: hidden by CSS until body gets class 'app-bg' after login -->
+  <div id="appSection">
+    <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
+      <div id="searchSection">
+        <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
+        <button type="submit" class="search-btn">Search</button>
+        <button type="button" class="add-reminder-btn" onclick="openReminderModal()">Add Reminder</button>
+      </div>
+    </form>
+
+    <div class="form-section">
+      <div class="form-group"><label for="username">Username:</label><input type="text" id="username"></div>
+      <div class="form-group"><label for="password">Password:</label><input type="text" id="password"></div>
+      <div class="form-group"><label for="email">Email:</label><input type="text" id="email"></div>
+      <div class="form-group"><label for="phone">Phone #:</label><input type="text" id="phone"></div>
+      <div class="form-group"><label for="server">Server:</label><input type="text" id="server"></div>
+      <div class="form-group"><label for="autoPay">AutoPay:</label><input type="text" id="autoPay"></div>
+      <div class="form-group">
+        <label for="notes">Notes:</label>
+        <input type="text" id="notes">
+      </div>
+      <input type="hidden" id="rowIndex" />
+    </div>
+
+    <div class="button-row">
+      <div class="button-group center">
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="confirmEdit()">Update</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
+        <button class="refresh-btn" onclick="loadData(false)">Refresh</button>
+        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button class="undo-btn" onclick="undoLastChange()">Undo</button>
+        <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
+        <button type="button" class="remove-alert-btn" onclick="removeCriticalAlert()">Remove Alert</button>
+      </div>
+    </div>
+
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Server</th>
+          <th>AutoPay</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="reminderNotification" class="reminder-notification-overlay">
+    <div class="reminder-notification-card">
+      <div class="reminder-notification-header">
+        <div class="icon">⏰</div>
+        <div>
+          <h3>Reminder</h3>
+          <div class="sub" id="reminderNotifSub"></div>
+        </div>
+      </div>
+      <div class="reminder-notification-body">
+        <div id="reminderNotifUser" class="username-tag" style="display:none;"></div>
+        <div class="message" id="reminderNotifMsg"></div>
+        <div class="reminder-notification-actions">
+          <button type="button" class="reminder-btn-done" onclick="handleReminderAction('done')">Done</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze30')">Snooze 30 mins</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze60')">Snooze 1 hr</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze360')">Snooze 6 hrs</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze1440')">Snooze 24 hrs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="reminderModal" class="reminder-modal-overlay" onclick="if(event.target===this)closeReminderModal()">
+    <div class="reminder-modal" onclick="event.stopPropagation()">
+      <h3>Add Reminder</h3>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="reminderUsername" readonly>
+      </div>
+      <div class="field">
+        <label>Reminder</label>
+        <textarea id="reminderText" placeholder="What to remember?" rows="6"></textarea>
+      </div>
+      <div class="field">
+        <label>Due date & time (optional)</label>
+        <input type="datetime-local" id="reminderDue">
+      </div>
+      <div class="user-reminders" id="userRemindersList"></div>
+      <div class="actions">
+        <button type="button" class="save-btn" onclick="saveReminderFromModal()">Save Reminder</button>
+        <button type="button" class="cancel-btn" onclick="closeReminderModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- Login background on first load ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('login-bg');
+      initDOMCache(); // Initialize DOM cache for performance
+    });
+
+    /* ---------- App constants ---------- */
+    const ROW_LIMIT = 25;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+    const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
+    const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
+    const range = 'data!A1:G3000';
+
+    let sessionPassword = "";
+    let selectedRowIndex = null;   // 1-based sheet row
+    let selectedRawNotes = '';
+    let existingUsernames = [];
+    let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
+    let totalRows = 0;
+    
+    // Undo functionality
+    let undoStack = [];
+    let maxUndoSteps = 10;
+    
+    function saveUndoState(action, data) {
+      undoStack.push({
+        action: action,
+        data: data,
+        timestamp: Date.now()
+      });
+      
+      // Keep only last N undo steps
+      if (undoStack.length > maxUndoSteps) {
+        undoStack.shift();
+      }
+    }
+    
+    function undoLastChange() {
+      if (undoStack.length === 0) {
+        alert('No changes to undo');
+        return;
+      }
+      
+      const lastChange = undoStack.pop();
+      
+      switch (lastChange.action) {
+        case 'add':
+          alert('Cannot undo add operation automatically. Please delete the row manually.');
+          break;
+        case 'edit':
+          if (lastChange.data && selectedRowIndex) {
+            restoreRowData(lastChange.data);
+            selectedRawNotes = lastChange.data.notes || '';
+            alert('Row data restored');
+          } else {
+            alert('Select a row first to restore.');
+          }
+          break;
+        case 'delete':
+          alert('Cannot undo delete operation automatically. Please add the row back manually.');
+          break;
+        default:
+          alert('Unknown operation type');
+      }
+    }
+    
+    function restoreRowData(data) {
+      if (domCache.username) domCache.username.value = data.username || '';
+      if (domCache.password) domCache.password.value = data.password || '';
+      if (domCache.email) domCache.email.value = data.email || '';
+      if (domCache.phone) domCache.phone.value = data.phone || '';
+      if (domCache.server) domCache.server.value = data.server || '';
+      if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
+      if (domCache.notes) domCache.notes.value = data.notes || '';
+    }
+    
+    // Performance optimization: Cache DOM elements
+    const domCache = {
+      searchQuery: null,
+      username: null,
+      password: null,
+      email: null,
+      phone: null,
+      server: null,
+      autoPay: null,
+      notes: null,
+      dataTable: null,
+      tbody: null
+    };
+    
+    // Initialize DOM cache
+    function initDOMCache() {
+      domCache.searchQuery = document.getElementById('searchQuery');
+      domCache.username = document.getElementById('username');
+      domCache.password = document.getElementById('password');
+      domCache.email = document.getElementById('email');
+      domCache.phone = document.getElementById('phone');
+      domCache.server = document.getElementById('server');
+      domCache.autoPay = document.getElementById('autoPay');
+      domCache.notes = document.getElementById('notes');
+      domCache.dataTable = document.getElementById('dataTable');
+      domCache.tbody = document.querySelector('#dataTable tbody');
+    }
+    
+    // Debounce search to prevent excessive calls
+    let searchTimeout = null;
+    function debounceSearch(func, delay = 300) {
+      return function(...args) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+    
+    // Request cache to prevent duplicate API calls
+    const requestCache = new Map();
+    const CACHE_DURATION = 5000; // 5 seconds
+    
+    function getCachedRequest(url) {
+      const cached = requestCache.get(url);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+      return null;
+    }
+    
+    function setCachedRequest(url, data) {
+      requestCache.set(url, {
+        data: data,
+        timestamp: Date.now()
+      });
+    }
+
+    // speed helper: disable/enable a button by selector (prevents double submits)
+    function setBusy(selector, on) {
+      const btn = document.querySelector(selector);
+      if (btn) btn.disabled = !!on;
+    }
+
+    /* ---------- Login ---------- */
+    function checkPassword() {
+      const pass = document.getElementById('appPassword').value.trim();
+      if (pass === 'Google#2020') {
+        sessionPassword = pass;
+        document.body.classList.remove('login-bg');
+        document.body.classList.add('app-bg');
+        document.getElementById('loginSection').style.display = 'none';
+        loadData();
+      } else {
+        alert('Incorrect password');
+      }
+    }
+    window.checkPassword = checkPassword; // keep inline onclick working
+
+    /* ---------- Helpers (formatting + search) ---------- */
+    const TS_REGEX = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)/;
+
+    function parseLastEditMs(notesCell) {
+      if (!notesCell) return 0;
+      const firstLine = String(notesCell).split('\n')[0].trim();
+      const m = firstLine.match(TS_REGEX);
+      if (!m) return 0;
+      const ms = Date.parse(m[0]);
+      return isNaN(ms) ? 0 : ms;
+    }
+
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function normalizePhone(s) {
+      const d = (s || '').replace(/\D/g, '');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1'))
+        return d.replace(/^1(\d{3})(\d{3})(\d{4})/, '1 ($1) $2-$3');
+      return s || '';
+    }
+
+    function digitsOnly(s) { return (s || '').replace(/\D/g, ''); }
+
+    function phoneLink(s) {
+      const d = digitsOnly(s);
+      if (!d) return '';
+      const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+      const display = normalizePhone(s);
+      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${escapeHTML(display)} 📲</a>`;
+    }
+
+    function canonicalEmail(s) {
+      return (s || '')
+        .toLowerCase()
+        .replace(/^mailto:\s*/, '')
+        .replace(/^mail\s*to:\s*/, '')
+        .replace(/\s+/g, '')
+        .trim();
+    }
+
+    function formatNotes(cell) {
+      const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+      if (!stripped) return '';
+
+      const lines = stripped.split('\n');
+      const criticalLines = [];
+      const otherLines = [];
+
+      lines.forEach(line => {
+        const c = line.match(/^\[CRITICAL_ALERT\]\s*(.*)$/);
+        if (c) {
+          const msg = c[1] || '';
+          criticalLines.push(`<div class="note-entry critical">CRITICAL ALERT: ${escapeHTML(msg)}</div>`);
+        } else {
+          const m = line.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+          if (!m) otherLines.push(`<div class="note-entry"><span class="txt">${escapeHTML(line)}</span></div>`);
+          else otherLines.push(`<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span>: <span class="txt">${escapeHTML(m[2])}</span></div>`);
+        }
+      });
+
+      // Critical Alert always on top
+      return criticalLines.join('') + otherLines.join('');
+    }
+
+    /* helper: show CRITICAL alert notification without auto-delete */
+    function showCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
+      if (!m) return;
+
+      const message = m[1].trim();
+      // Just show the alert without prompting for deletion
+      setTimeout(() => {
+        alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);
+      }, 100);
+    }
+
+
+    /* ---------- Table cell renderer (restores your look) ---------- */
+    function tdHTML(row) {
+      return row.map((cell, ci) => {
+        if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
+        if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone
+        return '<td>' + escapeHTML(cell) + '</td>';
+      }).join('');
+    }
+
+    /* ---------- Data load + render ---------- */
+    function renderTable(records){
+  if (!domCache.tbody) return;
+  domCache.tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  records.forEach(rec => {
+    const row = rec.row;
+    const tr = document.createElement('tr');
+    tr.dataset.row = rec.sheetRow;
+    tr.innerHTML = tdHTML(row);
+
+    tr.addEventListener('click', () => {
+      selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
+      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+      tr.classList.add('selected');
+
+      // Use cached DOM elements for better performance
+      if (domCache.username) domCache.username.value = row[0] || '';
+      if (domCache.password) domCache.password.value = row[1] || '';
+      if (domCache.email) domCache.email.value = row[2] || '';
+      if (domCache.phone) domCache.phone.value = row[3] || '';
+      if (domCache.server) domCache.server.value = row[4] || '';
+      if (domCache.autoPay) domCache.autoPay.value = row[5] || '';
+
+      selectedRawNotes = row[6] || '';
+      if (domCache.notes) domCache.notes.value = '';
+      const idxEl = document.getElementById('rowIndex');
+      if (idxEl) idxEl.value = selectedRowIndex;
+
+      // Show Critical Alert popup only when row is selected (not on Search)
+      showCriticalAlert(rec);
+    });
+
+    frag.appendChild(tr);
+  });
+
+  domCache.tbody.appendChild(frag);
+}
+
+   // Tunables
+const REFRESH_COLS = 'A:G';
+const SHEET_TAB    = 'data';
+
+// Safe busy helper (does nothing if not present)
+function setBusySafe(sel, on) {
+  const el = document.querySelector(sel);
+  if (!el) return;
+  el.disabled = !!on;
+  el.style.opacity = on ? .6 : 1;
+  el.style.pointerEvents = on ? 'none' : 'auto';
+}
+
+// Optimized sort helper with better performance
+function sortByRecent(a, b) {
+  // Use bitwise operations for faster comparison
+  const timeDiff = b.lastEditMs - a.lastEditMs;
+  return timeDiff !== 0 ? timeDiff : (b.sheetRow - a.sheetRow);
+}
+
+// Optimized sorting for large datasets
+function sortRecords(records) {
+  // Use native sort with optimized comparison
+  return records.sort(sortByRecent);
+}
+
+// Build the inner <td> HTML for a row (preserve WhatsApp link + notes formatting)
+function tdHTML(rowArr) {
+  return rowArr.map((cell, ci) => {
+    if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
+    if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone -> WhatsApp link
+    return '<td>' + escapeHTML(cell) + '</td>';
+  }).join('');
+}
+
+
+// Fetch and update a set of sheet rows via one batchGet
+async function refreshRowsBatch(sheetRowNums) {
+  if (!sheetRowNums.length) return;
+
+  const ranges = sheetRowNums.map(r => `${SHEET_TAB}!${REFRESH_COLS.split(':')[0]}${r}:${REFRESH_COLS.split(':')[1]}${r}`);
+  const qs = ranges.map(r => `ranges=${encodeURIComponent(r)}`).join('&');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${qs}&fields=valueRanges(range,values)&key=${apiKey}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const payload = await res.json();
+  const list = (payload && payload.valueRanges) || [];
+
+  // Map “A123:G123” -> 123
+  const rowNumFromRange = (rng) => {
+    const m = String(rng || '').match(/!.*?([A-Z]+)(\d+):/i);
+    return m ? parseInt(m[2], 10) : null;
+  };
+
+  list.forEach(vr => {
+    const rnum = rowNumFromRange(vr.range);
+    if (!rnum) return;
+
+    const row = (vr.values && vr.values[0]) ? vr.values[0] : [];
+    const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+    // update selected notes cache if applicable
+    if (typeof selectedRowIndex === 'number' && rnum === selectedRowIndex) {
+      selectedRawNotes = newRow[6] || '';
+    }
+
+    // upsert into allRecords - use timestamp from notes for correct sort order
+    const lastEdit = parseLastEditMs(newRow[6] || '') || 0;
+    let rec = allRecords.find(x => x.sheetRow === rnum);
+    if (rec) {
+      rec.row = newRow;
+      rec.lastEditMs = lastEdit || rec.lastEditMs;
+    } else {
+      rec = {
+        row: newRow,
+        sheetRow: rnum,
+        lastEditMs: lastEdit || Date.now()
+      };
+      allRecords.push(rec);
+    }
+
+    // update DOM cell contents if this row is currently rendered
+    const tr = document.querySelector(`#dataTable tbody tr[data-row="${rnum}"]`);
+    if (tr) tr.innerHTML = tdHTML(newRow);
+  });
+}
+
+// Full reload (reduced payload using fields=values)
+async function fullReload() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?fields=values&key=${apiKey}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.json();
+
+  const rows = data.values || [];
+  totalRows = rows.length;
+
+  const dataRows = rows.slice(1); // skip header
+  existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+  allRecords = dataRows.map((row, idx) => ({
+    row,
+    sheetRow: idx + 2, // 1-based + header
+    lastEditMs: parseLastEditMs(row[6] || '')
+  }));
+
+  sortRecords(allRecords);
+
+  if (domCache.searchQuery) domCache.searchQuery.value = '';
+  if (domCache.password) domCache.password.value = '';
+  if (domCache.tbody) domCache.tbody.innerHTML = '';
+
+  renderTable(allRecords.slice(0, ROW_LIMIT));
+}
+
+// === Optimized loader ===
+// - onlySelected === true -> refresh selected row if any,
+//   otherwise refresh all VISIBLE rows (no selection required).
+// - onlySelected === false -> full reload (lightweight payload).
+async function loadData(onlySelected = false) {
+  // Clear form password input on Refresh (table row data stays)
+  if (domCache.password) domCache.password.value = '';
+  setBusySafe('#refreshBtn', true);
+
+  try {
+    if (onlySelected) {
+      let targets = [];
+
+      // If a row is selected, prefer that…
+      if (Number.isInteger(selectedRowIndex)) {
+        targets = [selectedRowIndex];
+      } else {
+        // …otherwise grab all rows currently rendered in the table
+        targets = Array.from(document.querySelectorAll('#dataTable tbody tr'))
+          .map(tr => parseInt(tr.dataset.row, 10))
+          .filter(Boolean);
+      }
+
+      // Fallback to top chunk if table is empty (e.g., first load)
+      if (targets.length === 0 && Array.isArray(allRecords) && allRecords.length) {
+        targets = allRecords.slice(0, ROW_LIMIT).map(r => r.sheetRow);
+      }
+
+      if (targets.length) {
+        await refreshRowsBatch(Array.from(new Set(targets)));
+        // keep table sorted by latest change, then show top chunk (fast)
+        sortRecords(allRecords);
+        renderTable(allRecords.slice(0, ROW_LIMIT));
+        return;
+      }
+      // If we still have nothing, do a full reload.
+    }
+
+    await fullReload();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load data from Google Sheets.');
+  } finally {
+    setBusySafe('#refreshBtn', false);
+  }
+}
+
+window.loadData = loadData;
+
+    /* ---------- Search (optimized with caching and debouncing) ---------- */
+function searchData() {
+  // Clear form input boxes when search is performed (table row data stays)
+  if (domCache.username) domCache.username.value = '';
+  if (domCache.password) domCache.password.value = '';
+  if (domCache.email) domCache.email.value = '';
+  if (domCache.phone) domCache.phone.value = '';
+  if (domCache.server) domCache.server.value = '';
+  if (domCache.autoPay) domCache.autoPay.value = '';
+  if (domCache.notes) domCache.notes.value = '';
+  
+  const raw = domCache.searchQuery.value.trim().toLowerCase();
+  if (!raw) { 
+    renderTable(allRecords.slice(0, ROW_LIMIT)); 
+    return; 
+  }
+
+  // Pre-compile regex patterns for better performance
+  const qDigits = (raw.match(/\d/g) || []).join('');
+  const qEmail = canonicalEmail(raw);
+  const hasPhoneQuery = qDigits.length >= 7;
+  const hasEmailQuery = qEmail.includes('@');
+
+  // Use for loop instead of filter for better performance on large datasets
+  const filtered = [];
+  for (let i = 0; i < allRecords.length; i++) {
+    const rec = allRecords[i];
+    const row = rec.row;
+    const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+    let phoneMatch = false;
+    if (hasPhoneQuery) {
+      const rp = (row[3] || '').replace(/\D/g, '');
+      const last10 = s => s.slice(-10);
+      if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
+    }
+
+    let emailMatch = false;
+    if (hasEmailQuery) {
+      const re = canonicalEmail(row[2] || '');
+      emailMatch = re.includes(qEmail);
+    }
+
+    if (baseMatch || phoneMatch || emailMatch) {
+      filtered.push(rec);
+    }
+  }
+
+  renderTable(filtered.slice(0, ROW_LIMIT));
+}
+
+// Create debounced version of search
+const debouncedSearch = debounceSearch(searchData, 300);
+window.searchData = searchData;
+window.debouncedSearch = debouncedSearch;
+
+
+
+      /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
+      function clearForm() {
+        // Clear form inputs (table row data stays)
+        if (domCache.username) domCache.username.value = '';
+        if (domCache.password) domCache.password.value = '';
+        if (domCache.email) domCache.email.value = '';
+        if (domCache.phone) domCache.phone.value = '';
+        if (domCache.server) domCache.server.value = '';
+        if (domCache.autoPay) domCache.autoPay.value = '';
+        if (domCache.notes) domCache.notes.value = '';
+        if (domCache.searchQuery) domCache.searchQuery.value = '';
+        
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        selectedRowIndex = null;
+      }
+      window.clearForm = clearForm;
+
+      function confirmDelete() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        if (!confirm('Delete selected row?')) return;
+
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          password: domCache.password ? domCache.password.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('delete', currentData);
+
+        setBusy('.delete-btn', true);
+        fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({ action: 'delete', password: sessionPassword, row: selectedRowIndex })
+        })
+          .then(res => res.text())
+          .then(() => { selectedRowIndex = null; loadData(); })
+          .catch(err => alert('Delete failed: ' + err))
+          .finally(() => setBusy('.delete-btn', false));
+      }
+
+
+
+
+      window.confirmDelete = confirmDelete;
+
+      function confirmEdit() {
+        if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+        if (!confirm('Update this row?')) return;
+        editRow();
+      }
+      window.confirmEdit = confirmEdit;
+
+      function editRow() {
+  setBusy('.edit-btn', true);
+
+  // Save previous row data for Undo (before we overwrite)
+  const recForUndo = allRecords.find(r => r.sheetRow === selectedRowIndex);
+  const prevRow = recForUndo ? recForUndo.row : [];
+  const previousData = {
+    username: prevRow[0] || '',
+    password: prevRow[1] || '',
+    email: prevRow[2] || '',
+    phone: prevRow[3] || '',
+    server: prevRow[4] || '',
+    autoPay: prevRow[5] || '',
+    notes: prevRow[6] || ''
+  };
+  saveUndoState('edit', previousData);
+
+  // Use cached DOM elements for better performance
+  const rawNew = domCache.notes ? domCache.notes.value.trim() : '';
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+
+  let combined = existing;
+  if (rawNew) {
+    const ts = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago', // match server timezone used on Adds
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const newNote = `${ts}: ${rawNew}`;
+    // Keep [CRITICAL_ALERT] always on top
+    const criticalMatch = existing.match(/^\[CRITICAL_ALERT\]\s*.+$/m);
+    const criticalLine = criticalMatch ? criticalMatch[0] : '';
+    const rest = existing.split('\n').filter(l => !l.startsWith('[CRITICAL_ALERT]')).join('\n').trim();
+    const parts = [criticalLine, newNote, rest].filter(Boolean);
+    combined = parts.join('\n');
+  }
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+    notes: combined
+  });
+
+  // ✅ Post the edit, then refresh THIS row from Google Sheets (server truth),
+  // ✅ mark it as latest change, resort, and re-render.
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+      return fetch(url).then(res => res.json());
+    })
+    .then(data => {
+      const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+      const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+      // Update local cache with server-updated row (including any server timestamps)
+      selectedRawNotes = newRow[6] || '';
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this edit as latest change
+      }
+
+      // Update the currently selected table row in place
+      const selectedTr = document.querySelector('#dataTable tr.selected');
+      if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+
+      // Resort by last change and re-render the visible chunk
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Update failed: ' + err))
+    .finally(() => setBusy('.edit-btn', false));
+}
+
+
+          function addRow() {
+        setBusy('.add-btn', true);
+
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          password: domCache.password ? domCache.password.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('add', currentData);
+
+        // Use cached DOM elements for better performance
+        const username = domCache.username ? domCache.username.value.trim() : '';
+        if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
+        if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
+
+        const data = {
+          action: 'add',
+          password: sessionPassword,
+          username: username,
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          notes: domCache.notes ? domCache.notes.value.trim() : ''
+        };
+
+        // 1) Save to Apps Script
+        fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
+          .then(r => r.text())
+          .then(() => {
+            // 2) Refresh JUST the newly added row from Google Sheets
+            //    First get the Username column to find the new row index.
+            const usernamesRange = 'data!A2:A3000';
+            const urlA = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(usernamesRange)}?key=${apiKey}`;
+            return fetch(urlA).then(res => res.json()).then(col => {
+              const arr = (col && col.values) ? col.values.map(v => (v[0] || '')) : [];
+              const target = username.toLowerCase();
+              let foundIndex = -1;
+              for (let i = arr.length - 1; i >= 0; i--) {
+                if ((arr[i] || '').toLowerCase() === target) { foundIndex = i; break; }
+              }
+              if (foundIndex === -1) {
+                // Fallback: full reload if we can't find it for any reason.
+                loadData();
+                clearForm();
+                return null;
+              }
+              const sheetRow = 2 + foundIndex; // because A2 is index 0
+
+              const singleRange = `data!A${sheetRow}:G${sheetRow}`;
+              const urlRow = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+              return fetch(urlRow).then(r2 => r2.json()).then(data2 => {
+                const row = (data2 && data2.values && data2.values[0]) ? data2.values[0] : [];
+                const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+
+                // 3) Update local caches and sort by latest change (this row)
+                existingUsernames.push(username.toLowerCase());
+                totalRows = Math.max(totalRows, sheetRow);
+
+                const rec = {
+                  row: newRow,
+                  sheetRow: sheetRow,
+                  lastEditMs: Date.now() // treat this add as the latest change
+                };
+                allRecords.push(rec);
+
+                sortRecords(allRecords);
+                renderTable(allRecords.slice(0, ROW_LIMIT));
+
+                clearForm();
+                return null;
+              });
+            });
+          })
+          .catch(err => { console.error(err); alert('Error saving row.'); })
+          .finally(() => setBusy('.add-btn', false));
+      }
+
+
+
+      window.addRow = addRow;
+      function addCriticalAlert() {
+  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+
+  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
+  if (msg === null) return;                 // user canceled
+  const trimmed = msg.trim();
+  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
+
+  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  const cleaned = existing
+    .split('\n')
+    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+    .join('\n');
+
+  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+    notes: combined
+  });
+
+  // ✅ No page refresh: update UI + local cache, then resort by last change
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      alert('Critical alert saved.');
+
+      // Update our in-memory state + row UI
+      selectedRawNotes = combined;
+
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        const newRow = [
+          domCache.username ? domCache.username.value.trim() : '',
+          domCache.password ? domCache.password.value.trim() : '',
+          domCache.email ? domCache.email.value.trim() : '',
+          normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          domCache.server ? domCache.server.value.trim() : '',
+          domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          combined
+        ];
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this as latest change
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+      }
+
+      // Resort by last change and re-render the visible chunk (no network)
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTable(allRecords.slice(0, ROW_LIMIT));
+    })
+    .catch(err => alert('Failed to save critical alert: ' + err));
+}
+window.addCriticalAlert = addCriticalAlert;
+
+      function removeCriticalAlert() {
+        if (selectedRowIndex === null) { 
+          alert('Select a row first.'); 
+          return; 
+        }
+
+        // Check if the selected row has a critical alert
+        const noteCell = selectedRawNotes || '';
+        if (!noteCell.includes('[CRITICAL_ALERT]')) {
+          alert('No critical alert found on this row.');
+          return;
+        }
+
+        if (!confirm('Remove the critical alert from this row?')) return;
+
+        // Remove all critical alert lines
+        const cleaned = noteCell
+          .split('\n')
+          .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+          .join('\n')
+          .trim();
+
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: domCache.username ? domCache.username.value.trim() : '',
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          notes: cleaned
+        });
+
+        setBusy('.remove-alert-btn', true);
+
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => {
+            alert('Critical alert removed successfully.');
+            
+            // Update local cache and UI
+            selectedRawNotes = cleaned;
+            
+            const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+            if (rec) {
+              rec.row[6] = cleaned;
+              rec.lastEditMs = Date.now();
+              
+              // Update the selected row in the table
+              const selectedTr = document.querySelector('#dataTable tr.selected');
+              if (selectedTr) selectedTr.innerHTML = tdHTML(rec.row);
+            }
+            
+            // Resort and re-render
+            sortRecords(allRecords);
+            renderTable(allRecords.slice(0, ROW_LIMIT));
+          })
+          .catch(err => alert('Failed to remove critical alert: ' + err))
+          .finally(() => setBusy('.remove-alert-btn', false));
+      }
+      window.removeCriticalAlert = removeCriticalAlert;
+
+      window.undoLastChange = undoLastChange;
+
+    /* ---------- Reminder feature ---------- */
+    const REMINDER_STORAGE_KEY = 'contactsManagerReminders';
+    let reminders = [];
+    try {
+      reminders = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]') || [];
+    } catch (e) {
+      reminders = [];
+    }
+    if (!Array.isArray(reminders)) reminders = [];
+    reminders = reminders.filter(r => !r.alertShown);
+    if (reminders.length > 0) localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
+
+    function saveReminders() {
+      localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
+    }
+
+    function openReminderModal() {
+      let username = '';
+      if (selectedRowIndex !== null) {
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        username = rec && rec.row && rec.row[0] ? String(rec.row[0]).trim() : '';
+      }
+      if (!username && domCache.username) {
+        username = domCache.username.value ? String(domCache.username.value).trim() : '';
+      }
+      if (!username) {
+        alert('Select a row first: click on a row in the table, then click Add Reminder.');
+        return;
+      }
+      const modal = document.getElementById('reminderModal');
+      const userInput = document.getElementById('reminderUsername');
+      const textInput = document.getElementById('reminderText');
+      const dueInput = document.getElementById('reminderDue');
+      if (userInput) userInput.value = username;
+      if (textInput) textInput.value = '';
+      if (dueInput) dueInput.value = '';
+      renderUserReminders(username);
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeReminderModal() {
+      const modal = document.getElementById('reminderModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function renderUserReminders(username) {
+      const list = document.getElementById('userRemindersList');
+      if (!list) return;
+      const userReminders = reminders.filter(r =>
+        (r.username || '').toLowerCase() === (username || '').toLowerCase() &&
+        !r.alertShown
+      );
+      if (userReminders.length === 0) {
+        list.innerHTML = '';
+        return;
+      }
+      list.innerHTML = '<h4>Existing reminders for this user</h4>' +
+        userReminders.map(r => '<span class="reminder-chip">' + escapeHTML(r.text) + (r.due ? ' (' + new Date(r.due).toLocaleDateString() + ')' : '') + '</span>').join('');
+    }
+
+    function saveReminderFromModal() {
+      const username = (document.getElementById('reminderUsername') || {}).value || '';
+      const text = (document.getElementById('reminderText') || {}).value.trim();
+      const dueVal = (document.getElementById('reminderDue') || {}).value;
+      if (!username) { alert('Username is required.'); return; }
+      if (!text) { alert('Enter a reminder.'); return; }
+      const due = dueVal ? new Date(dueVal).getTime() : null;
+      reminders.push({
+        id: Date.now(),
+        username,
+        text,
+        due,
+        completed: false,
+        alertShown: false,
+        createdAt: Date.now()
+      });
+      saveReminders();
+      closeReminderModal();
+    }
+
+    let currentReminderId = null;
+
+    function showReminderNotification(reminder) {
+      if (!reminder) return;
+      currentReminderId = reminder.id;
+      const sub = document.getElementById('reminderNotifSub');
+      const userEl = document.getElementById('reminderNotifUser');
+      const msg = document.getElementById('reminderNotifMsg');
+      const overlay = document.getElementById('reminderNotification');
+      if (sub) sub.textContent = 'Due: ' + new Date(reminder.due).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      if (userEl) {
+        userEl.textContent = reminder.username ? 'For: ' + reminder.username : '';
+        userEl.style.display = reminder.username ? 'inline-block' : 'none';
+      }
+      if (msg) msg.textContent = reminder.text || 'Reminder';
+      if (overlay) overlay.classList.add('open');
+    }
+
+    function closeReminderNotification() {
+      const overlay = document.getElementById('reminderNotification');
+      if (overlay) overlay.classList.remove('open');
+      currentReminderId = null;
+    }
+
+    function handleReminderAction(action) {
+      if (!currentReminderId) { closeReminderNotification(); return; }
+      try {
+        let stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+        const idx = stored.findIndex(r => r.id === currentReminderId);
+        if (idx === -1) { closeReminderNotification(); return; }
+        const r = stored[idx];
+        const now = Date.now();
+        if (action === 'done') {
+          stored = stored.filter(x => x.id !== currentReminderId);
+        } else {
+          const mins = { snooze30: 30, snooze60: 60, snooze360: 360, snooze1440: 1440 }[action] || 30;
+          r.due = now + mins * 60 * 1000;
+          r.alertShown = false;
+        }
+        localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(stored));
+        reminders = stored;
+      } catch (e) {}
+      closeReminderNotification();
+      setTimeout(checkRemindersDue, 500);
+    }
+
+    function checkRemindersDue() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+        if (!Array.isArray(stored)) return;
+        if (document.getElementById('reminderNotification') && document.getElementById('reminderNotification').classList.contains('open')) return;
+        const now = Date.now();
+        const due = stored.find(r => r.due && !r.alertShown && now >= r.due);
+        if (due) showReminderNotification(due);
+      } catch (e) {}
+    }
+
+    setInterval(checkRemindersDue, 30000);
+    document.addEventListener('DOMContentLoaded', checkRemindersDue);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkRemindersDue(); });
+
+    window.openReminderModal = openReminderModal;
+    window.closeReminderModal = closeReminderModal;
+    window.saveReminderFromModal = saveReminderFromModal;
+    window.handleReminderAction = handleReminderAction;
+
+  </script>
+
+
+
+</body>
+
+</html>
