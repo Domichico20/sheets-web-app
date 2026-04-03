@@ -69,76 +69,262 @@
     .reminder-preview-panel {
       display: none;
       position: fixed;
-      top: 12px;
-      right: 12px;
-      width: 260px;
-      max-height: min(70vh, 420px);
-      overflow: auto;
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      top: 14px;
+      left: 14px;
+      right: auto;
       z-index: 100;
-      padding: 12px;
-      font-size: 0.85rem;
+      max-width: min(calc(100vw - 28px), 640px);
+      font-size: 0.8125rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .reminder-preview-title {
+    .reminder-preview-row {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .rpc-card {
+      background: linear-gradient(145deg, #1c2230 0%, #141824 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+      overflow: hidden;
+    }
+
+    .rpc-calendar-wrap {
+      flex: 0 0 auto;
+      width: min(288px, 42vw);
+      min-width: 240px;
+    }
+
+    .rpc-calendar-wrap .reminder-mini-cal {
+      padding: 14px 14px 12px;
+    }
+
+    .rpc-upcoming-wrap {
+      flex: 1 1 auto;
+      min-width: 200px;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 0 12px;
+    }
+
+    .rpc-upcoming-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #003366;
-      margin-bottom: 10px;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+      margin: 0 16px 12px;
+      padding: 0;
+    }
+
+    .rpc-upcoming-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: min(52vh, 280px);
+      padding: 0 8px 0 16px;
+      margin-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+    }
+
+    .rpc-upcoming-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .rpc-upcoming-list::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.45);
+      border-radius: 10px;
+    }
+
+    .rpc-cal-head {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .rpc-kicker {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(148, 163, 184, 0.75);
+      grid-column: 1;
+    }
+
+    .rpc-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      grid-column: 2;
+    }
+
+    .rpc-nav-btn {
+      appearance: none;
+      border: none;
+      background: rgba(255, 255, 255, 0.06);
+      color: #94a3b8;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      cursor: pointer;
       font-size: 0.95rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rpc-nav-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+      color: #e2e8f0;
+    }
+
+    .rpc-month-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f8fafc;
+      padding: 0 8px;
+      min-width: 7.5rem;
+      text-align: center;
+      white-space: nowrap;
     }
 
     .reminder-mini-cal table {
       width: 100%;
-      font-size: 0.75rem;
-      border-collapse: collapse;
-      margin-bottom: 10px;
+      font-size: 0.72rem;
+      border-collapse: separate;
+      border-spacing: 3px;
     }
 
-    .reminder-mini-cal th,
+    .reminder-mini-cal th {
+      text-align: center;
+      padding: 6px 0 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(148, 163, 184, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
     .reminder-mini-cal td {
       text-align: center;
-      padding: 4px 2px;
+      padding: 0;
       border: none;
     }
 
-    .reminder-mini-cal .cal-day-hl {
-      background: #e8f0fe;
-      border-radius: 4px;
+    .reminder-mini-cal td .rpc-day-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      aspect-ratio: 1;
+      max-height: 34px;
+      margin: 0 auto;
+      border-radius: 8px;
       font-weight: 600;
+      color: #e2e8f0;
+      font-size: 0.75rem;
     }
 
-    .reminder-mini-cal .cal-today {
-      outline: 2px solid #4285F4;
-      border-radius: 4px;
+    .reminder-mini-cal .rpc-day-muted {
+      color: rgba(148, 163, 184, 0.35);
+      font-weight: 500;
     }
 
-    .reminder-preview-list h4 {
-      font-size: 0.8rem;
-      color: #64748b;
-      margin: 8px 0 6px;
+    .reminder-mini-cal .cal-day-event .rpc-day-cell {
+      box-shadow: 0 0 0 1.5px #3b82f6;
+      color: #f1f5f9;
+    }
+
+    .reminder-mini-cal .cal-day-today .rpc-day-cell {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+    }
+
+    .reminder-mini-cal .cal-day-today.cal-day-event .rpc-day-cell {
+      box-shadow:
+        0 2px 8px rgba(37, 99, 235, 0.45),
+        0 0 0 2px rgba(147, 197, 253, 0.5);
+    }
+
+    .rpc-cal-foot {
+      text-align: center;
+      font-size: 0.68rem;
+      color: rgba(148, 163, 184, 0.55);
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .reminder-preview-item {
-      padding: 8px;
-      margin-bottom: 6px;
-      background: #f8fafc;
-      border-radius: 8px;
-      border-left: 3px solid #4285F4;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .reminder-preview-item:last-child {
+      border-bottom: none;
     }
 
     .reminder-preview-item .rv-title {
       font-weight: 600;
-      color: #1e293b;
+      font-size: 0.88rem;
+      color: #f1f5f9;
       word-break: break-word;
+      line-height: 1.35;
     }
 
     .reminder-preview-item .rv-meta {
-      font-size: 0.72rem;
-      color: #64748b;
-      margin-top: 4px;
+      font-size: 0.78rem;
+      color: rgba(148, 163, 184, 0.92);
+      margin-top: 5px;
+      line-height: 1.3;
+    }
+
+    .rpc-empty {
+      margin: 0;
+      padding: 8px 16px 16px;
+      color: rgba(148, 163, 184, 0.85);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 640px) {
+      .reminder-preview-panel {
+        position: relative;
+        top: auto;
+        left: auto;
+        max-width: 100%;
+        margin-bottom: 16px;
+      }
+
+      .reminder-preview-row {
+        flex-direction: column;
+      }
+
+      .rpc-calendar-wrap {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+      }
+
+      .rpc-upcoming-wrap {
+        max-width: none;
+      }
+
+      .rpc-upcoming-list {
+        max-height: 220px;
+      }
     }
 
     #email {
@@ -780,9 +966,15 @@
   </header>
 
   <div id="reminderPreviewPanel" class="reminder-preview-panel">
-    <div class="reminder-preview-title">Upcoming reminders</div>
-    <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
-    <div id="reminderPreviewList" class="reminder-preview-list"></div>
+    <div class="reminder-preview-row">
+      <div class="rpc-card rpc-calendar-wrap">
+        <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
+      </div>
+      <div class="rpc-card rpc-upcoming-wrap">
+        <h3 class="rpc-upcoming-title">Upcoming</h3>
+        <div id="reminderPreviewList" class="rpc-upcoming-list"></div>
+      </div>
+    </div>
   </div>
 
   <div id="loginSection">
@@ -1777,6 +1969,23 @@ window.addCriticalAlert = addCriticalAlert;
       localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
     }
 
+    let reminderCalYear = new Date().getFullYear();
+    let reminderCalMonth = new Date().getMonth();
+
+    function reminderCalendarNav(which) {
+      if (which === 'prevYear') reminderCalYear--;
+      else if (which === 'nextYear') reminderCalYear++;
+      else if (which === 'prevMonth') {
+        reminderCalMonth--;
+        if (reminderCalMonth < 0) { reminderCalMonth = 11; reminderCalYear--; }
+      } else if (which === 'nextMonth') {
+        reminderCalMonth++;
+        if (reminderCalMonth > 11) { reminderCalMonth = 0; reminderCalYear++; }
+      }
+      renderReminderPreview();
+    }
+    window.reminderCalendarNav = reminderCalendarNav;
+
     function renderReminderPreview() {
       const calEl = document.getElementById('reminderPreviewCalendar');
       const listEl = document.getElementById('reminderPreviewList');
@@ -1793,11 +2002,11 @@ window.addCriticalAlert = addCriticalAlert;
       );
 
       const now = new Date();
-      const y = now.getFullYear();
-      const mo = now.getMonth();
+      const y = reminderCalYear;
+      const mo = reminderCalMonth;
       const first = new Date(y, mo, 1);
       const lastDay = new Date(y, mo + 1, 0).getDate();
-      const padStart = first.getDay();
+      const padStart = (first.getDay() + 6) % 7;
       const monthLabel = first.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
       const daySet = new Set();
@@ -1806,39 +2015,58 @@ window.addCriticalAlert = addCriticalAlert;
         if (d.getFullYear() === y && d.getMonth() === mo) daySet.add(d.getDate());
       });
 
-      let calHtml = '<div style="text-align:center;font-weight:600;margin-bottom:6px">' + escapeHTML(monthLabel) + '</div>';
+      let calHtml = '<div class="rpc-cal-head">';
+      calHtml += '<span class="rpc-kicker">Calendar</span>';
+      calHtml += '<div class="rpc-nav">';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Previous year" onclick="reminderCalendarNav(\'prevYear\')">«</button>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Previous month" onclick="reminderCalendarNav(\'prevMonth\')">‹</button>';
+      calHtml += '<span class="rpc-month-label">' + escapeHTML(monthLabel) + '</span>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Next month" onclick="reminderCalendarNav(\'nextMonth\')">›</button>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Next year" onclick="reminderCalendarNav(\'nextYear\')">»</button>';
+      calHtml += '</div><span></span></div>';
+
       calHtml += '<table><thead><tr>';
-      ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(d => { calHtml += '<th>' + d + '</th>'; });
+      ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach(function (d, i) {
+        calHtml += '<th title="' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] + '">' + d + '</th>';
+      });
       calHtml += '</tr></thead><tbody><tr>';
-      for (let i = 0; i < padStart; i++) calHtml += '<td></td>';
+      for (let i = 0; i < padStart; i++) calHtml += '<td class="rpc-day-muted"><span class="rpc-day-cell"></span></td>';
+
       const todayD = now.getDate();
       const todayM = now.getMonth();
       const todayY = now.getFullYear();
+      let col = padStart;
       for (let day = 1; day <= lastDay; day++) {
-        if ((padStart + day - 1) % 7 === 0 && day > 1) calHtml += '</tr><tr>';
+        if (col === 7) { calHtml += '</tr><tr>'; col = 0; }
+        const isToday = day === todayD && mo === todayM && y === todayY;
+        const hasEvent = daySet.has(day);
         let cls = '';
-        if (daySet.has(day)) cls += ' cal-day-hl';
-        if (day === todayD && mo === todayM && y === todayY) cls += ' cal-today';
-        calHtml += '<td class="' + cls.trim() + '">' + day + '</td>';
+        if (isToday) cls += ' cal-day-today';
+        if (hasEvent) cls += ' cal-day-event';
+        calHtml += '<td class="' + cls.trim() + '"><span class="rpc-day-cell">' + day + '</span></td>';
+        col++;
       }
-      const trailing = (7 - ((padStart + lastDay) % 7)) % 7;
-      for (let i = 0; i < trailing; i++) calHtml += '<td></td>';
+      while (col < 7) {
+        calHtml += '<td class="rpc-day-muted"><span class="rpc-day-cell"></span></td>';
+        col++;
+      }
       calHtml += '</tr></tbody></table>';
+      calHtml += '<div class="rpc-cal-foot">' + escapeHTML(monthLabel) + '</div>';
       calEl.innerHTML = calHtml;
 
       const sorted = active.slice().sort((a, b) => (a.due || 0) - (b.due || 0));
       if (sorted.length === 0) {
-        listEl.innerHTML = '<p style="margin:0;color:#64748b;font-size:0.8rem">No upcoming reminders.</p>';
+        listEl.innerHTML = '<p class="rpc-empty">No upcoming reminders.</p>';
         return;
       }
-      listEl.innerHTML = '<h4>Next up</h4>' + sorted.slice(0, 15).map(r => {
+      listEl.innerHTML = sorted.slice(0, 20).map(r => {
         const dt = new Date(r.due);
-        const dateStr = dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const shortDate = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const user = r.username ? escapeHTML(r.username) : '';
         const title = escapeHTML(r.text || 'Reminder');
-        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' +
-          (user ? 'For: ' + user + ' · ' : '') + dateStr + ' · ' + timeStr + '</div></div>';
+        const meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
+        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>';
       }).join('');
     }
 
