@@ -68,12 +68,10 @@
 
     .reminder-preview-panel {
       display: none;
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      right: auto;
-      z-index: 100;
-      max-width: min(calc(100vw - 28px), 640px);
+      position: static;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto 20px;
       font-size: 0.8125rem;
       -webkit-font-smoothing: antialiased;
     }
@@ -82,55 +80,52 @@
       display: flex;
       flex-direction: row;
       align-items: stretch;
-      gap: 12px;
+      gap: 14px;
     }
 
     .rpc-card {
-      background: linear-gradient(145deg, #1c2230 0%, #141824 100%);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 20px rgba(15, 23, 42, 0.07);
       overflow: hidden;
     }
 
     .rpc-calendar-wrap {
       flex: 0 0 auto;
-      width: min(288px, 42vw);
-      min-width: 240px;
+      width: min(300px, 38vw);
+      min-width: 252px;
     }
 
     .rpc-calendar-wrap .reminder-mini-cal {
-      padding: 14px 14px 12px;
+      padding: 16px 16px 14px;
     }
 
     .rpc-upcoming-wrap {
       flex: 1 1 auto;
-      min-width: 200px;
-      max-width: 320px;
+      min-width: 220px;
       display: flex;
       flex-direction: column;
-      padding: 14px 0 12px;
+      padding: 16px 0 14px;
     }
 
     .rpc-upcoming-title {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 700;
-      color: #f1f5f9;
+      color: #0f172a;
       letter-spacing: -0.02em;
-      margin: 0 16px 12px;
+      margin: 0 18px 12px;
       padding: 0;
     }
 
     .rpc-upcoming-list {
       flex: 1;
       overflow-y: auto;
-      max-height: min(52vh, 280px);
-      padding: 0 8px 0 16px;
+      max-height: 280px;
+      padding: 0 10px 0 18px;
       margin-right: 4px;
       scrollbar-width: thin;
-      scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+      scrollbar-color: rgba(37, 99, 235, 0.35) transparent;
     }
 
     .rpc-upcoming-list::-webkit-scrollbar {
@@ -138,7 +133,7 @@
     }
 
     .rpc-upcoming-list::-webkit-scrollbar-thumb {
-      background: rgba(59, 130, 246, 0.45);
+      background: rgba(37, 99, 235, 0.35);
       border-radius: 10px;
     }
 
@@ -155,7 +150,7 @@
       font-weight: 600;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(148, 163, 184, 0.75);
+      color: #64748b;
       grid-column: 1;
     }
 
@@ -170,10 +165,10 @@
     .rpc-nav-btn {
       appearance: none;
       border: none;
-      background: rgba(255, 255, 255, 0.06);
-      color: #94a3b8;
-      width: 28px;
-      height: 28px;
+      background: #f1f5f9;
+      color: #334155;
+      width: 30px;
+      height: 30px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.95rem;
@@ -185,14 +180,14 @@
     }
 
     .rpc-nav-btn:hover {
-      background: rgba(59, 130, 246, 0.25);
-      color: #e2e8f0;
+      background: #e0e7ff;
+      color: #1e3a8a;
     }
 
     .rpc-month-label {
       font-size: 0.9rem;
       font-weight: 600;
-      color: #f8fafc;
+      color: #0f172a;
       padding: 0 8px;
       min-width: 7.5rem;
       text-align: center;
@@ -201,25 +196,32 @@
 
     .reminder-mini-cal table {
       width: 100%;
-      font-size: 0.72rem;
+      margin: 0;
+      font-size: 0.75rem;
       border-collapse: separate;
-      border-spacing: 3px;
+      border-spacing: 4px;
+      background: transparent;
+      border-radius: 0;
+      border: none;
     }
 
-    .reminder-mini-cal th {
+    .reminder-mini-cal thead th {
       text-align: center;
-      padding: 6px 0 8px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: rgba(148, 163, 184, 0.9);
+      padding: 8px 0 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #334155;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
+      background: #eff6ff;
+      border: none;
     }
 
-    .reminder-mini-cal td {
+    .reminder-mini-cal tbody td {
       text-align: center;
       padding: 0;
       border: none;
+      background: transparent;
     }
 
     .reminder-mini-cal td .rpc-day-cell {
@@ -228,48 +230,49 @@
       justify-content: center;
       width: 100%;
       aspect-ratio: 1;
-      max-height: 34px;
+      max-height: 36px;
       margin: 0 auto;
       border-radius: 8px;
-      font-weight: 600;
-      color: #e2e8f0;
-      font-size: 0.75rem;
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.8rem;
     }
 
-    .reminder-mini-cal .rpc-day-muted {
-      color: rgba(148, 163, 184, 0.35);
+    .reminder-mini-cal .rpc-day-muted .rpc-day-cell {
+      color: #cbd5e1;
       font-weight: 500;
     }
 
     .reminder-mini-cal .cal-day-event .rpc-day-cell {
-      box-shadow: 0 0 0 1.5px #3b82f6;
-      color: #f1f5f9;
+      box-shadow: inset 0 0 0 2px #2563eb;
+      color: #1e3a8a;
+      background: #f8fafc;
     }
 
     .reminder-mini-cal .cal-day-today .rpc-day-cell {
       background: #2563eb;
       color: #fff;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
     }
 
     .reminder-mini-cal .cal-day-today.cal-day-event .rpc-day-cell {
       box-shadow:
-        0 2px 8px rgba(37, 99, 235, 0.45),
-        0 0 0 2px rgba(147, 197, 253, 0.5);
+        0 2px 8px rgba(37, 99, 235, 0.35),
+        inset 0 0 0 2px rgba(191, 219, 254, 0.95);
     }
 
     .rpc-cal-foot {
       text-align: center;
-      font-size: 0.68rem;
-      color: rgba(148, 163, 184, 0.55);
+      font-size: 0.7rem;
+      color: #64748b;
       margin-top: 10px;
       padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid #e2e8f0;
     }
 
     .reminder-preview-item {
       padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid #e2e8f0;
     }
 
     .reminder-preview-item:last-child {
@@ -279,35 +282,36 @@
     .reminder-preview-item .rv-title {
       font-weight: 600;
       font-size: 0.88rem;
-      color: #f1f5f9;
+      color: #0f172a;
       word-break: break-word;
       line-height: 1.35;
     }
 
     .reminder-preview-item .rv-meta {
       font-size: 0.78rem;
-      color: rgba(148, 163, 184, 0.92);
+      color: #64748b;
       margin-top: 5px;
       line-height: 1.3;
     }
 
+    .reminder-preview-item .rv-source {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
     .rpc-empty {
       margin: 0;
-      padding: 8px 16px 16px;
-      color: rgba(148, 163, 184, 0.85);
-      font-size: 0.82rem;
-      line-height: 1.45;
+      padding: 8px 18px 16px;
+      color: #64748b;
+      font-size: 0.84rem;
+      line-height: 1.5;
     }
 
     @media (max-width: 640px) {
-      .reminder-preview-panel {
-        position: relative;
-        top: auto;
-        left: auto;
-        max-width: 100%;
-        margin-bottom: 16px;
-      }
-
       .reminder-preview-row {
         flex-direction: column;
       }
@@ -315,10 +319,6 @@
       .rpc-calendar-wrap {
         width: 100%;
         min-width: 0;
-        max-width: none;
-      }
-
-      .rpc-upcoming-wrap {
         max-width: none;
       }
 
@@ -573,7 +573,7 @@
     .delete-btn { background-color: red; }
     .undo-btn { background-color: #FF6B35; }
 
-    table {
+    #dataTable {
       margin: 0 auto;
       width: auto;
       border-collapse: separate;
@@ -581,10 +581,12 @@
       background: white;
       border-radius: 12px;
       overflow: hidden;
+      content-visibility: auto;
+      contain-intrinsic-size: 600px 400px;
     }
 
-    table th:nth-child(3),
-    table td:nth-child(3) {
+    #dataTable th:nth-child(3),
+    #dataTable td:nth-child(3) {
       max-width: 360px;
       min-width: 180px;
       max-height: 120px;
@@ -594,15 +596,15 @@
       vertical-align: top;
     }
 
-    table th,
-    table td {
+    #dataTable th,
+    #dataTable td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: left;
       white-space: nowrap;
     }
 
-    table th { background-color: #4285F4; color: white; }
+    #dataTable th { background-color: #4285F4; color: white; }
     tr.selected { background-color: rgb(238, 217, 217); }
 
     /* ========= SAME gradient glow for ALL buttons ========= */
@@ -639,8 +641,8 @@
     }
 
     /* --- Notes wrapping + scroll + WhatsApp link styling --- */
-    table th:nth-child(6),
-    table td:nth-child(6) { width: 550px; }
+    #dataTable th:nth-child(6),
+    #dataTable td:nth-child(6) { width: 550px; }
 
     .notes-cell {
       max-height: 180px;
@@ -711,12 +713,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Make the table paint faster and scroll nicely on mobile */
-    #dataTable {
-      content-visibility: auto;                 /* paint only when visible */
-      contain-intrinsic-size: 600px 400px;      /* reserve size for faster paint */
-    }
-
     @media (max-width: 900px) {
       body { margin: 10px; }
       header img.logo { max-width: 150px; }
@@ -754,8 +750,8 @@
       }
 
       /* Table horizontal scroll instead of squeezing columns */
-      table { width: 100%; }
       #dataTable {
+        width: 100%;
         display: block;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -767,8 +763,8 @@
       #dataTable td {
         white-space: nowrap;
       }
-      table th:nth-child(6),
-      table td:nth-child(6) { width: auto; }
+      #dataTable th:nth-child(6),
+      #dataTable td:nth-child(6) { width: auto; }
       .notes-cell { max-height: 120px; }
     }
 
@@ -965,18 +961,6 @@
       onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
   </header>
 
-  <div id="reminderPreviewPanel" class="reminder-preview-panel">
-    <div class="reminder-preview-row">
-      <div class="rpc-card rpc-calendar-wrap">
-        <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
-      </div>
-      <div class="rpc-card rpc-upcoming-wrap">
-        <h3 class="rpc-upcoming-title">Upcoming</h3>
-        <div id="reminderPreviewList" class="rpc-upcoming-list"></div>
-      </div>
-    </div>
-  </div>
-
   <div id="loginSection">
     <div class="login-card">
       <h1 class="brand">
@@ -1000,6 +984,18 @@
 
   <!-- App UI: hidden by CSS until body gets class 'app-bg' after login -->
   <div id="appSection">
+    <div id="reminderPreviewPanel" class="reminder-preview-panel">
+      <div class="reminder-preview-row">
+        <div class="rpc-card rpc-calendar-wrap">
+          <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
+        </div>
+        <div class="rpc-card rpc-upcoming-wrap">
+          <h3 class="rpc-upcoming-title">Upcoming</h3>
+          <div id="reminderPreviewList" class="rpc-upcoming-list"></div>
+        </div>
+      </div>
+    </div>
+
     <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
       <div id="searchSection">
         <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
@@ -1962,8 +1958,6 @@ window.addCriticalAlert = addCriticalAlert;
       reminders = [];
     }
     if (!Array.isArray(reminders)) reminders = [];
-    reminders = reminders.filter(r => !r.alertShown);
-    if (reminders.length > 0) localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
 
     function saveReminders() {
       localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
@@ -1986,6 +1980,72 @@ window.addCriticalAlert = addCriticalAlert;
     }
     window.reminderCalendarNav = reminderCalendarNav;
 
+    function parseNotesCellToPreviewItems(notesCell, username) {
+      const items = [];
+      if (!notesCell) return items;
+      const lines = String(notesCell).split('\n');
+      const tsBody = /^(.+\b(?:AM|PM))\s*:\s*(.*)$/i;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const m = line.match(tsBody);
+        if (!m) continue;
+        const tsPart = m[1].trim();
+        const body = (m[2] || '').trim();
+        if (!body) continue;
+        const ms = Date.parse(tsPart);
+        if (isNaN(ms)) continue;
+        items.push({
+          id: 'note-' + ms + '-' + i + '-' + String(username || '').replace(/\W/g, '').slice(0, 24),
+          text: body.length > 220 ? body.slice(0, 220) + '…' : body,
+          due: ms,
+          username: username || '',
+          source: 'notes'
+        });
+      }
+      return items;
+    }
+
+    function buildMergedPreviewItems(stored, records) {
+      const dedup = new Map();
+      function addItem(x) {
+        const k = (x.source || '') + '|' + String(x.due || '') + '|' + String(x.username || '').toLowerCase() + '|' + String(x.text || '').slice(0, 80);
+        if (!dedup.has(k)) dedup.set(k, x);
+      }
+
+      if (Array.isArray(stored)) {
+        stored.forEach(r => {
+          if (!r || r.completed) return;
+          if (r.due != null && !isNaN(Number(r.due))) {
+            addItem({
+              id: 'r-' + r.id,
+              text: r.text || 'Reminder',
+              due: Number(r.due),
+              username: r.username || '',
+              source: 'reminder'
+            });
+          } else if (r.text && String(r.text).trim()) {
+            addItem({
+              id: 'r-' + r.id,
+              text: r.text,
+              due: null,
+              username: r.username || '',
+              source: 'reminder'
+            });
+          }
+        });
+      }
+
+      if (Array.isArray(records)) {
+        records.forEach(rec => {
+          const row = rec.row || [];
+          parseNotesCellToPreviewItems(row[6], row[0]).forEach(addItem);
+        });
+      }
+
+      return Array.from(dedup.values());
+    }
+
     function renderReminderPreview() {
       const calEl = document.getElementById('reminderPreviewCalendar');
       const listEl = document.getElementById('reminderPreviewList');
@@ -1997,9 +2057,18 @@ window.addCriticalAlert = addCriticalAlert;
       } catch (e) { stored = []; }
       if (!Array.isArray(stored)) stored = [];
 
-      const active = stored.filter(r =>
-        r && r.due != null && !isNaN(Number(r.due)) && !r.completed
-      );
+      const merged = buildMergedPreviewItems(stored, typeof allRecords !== 'undefined' ? allRecords : []);
+      const horizonStart = new Date();
+      horizonStart.setHours(0, 0, 0, 0);
+      horizonStart.setDate(horizonStart.getDate() - 1);
+      const minDue = horizonStart.getTime();
+      const maxDue = minDue + 86400000 * 420;
+
+      const withDue = merged.filter(x => x.due != null && !isNaN(x.due) && x.due >= minDue && x.due <= maxDue);
+      const noDue = merged.filter(x => x.due == null || isNaN(x.due));
+      withDue.sort((a, b) => a.due - b.due);
+      noDue.sort((a, b) => String(a.text || '').localeCompare(String(b.text || '')));
+      const active = withDue.concat(noDue);
 
       const now = new Date();
       const y = reminderCalYear;
@@ -2010,8 +2079,8 @@ window.addCriticalAlert = addCriticalAlert;
       const monthLabel = first.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
       const daySet = new Set();
-      active.forEach(r => {
-        const d = new Date(r.due);
+      withDue.forEach(item => {
+        const d = new Date(item.due);
         if (d.getFullYear() === y && d.getMonth() === mo) daySet.add(d.getDate());
       });
 
@@ -2054,19 +2123,26 @@ window.addCriticalAlert = addCriticalAlert;
       calHtml += '<div class="rpc-cal-foot">' + escapeHTML(monthLabel) + '</div>';
       calEl.innerHTML = calHtml;
 
-      const sorted = active.slice().sort((a, b) => (a.due || 0) - (b.due || 0));
-      if (sorted.length === 0) {
-        listEl.innerHTML = '<p class="rpc-empty">No upcoming reminders.</p>';
+      if (active.length === 0) {
+        listEl.innerHTML = '<p class="rpc-empty">No upcoming items. Saved reminders (with a due date) and dated lines from the Notes column appear here.</p>';
         return;
       }
-      listEl.innerHTML = sorted.slice(0, 20).map(r => {
-        const dt = new Date(r.due);
-        const shortDate = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        const user = r.username ? escapeHTML(r.username) : '';
+      listEl.innerHTML = active.slice(0, 25).map(r => {
         const title = escapeHTML(r.text || 'Reminder');
-        const meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
-        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>';
+        const user = r.username ? escapeHTML(r.username) : '';
+        let meta = '';
+        let srcLine = '';
+        if (r.due != null && !isNaN(r.due)) {
+          const dt = new Date(r.due);
+          const shortDate = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+          meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
+          srcLine = r.source === 'notes' ? 'Sheet note' : 'Reminder';
+        } else {
+          meta = (user ? user + ' · ' : '') + 'No date set — open Add Reminder to add a due time';
+          srcLine = 'Reminder';
+        }
+        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div><div class="rv-source">' + srcLine + '</div></div>';
       }).join('');
     }
 
