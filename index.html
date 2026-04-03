@@ -294,15 +294,6 @@
       line-height: 1.3;
     }
 
-    .reminder-preview-item .rv-source {
-      font-size: 0.68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
     .rpc-empty {
       margin: 0;
       padding: 8px 18px 16px;
@@ -1980,72 +1971,6 @@ window.addCriticalAlert = addCriticalAlert;
     }
     window.reminderCalendarNav = reminderCalendarNav;
 
-    function parseNotesCellToPreviewItems(notesCell, username) {
-      const items = [];
-      if (!notesCell) return items;
-      const lines = String(notesCell).split('\n');
-      const tsBody = /^(.+\b(?:AM|PM))\s*:\s*(.*)$/i;
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        const m = line.match(tsBody);
-        if (!m) continue;
-        const tsPart = m[1].trim();
-        const body = (m[2] || '').trim();
-        if (!body) continue;
-        const ms = Date.parse(tsPart);
-        if (isNaN(ms)) continue;
-        items.push({
-          id: 'note-' + ms + '-' + i + '-' + String(username || '').replace(/\W/g, '').slice(0, 24),
-          text: body.length > 220 ? body.slice(0, 220) + '…' : body,
-          due: ms,
-          username: username || '',
-          source: 'notes'
-        });
-      }
-      return items;
-    }
-
-    function buildMergedPreviewItems(stored, records) {
-      const dedup = new Map();
-      function addItem(x) {
-        const k = (x.source || '') + '|' + String(x.due || '') + '|' + String(x.username || '').toLowerCase() + '|' + String(x.text || '').slice(0, 80);
-        if (!dedup.has(k)) dedup.set(k, x);
-      }
-
-      if (Array.isArray(stored)) {
-        stored.forEach(r => {
-          if (!r || r.completed) return;
-          if (r.due != null && !isNaN(Number(r.due))) {
-            addItem({
-              id: 'r-' + r.id,
-              text: r.text || 'Reminder',
-              due: Number(r.due),
-              username: r.username || '',
-              source: 'reminder'
-            });
-          } else if (r.text && String(r.text).trim()) {
-            addItem({
-              id: 'r-' + r.id,
-              text: r.text,
-              due: null,
-              username: r.username || '',
-              source: 'reminder'
-            });
-          }
-        });
-      }
-
-      if (Array.isArray(records)) {
-        records.forEach(rec => {
-          const row = rec.row || [];
-          parseNotesCellToPreviewItems(row[6], row[0]).forEach(addItem);
-        });
-      }
-
-      return Array.from(dedup.values());
-    }
-
     function renderReminderPreview() {
       const calEl = document.getElementById('reminderPreviewCalendar');
       const listEl = document.getElementById('reminderPreviewList');
@@ -2057,7 +1982,24 @@ window.addCriticalAlert = addCriticalAlert;
       } catch (e) { stored = []; }
       if (!Array.isArray(stored)) stored = [];
 
-      const merged = buildMergedPreviewItems(stored, typeof allRecords !== 'undefined' ? allRecords : []);
+      /* Upcoming + calendar dots: localStorage reminders only (Add Reminder). Sheet Notes column is not read. */
+      const merged = [];
+      stored.forEach(r => {
+        if (!r || r.completed || r.id == null) return;
+        if (r.due != null && !isNaN(Number(r.due))) {
+          merged.push({
+            text: r.text || 'Reminder',
+            due: Number(r.due),
+            username: r.username || ''
+          });
+        } else if (r.text && String(r.text).trim()) {
+          merged.push({
+            text: r.text,
+            due: null,
+            username: r.username || ''
+          });
+        }
+      });
       const horizonStart = new Date();
       horizonStart.setHours(0, 0, 0, 0);
       horizonStart.setDate(horizonStart.getDate() - 1);
@@ -2124,25 +2066,22 @@ window.addCriticalAlert = addCriticalAlert;
       calEl.innerHTML = calHtml;
 
       if (active.length === 0) {
-        listEl.innerHTML = '<p class="rpc-empty">No upcoming items. Saved reminders (with a due date) and dated lines from the Notes column appear here.</p>';
+        listEl.innerHTML = '<p class="rpc-empty">No reminders yet. Use Add Reminder to create one (a due date shows it on the calendar).</p>';
         return;
       }
       listEl.innerHTML = active.slice(0, 25).map(r => {
         const title = escapeHTML(r.text || 'Reminder');
         const user = r.username ? escapeHTML(r.username) : '';
         let meta = '';
-        let srcLine = '';
         if (r.due != null && !isNaN(r.due)) {
           const dt = new Date(r.due);
           const shortDate = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
           const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
           meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
-          srcLine = r.source === 'notes' ? 'Sheet note' : 'Reminder';
         } else {
-          meta = (user ? user + ' · ' : '') + 'No date set — open Add Reminder to add a due time';
-          srcLine = 'Reminder';
+          meta = (user ? user + ' · ' : '') + 'No date set — edit in Add Reminder to add a due time';
         }
-        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div><div class="rv-source">' + srcLine + '</div></div>';
+        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>';
       }).join('');
     }
 
