@@ -62,6 +62,102 @@
       height: auto;
     }
 
+    body.app-bg .reminder-preview-panel {
+      display: block;
+    }
+
+    .reminder-preview-panel {
+      display: none;
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      width: 260px;
+      max-height: min(70vh, 420px);
+      overflow: auto;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      z-index: 100;
+      padding: 12px;
+      font-size: 0.85rem;
+    }
+
+    .reminder-preview-title {
+      font-weight: 700;
+      color: #003366;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .reminder-mini-cal table {
+      width: 100%;
+      font-size: 0.75rem;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+
+    .reminder-mini-cal th,
+    .reminder-mini-cal td {
+      text-align: center;
+      padding: 4px 2px;
+      border: none;
+    }
+
+    .reminder-mini-cal .cal-day-hl {
+      background: #e8f0fe;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .reminder-mini-cal .cal-today {
+      outline: 2px solid #4285F4;
+      border-radius: 4px;
+    }
+
+    .reminder-preview-list h4 {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 8px 0 6px;
+    }
+
+    .reminder-preview-item {
+      padding: 8px;
+      margin-bottom: 6px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border-left: 3px solid #4285F4;
+    }
+
+    .reminder-preview-item .rv-title {
+      font-weight: 600;
+      color: #1e293b;
+      word-break: break-word;
+    }
+
+    .reminder-preview-item .rv-meta {
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    #email {
+      min-width: 280px;
+      max-width: 560px;
+      width: min(100%, 560px);
+      min-height: 72px;
+      max-height: 160px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      resize: vertical;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+      font-family: inherit;
+    }
+
     h2 {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       font-size: 1.75rem;
@@ -244,6 +340,10 @@
       border-radius: 12px;
     }
 
+    .form-group textarea#email {
+      width: min(100%, 560px);
+    }
+
     .button-row {
       display: flex;
       align-items: center;
@@ -299,10 +399,13 @@
 
     table th:nth-child(3),
     table td:nth-child(3) {
-      max-width: 250px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      max-width: 360px;
+      min-width: 180px;
+      max-height: 120px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      vertical-align: top;
     }
 
     table th,
@@ -350,8 +453,8 @@
     }
 
     /* --- Notes wrapping + scroll + WhatsApp link styling --- */
-    table th:nth-child(7),
-    table td:nth-child(7) { width: 550px; }
+    table th:nth-child(6),
+    table td:nth-child(6) { width: 550px; }
 
     .notes-cell {
       max-height: 180px;
@@ -478,8 +581,8 @@
       #dataTable td {
         white-space: nowrap;
       }
-      table th:nth-child(7),
-      table td:nth-child(7) { width: auto; }
+      table th:nth-child(6),
+      table td:nth-child(6) { width: auto; }
       .notes-cell { max-height: 120px; }
     }
 
@@ -676,7 +779,11 @@
       onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
   </header>
 
-
+  <div id="reminderPreviewPanel" class="reminder-preview-panel">
+    <div class="reminder-preview-title">Upcoming reminders</div>
+    <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
+    <div id="reminderPreviewList" class="reminder-preview-list"></div>
+  </div>
 
   <div id="loginSection">
     <div class="login-card">
@@ -712,10 +819,9 @@
     <div class="form-section">
       <div class="form-group"><label for="username">Username:</label><input type="text" id="username"></div>
       <div class="form-group"><label for="password">Password:</label><input type="text" id="password"></div>
-      <div class="form-group"><label for="email">Email:</label><input type="text" id="email"></div>
+      <div class="form-group"><label for="email">Email:</label><textarea id="email" rows="4"></textarea></div>
       <div class="form-group"><label for="phone">Phone #:</label><input type="text" id="phone"></div>
       <div class="form-group"><label for="server">Server:</label><input type="text" id="server"></div>
-      <div class="form-group"><label for="autoPay">AutoPay:</label><input type="text" id="autoPay"></div>
       <div class="form-group">
         <label for="notes">Notes:</label>
         <input type="text" id="notes">
@@ -745,7 +851,6 @@
           <th>Email</th>
           <th>Phone</th>
           <th>Server</th>
-          <th>AutoPay</th>
           <th>Notes</th>
         </tr>
       </thead>
@@ -872,7 +977,6 @@
       if (domCache.email) domCache.email.value = data.email || '';
       if (domCache.phone) domCache.phone.value = data.phone || '';
       if (domCache.server) domCache.server.value = data.server || '';
-      if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
       if (domCache.notes) domCache.notes.value = data.notes || '';
     }
     
@@ -884,7 +988,6 @@
       email: null,
       phone: null,
       server: null,
-      autoPay: null,
       notes: null,
       dataTable: null,
       tbody: null
@@ -898,7 +1001,6 @@
       domCache.email = document.getElementById('email');
       domCache.phone = document.getElementById('phone');
       domCache.server = document.getElementById('server');
-      domCache.autoPay = document.getElementById('autoPay');
       domCache.notes = document.getElementById('notes');
       domCache.dataTable = document.getElementById('dataTable');
       domCache.tbody = document.querySelector('#dataTable tbody');
@@ -1035,15 +1137,6 @@
     }
 
 
-    /* ---------- Table cell renderer (restores your look) ---------- */
-    function tdHTML(row) {
-      return row.map((cell, ci) => {
-        if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
-        if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone
-        return '<td>' + escapeHTML(cell) + '</td>';
-      }).join('');
-    }
-
     /* ---------- Data load + render ---------- */
     function renderTable(records){
   if (!domCache.tbody) return;
@@ -1067,7 +1160,6 @@
       if (domCache.email) domCache.email.value = row[2] || '';
       if (domCache.phone) domCache.phone.value = row[3] || '';
       if (domCache.server) domCache.server.value = row[4] || '';
-      if (domCache.autoPay) domCache.autoPay.value = row[5] || '';
 
       selectedRawNotes = row[6] || '';
       if (domCache.notes) domCache.notes.value = '';
@@ -1110,13 +1202,22 @@ function sortRecords(records) {
   return records.sort(sortByRecent);
 }
 
-// Build the inner <td> HTML for a row (preserve WhatsApp link + notes formatting)
+// Build the inner <td> HTML for a row (skip sheet AutoPay column; WhatsApp + notes formatting)
 function tdHTML(rowArr) {
-  return rowArr.map((cell, ci) => {
-    if (ci === 6) return '<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>'; // Notes
-    if (ci === 3) return '<td class="phone-wa">' + phoneLink(cell) + '</td>';                 // Phone -> WhatsApp link
-    return '<td>' + escapeHTML(cell) + '</td>';
-  }).join('');
+  const parts = [];
+  rowArr.forEach((cell, ci) => {
+    if (ci === 5) return;
+    if (ci === 6) parts.push('<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>');
+    else if (ci === 3) parts.push('<td class="phone-wa">' + phoneLink(cell) + '</td>');
+    else parts.push('<td>' + escapeHTML(cell) + '</td>');
+  });
+  return parts.join('');
+}
+
+function sheetAutoPayForSelectedRow() {
+  if (selectedRowIndex == null) return '';
+  const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+  return (rec && rec.row && rec.row[5] != null) ? String(rec.row[5]).trim() : '';
 }
 
 
@@ -1244,6 +1345,7 @@ async function loadData(onlySelected = false) {
     alert('Failed to load data from Google Sheets.');
   } finally {
     setBusySafe('#refreshBtn', false);
+    renderReminderPreview();
   }
 }
 
@@ -1257,7 +1359,6 @@ function searchData() {
   if (domCache.email) domCache.email.value = '';
   if (domCache.phone) domCache.phone.value = '';
   if (domCache.server) domCache.server.value = '';
-  if (domCache.autoPay) domCache.autoPay.value = '';
   if (domCache.notes) domCache.notes.value = '';
   
   const raw = domCache.searchQuery.value.trim().toLowerCase();
@@ -1315,7 +1416,6 @@ window.debouncedSearch = debouncedSearch;
         if (domCache.email) domCache.email.value = '';
         if (domCache.phone) domCache.phone.value = '';
         if (domCache.server) domCache.server.value = '';
-        if (domCache.autoPay) domCache.autoPay.value = '';
         if (domCache.notes) domCache.notes.value = '';
         if (domCache.searchQuery) domCache.searchQuery.value = '';
         
@@ -1335,7 +1435,6 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value : '',
           phone: domCache.phone ? domCache.phone.value : '',
           server: domCache.server ? domCache.server.value : '',
-          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
           notes: domCache.notes ? domCache.notes.value : ''
         };
         saveUndoState('delete', currentData);
@@ -1375,7 +1474,6 @@ window.debouncedSearch = debouncedSearch;
     email: prevRow[2] || '',
     phone: prevRow[3] || '',
     server: prevRow[4] || '',
-    autoPay: prevRow[5] || '',
     notes: prevRow[6] || ''
   };
   saveUndoState('edit', previousData);
@@ -1409,7 +1507,7 @@ window.debouncedSearch = debouncedSearch;
     email: domCache.email ? domCache.email.value.trim() : '',
     phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
     server: domCache.server ? domCache.server.value.trim() : '',
-    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+    autoPay: sheetAutoPayForSelectedRow(),
     notes: combined
   });
 
@@ -1457,7 +1555,6 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value : '',
           phone: domCache.phone ? domCache.phone.value : '',
           server: domCache.server ? domCache.server.value : '',
-          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
           notes: domCache.notes ? domCache.notes.value : ''
         };
         saveUndoState('add', currentData);
@@ -1475,7 +1572,7 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value.trim() : '',
           phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           server: domCache.server ? domCache.server.value.trim() : '',
-          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          autoPay: '',
           notes: domCache.notes ? domCache.notes.value.trim() : ''
         };
 
@@ -1560,7 +1657,7 @@ window.debouncedSearch = debouncedSearch;
     email: domCache.email ? domCache.email.value.trim() : '',
     phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
     server: domCache.server ? domCache.server.value.trim() : '',
-    autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+    autoPay: sheetAutoPayForSelectedRow(),
     notes: combined
   });
 
@@ -1581,7 +1678,7 @@ window.debouncedSearch = debouncedSearch;
           domCache.email ? domCache.email.value.trim() : '',
           normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           domCache.server ? domCache.server.value.trim() : '',
-          domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          sheetAutoPayForSelectedRow(),
           combined
         ];
         rec.row = newRow;
@@ -1629,7 +1726,7 @@ window.addCriticalAlert = addCriticalAlert;
           email: domCache.email ? domCache.email.value.trim() : '',
           phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           server: domCache.server ? domCache.server.value.trim() : '',
-          autoPay: domCache.autoPay ? domCache.autoPay.value.trim() : '',
+          autoPay: sheetAutoPayForSelectedRow(),
           notes: cleaned
         });
 
@@ -1678,6 +1775,71 @@ window.addCriticalAlert = addCriticalAlert;
 
     function saveReminders() {
       localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
+    }
+
+    function renderReminderPreview() {
+      const calEl = document.getElementById('reminderPreviewCalendar');
+      const listEl = document.getElementById('reminderPreviewList');
+      if (!calEl || !listEl) return;
+
+      let stored = [];
+      try {
+        stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+      } catch (e) { stored = []; }
+      if (!Array.isArray(stored)) stored = [];
+
+      const active = stored.filter(r =>
+        r && r.due != null && !isNaN(Number(r.due)) && !r.completed
+      );
+
+      const now = new Date();
+      const y = now.getFullYear();
+      const mo = now.getMonth();
+      const first = new Date(y, mo, 1);
+      const lastDay = new Date(y, mo + 1, 0).getDate();
+      const padStart = first.getDay();
+      const monthLabel = first.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+      const daySet = new Set();
+      active.forEach(r => {
+        const d = new Date(r.due);
+        if (d.getFullYear() === y && d.getMonth() === mo) daySet.add(d.getDate());
+      });
+
+      let calHtml = '<div style="text-align:center;font-weight:600;margin-bottom:6px">' + escapeHTML(monthLabel) + '</div>';
+      calHtml += '<table><thead><tr>';
+      ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(d => { calHtml += '<th>' + d + '</th>'; });
+      calHtml += '</tr></thead><tbody><tr>';
+      for (let i = 0; i < padStart; i++) calHtml += '<td></td>';
+      const todayD = now.getDate();
+      const todayM = now.getMonth();
+      const todayY = now.getFullYear();
+      for (let day = 1; day <= lastDay; day++) {
+        if ((padStart + day - 1) % 7 === 0 && day > 1) calHtml += '</tr><tr>';
+        let cls = '';
+        if (daySet.has(day)) cls += ' cal-day-hl';
+        if (day === todayD && mo === todayM && y === todayY) cls += ' cal-today';
+        calHtml += '<td class="' + cls.trim() + '">' + day + '</td>';
+      }
+      const trailing = (7 - ((padStart + lastDay) % 7)) % 7;
+      for (let i = 0; i < trailing; i++) calHtml += '<td></td>';
+      calHtml += '</tr></tbody></table>';
+      calEl.innerHTML = calHtml;
+
+      const sorted = active.slice().sort((a, b) => (a.due || 0) - (b.due || 0));
+      if (sorted.length === 0) {
+        listEl.innerHTML = '<p style="margin:0;color:#64748b;font-size:0.8rem">No upcoming reminders.</p>';
+        return;
+      }
+      listEl.innerHTML = '<h4>Next up</h4>' + sorted.slice(0, 15).map(r => {
+        const dt = new Date(r.due);
+        const dateStr = dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const user = r.username ? escapeHTML(r.username) : '';
+        const title = escapeHTML(r.text || 'Reminder');
+        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' +
+          (user ? 'For: ' + user + ' · ' : '') + dateStr + ' · ' + timeStr + '</div></div>';
+      }).join('');
     }
 
     function openReminderModal() {
@@ -1741,6 +1903,7 @@ window.addCriticalAlert = addCriticalAlert;
         createdAt: Date.now()
       });
       saveReminders();
+      renderReminderPreview();
       closeReminderModal();
     }
 
@@ -1788,6 +1951,7 @@ window.addCriticalAlert = addCriticalAlert;
       } catch (e) {}
       closeReminderNotification();
       setTimeout(checkRemindersDue, 500);
+      renderReminderPreview();
     }
 
     function checkRemindersDue() {
@@ -1801,9 +1965,11 @@ window.addCriticalAlert = addCriticalAlert;
       } catch (e) {}
     }
 
-    setInterval(checkRemindersDue, 30000);
-    document.addEventListener('DOMContentLoaded', checkRemindersDue);
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkRemindersDue(); });
+    setInterval(() => { checkRemindersDue(); renderReminderPreview(); }, 30000);
+    document.addEventListener('DOMContentLoaded', () => { checkRemindersDue(); renderReminderPreview(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') { checkRemindersDue(); renderReminderPreview(); }
+    });
 
     window.openReminderModal = openReminderModal;
     window.closeReminderModal = closeReminderModal;
