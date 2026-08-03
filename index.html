@@ -613,6 +613,52 @@
     .delete-btn { background-color: red; }
     .undo-btn { background-color: #FF6B35; }
 
+    .table-pagination {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin: 16px auto 12px;
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .table-page-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #003366;
+      color: white;
+      min-height: 44px;
+    }
+
+    .table-page-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .table-page-info {
+      font-size: 0.92rem;
+      color: #0f172a;
+      font-weight: 600;
+      text-align: center;
+      min-width: min(100%, 280px);
+    }
+
+    @media (max-width: 768px) {
+      .table-pagination {
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 4px;
+      }
+      .table-page-btn {
+        width: 100%;
+        max-width: 320px;
+      }
+    }
+
     #dataTable {
       margin: 0 auto;
       width: auto;
@@ -1156,6 +1202,12 @@
       </thead>
       <tbody></tbody>
     </table>
+
+    <div id="tablePagination" class="table-pagination">
+      <button type="button" id="tablePrevPage" class="table-page-btn" onclick="tablePrevPage()">← Back Page</button>
+      <span id="tablePageInfo" class="table-page-info"></span>
+      <button type="button" id="tableNextPage" class="table-page-btn" onclick="tableNextPage()">Next Page →</button>
+    </div>
   </div>
 
   <div id="reminderNotification" class="reminder-notification-overlay">
@@ -1213,6 +1265,8 @@
 
     /* ---------- App constants ---------- */
     const ROW_LIMIT = 25;
+    let currentTablePage = 0;
+    let currentTableRecords = [];
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
     const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
     const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
@@ -1476,6 +1530,60 @@
   domCache.tbody.appendChild(frag);
 }
 
+function getTablePageSlice(records) {
+  const start = currentTablePage * ROW_LIMIT;
+  return records.slice(start, start + ROW_LIMIT);
+}
+
+function updateTablePaginationUI(records) {
+  const panel = document.getElementById('tablePagination');
+  if (!panel) return;
+  const total = records.length;
+  const totalPages = Math.max(1, Math.ceil(total / ROW_LIMIT));
+  if (currentTablePage >= totalPages) currentTablePage = Math.max(0, totalPages - 1);
+  const prevBtn = document.getElementById('tablePrevPage');
+  const nextBtn = document.getElementById('tableNextPage');
+  const info = document.getElementById('tablePageInfo');
+  if (prevBtn) prevBtn.disabled = currentTablePage <= 0;
+  if (nextBtn) nextBtn.disabled = currentTablePage >= totalPages - 1 || total === 0;
+  if (info) {
+    if (total === 0) {
+      info.textContent = 'No rows';
+    } else {
+      const from = currentTablePage * ROW_LIMIT + 1;
+      const to = Math.min((currentTablePage + 1) * ROW_LIMIT, total);
+      info.textContent = 'Page ' + (currentTablePage + 1) + ' of ' + totalPages + ' · rows ' + from + '–' + to + ' of ' + total;
+    }
+  }
+  panel.style.display = total > 0 ? 'flex' : 'none';
+}
+
+function renderTablePage(records, resetPage) {
+  if (resetPage !== false) currentTablePage = 0;
+  currentTableRecords = Array.isArray(records) ? records : [];
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+function tablePrevPage() {
+  if (currentTablePage <= 0) return;
+  currentTablePage--;
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+function tableNextPage() {
+  const totalPages = Math.ceil(currentTableRecords.length / ROW_LIMIT);
+  if (currentTablePage >= totalPages - 1) return;
+  currentTablePage++;
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+window.tablePrevPage = tablePrevPage;
+window.tableNextPage = tableNextPage;
+window.renderTablePage = renderTablePage;
+
    // Tunables
 const REFRESH_COLS = 'A:G';
 const SHEET_TAB    = 'data';
@@ -1598,7 +1706,7 @@ async function fullReload() {
   if (domCache.password) domCache.password.value = '';
   if (domCache.tbody) domCache.tbody.innerHTML = '';
 
-  renderTable(allRecords.slice(0, ROW_LIMIT));
+  renderTablePage(allRecords);
 }
 
 // === Optimized loader ===
@@ -1626,14 +1734,14 @@ async function loadData(onlySelected = false) {
 
       // Fallback to top chunk if table is empty (e.g., first load)
       if (targets.length === 0 && Array.isArray(allRecords) && allRecords.length) {
-        targets = allRecords.slice(0, ROW_LIMIT).map(r => r.sheetRow);
+        targets = getTablePageSlice(allRecords).map(r => r.sheetRow);
       }
 
       if (targets.length) {
         await refreshRowsBatch(Array.from(new Set(targets)));
         // keep table sorted by latest change, then show top chunk (fast)
         sortRecords(allRecords);
-        renderTable(allRecords.slice(0, ROW_LIMIT));
+        renderTablePage(allRecords, false);
         return;
       }
       // If we still have nothing, do a full reload.
@@ -1663,7 +1771,7 @@ function searchData() {
   
   const raw = domCache.searchQuery.value.trim().toLowerCase();
   if (!raw) { 
-    renderTable(allRecords.slice(0, ROW_LIMIT)); 
+    renderTablePage(allRecords); 
     return; 
   }
 
@@ -1698,7 +1806,7 @@ function searchData() {
     }
   }
 
-  renderTable(filtered.slice(0, ROW_LIMIT));
+  renderTablePage(filtered);
 }
 
 // Create debounced version of search
@@ -1838,7 +1946,7 @@ window.debouncedSearch = debouncedSearch;
 
       // Resort by last change and re-render the visible chunk
       allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
-      renderTable(allRecords.slice(0, ROW_LIMIT));
+      renderTablePage(allRecords, false);
     })
     .catch(err => alert('Update failed: ' + err))
     .finally(() => setBusy('.edit-btn', false));
@@ -1917,7 +2025,7 @@ window.debouncedSearch = debouncedSearch;
                 allRecords.push(rec);
 
                 sortRecords(allRecords);
-                renderTable(allRecords.slice(0, ROW_LIMIT));
+                renderTablePage(allRecords, false);
 
                 clearForm();
                 return null;
@@ -1989,7 +2097,7 @@ window.debouncedSearch = debouncedSearch;
 
       // Resort by last change and re-render the visible chunk (no network)
       allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
-      renderTable(allRecords.slice(0, ROW_LIMIT));
+      renderTablePage(allRecords, false);
     })
     .catch(err => alert('Failed to save critical alert: ' + err));
 }
@@ -2052,7 +2160,7 @@ window.addCriticalAlert = addCriticalAlert;
             
             // Resort and re-render
             sortRecords(allRecords);
-            renderTable(allRecords.slice(0, ROW_LIMIT));
+            renderTablePage(allRecords, false);
           })
           .catch(err => alert('Failed to remove critical alert: ' + err))
           .finally(() => setBusy('.remove-alert-btn', false));
