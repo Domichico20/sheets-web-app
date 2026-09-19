@@ -38,6 +38,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --app-primary: #1e40af;
+      --app-primary-hover: #2563eb;
+      --app-primary-dark: #1e3a8a;
+      --app-accent: #0ea5e9;
+      --app-surface: rgba(255, 255, 255, 0.97);
+      --app-text: #0f172a;
+      --app-muted: #64748b;
+      --app-border: rgba(15, 23, 42, 0.1);
+      --app-radius: 12px;
+      --app-radius-lg: 16px;
+      --app-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 28px rgba(15, 23, 42, 0.08);
+      --notes-table-col: 40%;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -69,8 +84,151 @@
       height: auto;
     }
 
-    body.app-bg .reminder-preview-panel {
+    body.app-bg .reminder-preview-panel,
+    body.app-bg .expirations-panel {
       display: block;
+    }
+
+    body.app-bg #appSection {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 4px;
+    }
+
+    body.app-bg {
+      overflow-x: hidden;
+    }
+
+    .table-scroll-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      border: 1px solid var(--app-border, #ccc);
+      background: white;
+    }
+
+    body.app-bg #searchSection {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--app-radius-lg);
+      box-shadow: var(--app-shadow);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    body.app-bg .form-section {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--app-radius-lg);
+      box-shadow: var(--app-shadow);
+      padding: 12px 14px 14px;
+    }
+
+    body.app-bg #dataTable {
+      box-shadow: var(--app-shadow);
+      border: 1px solid var(--app-border);
+    }
+
+    .expirations-panel {
+      display: none;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto 20px;
+      padding: 16px 18px 14px;
+    }
+
+    .expirations-panel h3 {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--app-text);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .expirations-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .exp-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .exp-item:last-child {
+      border-bottom: none;
+    }
+
+    .exp-item-main {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px 14px;
+      font-size: 0.86rem;
+      color: var(--app-text);
+    }
+
+    .exp-item-main .exp-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--app-muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .exp-item-main .exp-date {
+      font-weight: 700;
+      color: var(--app-primary-dark);
+      white-space: nowrap;
+    }
+
+    .exp-remove-btn {
+      flex-shrink: 0;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--app-radius);
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    .exp-remove-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .exp-empty {
+      color: var(--app-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      padding: 4px 0 8px;
+    }
+
+    @media (max-width: 640px) {
+      .exp-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .exp-item-main {
+        grid-template-columns: 1fr;
+      }
+      .exp-remove-btn {
+        width: 100%;
+      }
     }
 
     .reminder-preview-panel {
@@ -347,33 +505,7 @@
       }
     }
 
-    #email,
-    #notes {
-      min-width: 280px;
-      max-width: 560px;
-      width: min(100%, 560px);
-      min-height: 72px;
-      max-height: 160px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      resize: vertical;
-      padding: 10px;
-      font-size: 1rem;
-      border: 1px solid #d6d6d6;
-      border-radius: 12px;
-      font-family: inherit;
-    }
-
-    @media (max-width: 768px) {
-      #email,
-      #notes {
-        min-width: 0;
-        width: 100%;
-        max-width: none;
-        font-size: 16px;
-      }
-    }
+    /* Email/notes sizing is controlled in .form-section (single row) */
 
     h2 {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -532,42 +664,88 @@
       border: none;
       cursor: pointer;
     }
-    #searchSection button.search-btn { background-color: #92e67d; }
-    #searchSection button.add-reminder-btn { background-color: #003366; color: white; }
-    #searchSection button.add-reminder-btn:hover { background-color: #004080; }
+    #searchSection button.search-btn { background-color: #10b981; color: #fff; font-weight: 600; }
+    #searchSection button.add-reminder-btn { background-color: var(--app-primary-dark); color: white; font-weight: 600; }
+    #searchSection button.add-reminder-btn:hover { background-color: var(--app-primary); }
 
     .critical-btn { background-color: #fc933d; color: #fff; }
     .remove-alert-btn { background-color: #d93025; color: #fff; }
 
     .form-section {
       display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 20px;
-      justify-content: center;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
     }
 
-    .form-group { display: flex; flex-direction: column; }
-    .form-group label { font-weight: bold; margin-bottom: 5px; }
-    .form-group input {
-      padding: 10px;
-      font-size: 1rem;
-      width: 175px;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+
+    .form-section .form-group label {
+      font-weight: 600;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      color: var(--app-muted);
+    }
+
+    .form-section .form-group input,
+    .form-section .form-group select,
+    .form-section .form-group textarea {
+      box-sizing: border-box;
+      width: 100%;
+      height: 42px;
+      min-height: 42px;
+      max-height: 42px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      line-height: 1.25;
       border: 1px solid #d6d6d6;
-      border-radius: 12px;
+      border-radius: var(--app-radius);
+      background: #fff;
+      color: var(--app-text);
+      resize: none;
+      overflow-y: auto;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
-    .form-group textarea#email,
-    .form-group textarea#notes {
-      width: min(100%, 560px);
+    .form-section .form-group textarea {
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-family: inherit;
     }
 
-    @media (max-width: 768px) {
-      .form-group textarea#email,
-      .form-group textarea#notes {
-        width: 100%;
-        max-width: none;
-      }
+    .form-section .form-group textarea:focus {
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 120px;
+      height: auto;
+      min-height: 42px;
+    }
+
+    .form-section .fg-user { flex: 0 0 6.5rem; }
+    .form-section .fg-pass { flex: 0 0 6.5rem; }
+    .form-section .fg-email { flex: 2 1 18rem; min-width: 16rem; max-width: 22rem; }
+    .form-section .fg-phone { flex: 0 0 7.5rem; }
+    .form-section .fg-server { flex: 0 0 4.5rem; }
+    .form-section .fg-autopay { flex: 0 0 5.25rem; }
+    .form-section .fg-exp { flex: 0 0 8.75rem; }
+    .form-section .fg-notes { flex: 2.6 1 21.9rem; min-width: 18.25rem; max-width: 29.2rem; }
+
+    .form-group input[type="date"] {
+      min-height: 42px;
     }
 
     .button-row {
@@ -606,12 +784,12 @@
       cursor: pointer;
     }
 
-    .add-btn    { background-color: #003366; }
-    .edit-btn   { background-color: #3399FF; }
-    .clear-btn  { background-color: #66CC66; }
-    .refresh-btn{ background-color: gold; color: black; }
-    .delete-btn { background-color: red; }
-    .undo-btn { background-color: #FF6B35; }
+    .add-btn    { background-color: var(--app-primary-dark); }
+    .edit-btn   { background-color: var(--app-primary-hover); }
+    .clear-btn  { background-color: #059669; }
+    .refresh-btn{ background-color: #eab308; color: #1e293b; }
+    .delete-btn { background-color: #dc2626; }
+    .undo-btn { background-color: #ea580c; }
 
     .table-pagination {
       display: none;
@@ -661,36 +839,73 @@
 
     #dataTable {
       margin: 0 auto;
-      width: auto;
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
       border-collapse: separate;
       border-spacing: 0;
       background: white;
-      border-radius: 12px;
+      border-radius: 0;
       overflow: hidden;
-      content-visibility: auto;
-      contain-intrinsic-size: 600px 400px;
-    }
-
-    #dataTable th:nth-child(3),
-    #dataTable td:nth-child(3) {
-      max-width: 360px;
-      min-width: 180px;
-      max-height: 120px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      vertical-align: top;
     }
 
     #dataTable th,
     #dataTable td {
       border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
+      padding: 6px 5px;
+      text-align: center;
+      vertical-align: middle;
       white-space: nowrap;
+      font-size: 0.84rem;
     }
 
-    #dataTable th { background-color: #4285F4; color: white; }
+    #dataTable th:nth-child(1),
+    #dataTable td:nth-child(1),
+    #dataTable th:nth-child(2),
+    #dataTable td:nth-child(2),
+    #dataTable th:nth-child(3),
+    #dataTable td:nth-child(3),
+    #dataTable th:nth-child(4),
+    #dataTable td:nth-child(4),
+    #dataTable th:nth-child(5),
+    #dataTable td:nth-child(5),
+    #dataTable th:nth-child(6),
+    #dataTable td:nth-child(6),
+    #dataTable th:nth-child(7),
+    #dataTable td:nth-child(7) {
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #dataTable td.notes-td,
+    #dataTable td.notes-td .notes-cell,
+    #dataTable td.notes-td .note-entry,
+    #dataTable td.notes-td .txt {
+      white-space: normal;
+    }
+
+    #dataTable th:nth-child(3),
+    #dataTable td:nth-child(3) {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      vertical-align: middle;
+      text-overflow: clip;
+    }
+
+    #dataTable th.th-stack {
+      white-space: normal;
+      line-height: 1.25;
+      font-size: 0.82rem;
+      padding: 8px 6px;
+    }
+
+    #dataTable th {
+      background: linear-gradient(180deg, var(--app-primary) 0%, var(--app-primary-dark) 100%);
+      color: white;
+      font-weight: 600;
+    }
     tr.selected { background-color: rgb(238, 217, 217); }
 
     /* ========= SAME gradient glow for ALL buttons ========= */
@@ -726,19 +941,118 @@
       opacity: 1;
     }
 
-    /* --- Notes wrapping + scroll + WhatsApp link styling --- */
-    #dataTable th:nth-child(6),
-    #dataTable td:nth-child(6) { width: 550px; }
-
-    .notes-cell {
-      max-height: 180px;
-      overflow: auto;
-      white-space: normal;
-      line-height: 1.35;
+    /* --- Expiration date column (fits e.g. Sep 22, 2026) --- */
+    #dataTable td:nth-child(7) {
+      white-space: nowrap;
     }
 
-    .note-entry { margin: 0 0 .55em 0; }
-    .note-entry .ts { font-weight: 100; color: #880000; font-size: 1.05rem; }
+    /* --- Notes column (centered card + scroll, shares table width) --- */
+    #dataTable th.col-notes-header,
+    #dataTable th:nth-child(8) {
+      min-width: 0;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    #dataTable col.col-notes {
+      width: var(--notes-table-col);
+    }
+
+    #dataTable td.notes-td {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      height: 12.5rem;
+      padding: 10px 12px;
+      vertical-align: middle;
+      text-align: center;
+      white-space: normal;
+      overflow: hidden;
+      background: #eef2ff;
+    }
+
+    #dataTable td.notes-td .notes-cell-wrap {
+      display: block;
+      width: 100%;
+      height: calc(12.5rem - 20px);
+      max-height: calc(12.5rem - 20px);
+    }
+
+    #dataTable td.notes-td .notes-cell {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #c7d2fe;
+      box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #6366f1 #e0e7ff;
+    }
+
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar {
+      width: 9px;
+    }
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar-track {
+      background: #e0e7ff;
+      border-radius: 8px;
+      margin: 4px 0;
+    }
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar-thumb {
+      background: #6366f1;
+      border-radius: 8px;
+    }
+
+    #dataTable td.notes-td .notes-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 6rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    .note-entry {
+      margin: 0 0 10px;
+      padding: 0 4px 10px;
+      text-align: center;
+      border-bottom: 1px dashed #e2e8f0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .note-entry:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .note-entry .ts {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #be123c;
+      letter-spacing: 0.01em;
+      margin-bottom: 5px;
+    }
+    .note-entry .txt {
+      display: block;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #334155;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+      max-width: 100%;
+    }
 
     /* 🔴 Critical alert highlight */
     .note-entry.critical {
@@ -747,7 +1061,9 @@
       font-weight: 700;
       border-radius: 10px;
       padding: 6px 10px;
-      display: inline-block;
+      display: block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
     }
 
     .phone-wa a { text-decoration: none; }
@@ -771,7 +1087,9 @@
     /* ===== App (2nd page) background ===== */
     body.app-bg {
       min-height: 100vh;
-      background: url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat;
+      background:
+        linear-gradient(165deg, rgba(241, 245, 249, 0.92) 0%, rgba(224, 231, 255, 0.88) 45%, rgba(252, 231, 243, 0.85) 100%),
+        url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat fixed;
     }
 
     /* Hide the app by default; only show it after login when body.app-bg is set */
@@ -832,29 +1150,39 @@
       }
 
       .form-section {
-        flex-direction: column;
+        flex-wrap: wrap;
         align-items: stretch;
         justify-content: flex-start;
-        gap: 16px;
+        gap: 12px;
         padding: 0 2px;
+        overflow-x: visible;
       }
 
-      .form-group {
-        width: 100%;
+      .form-section .form-group {
+        flex: 1 1 calc(50% - 12px);
+        min-width: calc(50% - 12px);
         max-width: 100%;
       }
 
-      /* Inputs full-width in small screens */
-      .form-group input {
+      .form-section .fg-notes,
+      .form-section .fg-email {
+        flex: 1 1 100%;
+        min-width: 100%;
+        max-width: 100%;
+      }
+
+      .form-section .form-group input,
+      .form-section .form-group select,
+      .form-section .form-group textarea {
         width: 100%;
-        max-width: none;
         min-height: 48px;
+        height: 48px;
+        max-height: 48px;
         font-size: 16px;
       }
 
-      .form-group textarea {
-        width: 100% !important;
-        max-width: none !important;
+      .form-section .form-group textarea:focus {
+        max-height: 160px;
       }
 
       /* Button group wraps nicely */
@@ -866,30 +1194,26 @@
         min-height: 48px;
       }
 
-      /* Table horizontal scroll instead of squeezing columns */
-      #dataTable {
-        width: 100%;
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        max-width: 100%;
-        border-radius: 10px;
-      }
-      #dataTable thead,
-      #dataTable tbody,
-      #dataTable tr,
-      #dataTable th,
-      #dataTable td {
-        white-space: nowrap;
-      }
+      /* Table scrolls horizontally in .table-scroll-wrap — keep real table layout */
       #dataTable th:nth-child(3),
       #dataTable td:nth-child(3) {
-        min-width: 140px;
-        max-width: 260px;
+        min-width: 9rem;
+        max-width: 12rem;
       }
-      #dataTable th:nth-child(6),
-      #dataTable td:nth-child(6) { width: auto; }
-      .notes-cell { max-height: 120px; }
+      .table-scroll-wrap {
+        overflow-x: auto;
+      }
+      #dataTable {
+        width: 100%;
+        min-width: 720px;
+      }
+      #dataTable td.notes-td {
+        height: 11rem;
+        padding: 8px 10px;
+      }
+      #dataTable td.notes-td .notes-cell-wrap {
+        min-height: 9rem;
+      }
     }
 
     @media (max-width: 480px) {
@@ -1154,6 +1478,11 @@
       </div>
     </div>
 
+    <div id="expirationsPanel" class="expirations-panel rpc-card">
+      <h3>Upcoming Expirations <span style="font-weight:500;font-size:0.78rem;color:var(--app-muted)">(next 7 days · no AutoPay · Remove hides from this list only)</span></h3>
+      <div id="expirationsList" class="expirations-list"></div>
+    </div>
+
     <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
       <div id="searchSection">
         <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
@@ -1163,14 +1492,26 @@
     </form>
 
     <div class="form-section">
-      <div class="form-group"><label for="username">Username:</label><input type="text" id="username"></div>
-      <div class="form-group"><label for="password">Password:</label><input type="text" id="password"></div>
-      <div class="form-group"><label for="email">Email:</label><textarea id="email" rows="4"></textarea></div>
-      <div class="form-group"><label for="phone">Phone #:</label><input type="text" id="phone"></div>
-      <div class="form-group"><label for="server">Server:</label><input type="text" id="server"></div>
-      <div class="form-group">
-        <label for="notes">Notes:</label>
-        <textarea id="notes" rows="4"></textarea>
+      <div class="form-group fg-user"><label for="username">Username</label><input type="text" id="username" autocomplete="off"></div>
+      <div class="form-group fg-pass"><label for="password">Password</label><input type="text" id="password" autocomplete="off"></div>
+      <div class="form-group fg-email"><label for="email">Email</label><textarea id="email" rows="1" title="Scroll or focus to edit full email"></textarea></div>
+      <div class="form-group fg-phone"><label for="phone">Phone #</label><input type="text" id="phone"></div>
+      <div class="form-group fg-server"><label for="server">Server</label><input type="text" id="server"></div>
+      <div class="form-group fg-autopay">
+        <label for="autoPay">AutoPay</label>
+        <select id="autoPay">
+          <option value="">—</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+      <div class="form-group fg-exp">
+        <label for="expirationDate">Expiration</label>
+        <input type="date" id="expirationDate">
+      </div>
+      <div class="form-group fg-notes">
+        <label for="notes">Notes</label>
+        <textarea id="notes" rows="1" title="Focus to expand and scroll long notes"></textarea>
       </div>
       <input type="hidden" id="rowIndex" />
     </div>
@@ -1189,7 +1530,18 @@
     </div>
 
 
+    <div class="table-scroll-wrap">
     <table id="dataTable">
+      <colgroup>
+        <col class="col-user" style="width: 8%">
+        <col class="col-pass" style="width: 8%">
+        <col class="col-email" style="width: 11%">
+        <col class="col-phone" style="width: 10%">
+        <col class="col-server" style="width: 5%">
+        <col class="col-autopay" style="width: 6%">
+        <col class="col-exp" style="width: 9%">
+        <col class="col-notes" style="width: 43%">
+      </colgroup>
       <thead>
         <tr>
           <th>Username</th>
@@ -1197,11 +1549,14 @@
           <th>Email</th>
           <th>Phone</th>
           <th>Server</th>
-          <th>Notes</th>
+          <th class="th-stack">Auto<br>Pay</th>
+          <th class="th-stack">Expiration<br>Date</th>
+          <th class="col-notes-header">Notes</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+    </div>
 
     <div id="tablePagination" class="table-pagination">
       <button type="button" id="tablePrevPage" class="table-page-btn" onclick="tablePrevPage()">← Back Page</button>
@@ -1270,7 +1625,92 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
     const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
     const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
-    const range = 'data!A1:G3000';
+    const range = 'data!A1:H3000';
+    const SHEET_COL_COUNT = 8;
+    const COL_AUTOPAY = 5;
+    const COL_NOTES = 6;
+    const COL_EXPIRATION = 7;
+
+    function normalizeSheetRow(row) {
+      const r = Array.isArray(row) ? row.slice() : [];
+      while (r.length < SHEET_COL_COUNT) r.push('');
+      return r.slice(0, SHEET_COL_COUNT);
+    }
+
+    function sheetSerialToMs(n) {
+      if (typeof n !== 'number' || !isFinite(n)) return NaN;
+      if (n < 20000 || n > 60000) return NaN;
+      return Math.round((n - 25569) * 86400 * 1000);
+    }
+
+    function isExpirationColumnValue(cell) {
+      if (cell == null || cell === '') return false;
+      if (typeof cell === 'number') return !isNaN(sheetSerialToMs(cell));
+      const s = String(cell).trim();
+      if (!s) return false;
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return true;
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) return true;
+      if (/\b(AM|PM)\s*:\s*\S/i.test(s)) return false;
+      if ((s.match(/:/g) || []).length >= 2 && !/^\d{4}-\d{2}-\d{2}/.test(s)) return false;
+      if (s.length > 80) return false;
+      return !isNaN(Date.parse(s));
+    }
+
+    function parseExpirationMs(cell) {
+      if (cell == null || cell === '') return NaN;
+      if (typeof cell === 'number') {
+        const serial = sheetSerialToMs(cell);
+        if (!isNaN(serial)) return serial;
+      }
+      if (!isExpirationColumnValue(cell)) return NaN;
+      const s = String(cell).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const t = Date.parse(s.slice(0, 10) + 'T12:00:00');
+        return isNaN(t) ? NaN : t;
+      }
+      const t = Date.parse(s);
+      return isNaN(t) ? NaN : t;
+    }
+
+    function applyExpirationToRow(row, expirationStr) {
+      const r = normalizeSheetRow(row);
+      if (expirationStr != null && String(expirationStr).trim() !== '') {
+        r[COL_EXPIRATION] = String(expirationStr).trim();
+      }
+      return r;
+    }
+
+    function rowHasAutoPayYes(row) {
+      const ap = normalizeAutoPayDisplay(normalizeSheetRow(row)[COL_AUTOPAY]).toLowerCase();
+      return ap === 'yes' || ap === 'y';
+    }
+
+    function expirationToInputValue(cell) {
+      const ms = parseExpirationMs(cell);
+      if (isNaN(ms)) return '';
+      return new Date(ms).toISOString().slice(0, 10);
+    }
+
+    function formatExpirationDisplay(cell) {
+      const ms = parseExpirationMs(cell);
+      if (isNaN(ms)) return '';
+      return escapeHTML(new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
+    }
+
+    function normalizeAutoPayDisplay(val) {
+      const v = String(val || '').trim().toLowerCase();
+      if (v === 'yes' || v === 'y') return 'Yes';
+      if (v === 'no' || v === 'n') return 'No';
+      return String(val || '').trim();
+    }
+
+    function formAutoPayValue() {
+      return domCache.autoPay ? domCache.autoPay.value : '';
+    }
+
+    function formExpirationValue() {
+      return domCache.expirationDate ? domCache.expirationDate.value : '';
+    }
 
     let sessionPassword = "";
     let selectedRowIndex = null;   // 1-based sheet row
@@ -1331,6 +1771,8 @@
       if (domCache.email) domCache.email.value = data.email || '';
       if (domCache.phone) domCache.phone.value = data.phone || '';
       if (domCache.server) domCache.server.value = data.server || '';
+      if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
+      if (domCache.expirationDate) domCache.expirationDate.value = data.expirationDate || '';
       if (domCache.notes) domCache.notes.value = data.notes || '';
     }
     
@@ -1342,6 +1784,8 @@
       email: null,
       phone: null,
       server: null,
+      autoPay: null,
+      expirationDate: null,
       notes: null,
       dataTable: null,
       tbody: null
@@ -1355,6 +1799,8 @@
       domCache.email = document.getElementById('email');
       domCache.phone = document.getElementById('phone');
       domCache.server = document.getElementById('server');
+      domCache.autoPay = document.getElementById('autoPay');
+      domCache.expirationDate = document.getElementById('expirationDate');
       domCache.notes = document.getElementById('notes');
       domCache.dataTable = document.getElementById('dataTable');
       domCache.tbody = document.querySelector('#dataTable tbody');
@@ -1469,7 +1915,7 @@
         } else {
           const m = line.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
           if (!m) otherLines.push(`<div class="note-entry"><span class="txt">${escapeHTML(line)}</span></div>`);
-          else otherLines.push(`<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span>: <span class="txt">${escapeHTML(m[2])}</span></div>`);
+          else otherLines.push(`<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span><span class="txt">${escapeHTML(m[2])}</span></div>`);
         }
       });
 
@@ -1479,7 +1925,7 @@
 
     /* helper: show CRITICAL alert notification without auto-delete */
     function showCriticalAlert(rec) {
-      const noteCell = (rec && rec.row && rec.row[6]) ? rec.row[6] : '';
+      const noteCell = (rec && rec.row && rec.row[COL_NOTES]) ? rec.row[COL_NOTES] : '';
       const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
       if (!m) return;
 
@@ -1514,8 +1960,13 @@
       if (domCache.email) domCache.email.value = row[2] || '';
       if (domCache.phone) domCache.phone.value = row[3] || '';
       if (domCache.server) domCache.server.value = row[4] || '';
+      if (domCache.autoPay) {
+        const ap = normalizeAutoPayDisplay(row[COL_AUTOPAY]);
+        domCache.autoPay.value = (ap === 'Yes' || ap === 'No') ? ap : '';
+      }
+      if (domCache.expirationDate) domCache.expirationDate.value = expirationToInputValue(row[COL_EXPIRATION]);
 
-      selectedRawNotes = row[6] || '';
+      selectedRawNotes = row[COL_NOTES] || '';
       if (domCache.notes) domCache.notes.value = '';
       const idxEl = document.getElementById('rowIndex');
       if (idxEl) idxEl.value = selectedRowIndex;
@@ -1585,7 +2036,7 @@ window.tableNextPage = tableNextPage;
 window.renderTablePage = renderTablePage;
 
    // Tunables
-const REFRESH_COLS = 'A:G';
+const REFRESH_COLS = 'A:H';
 const SHEET_TAB    = 'data';
 
 // Safe busy helper (does nothing if not present)
@@ -1610,22 +2061,26 @@ function sortRecords(records) {
   return records.sort(sortByRecent);
 }
 
-// Build the inner <td> HTML for a row (skip sheet AutoPay column; WhatsApp + notes formatting)
+// Build the inner <td> HTML for a row (column order matches table header, not raw sheet index order)
 function tdHTML(rowArr) {
+  const row = normalizeSheetRow(rowArr);
+  const displayOrder = [0, 1, 2, 3, 4, COL_AUTOPAY, COL_EXPIRATION, COL_NOTES];
   const parts = [];
-  rowArr.forEach((cell, ci) => {
-    if (ci === 5) return;
-    if (ci === 6) parts.push('<td><div class="notes-cell">' + formatNotes(cell) + '</div></td>');
+  displayOrder.forEach(ci => {
+    const cell = row[ci] || '';
+    if (ci === COL_NOTES) {
+      const notesBody = formatNotes(cell);
+      const inner = notesBody
+        ? '<div class="notes-cell" tabindex="0" role="region" aria-label="Notes (scroll to read all)">' + notesBody + '</div>'
+        : '<div class="notes-empty">No notes</div>';
+      parts.push('<td class="notes-td"><div class="notes-cell-wrap">' + inner + '</div></td>');
+    }
+    else if (ci === COL_EXPIRATION) parts.push('<td>' + formatExpirationDisplay(cell) + '</td>');
+    else if (ci === COL_AUTOPAY) parts.push('<td>' + escapeHTML(normalizeAutoPayDisplay(cell) || cell) + '</td>');
     else if (ci === 3) parts.push('<td class="phone-wa">' + phoneLink(cell) + '</td>');
     else parts.push('<td>' + escapeHTML(cell) + '</td>');
   });
   return parts.join('');
-}
-
-function sheetAutoPayForSelectedRow() {
-  if (selectedRowIndex == null) return '';
-  const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
-  return (rec && rec.row && rec.row[5] != null) ? String(rec.row[5]).trim() : '';
 }
 
 
@@ -1653,15 +2108,15 @@ async function refreshRowsBatch(sheetRowNums) {
     if (!rnum) return;
 
     const row = (vr.values && vr.values[0]) ? vr.values[0] : [];
-    const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+    const newRow = normalizeSheetRow(row);
 
     // update selected notes cache if applicable
     if (typeof selectedRowIndex === 'number' && rnum === selectedRowIndex) {
-      selectedRawNotes = newRow[6] || '';
+      selectedRawNotes = newRow[COL_NOTES] || '';
     }
 
     // upsert into allRecords - use timestamp from notes for correct sort order
-    const lastEdit = parseLastEditMs(newRow[6] || '') || 0;
+    const lastEdit = parseLastEditMs(newRow[COL_NOTES] || '') || 0;
     let rec = allRecords.find(x => x.sheetRow === rnum);
     if (rec) {
       rec.row = newRow;
@@ -1694,11 +2149,14 @@ async function fullReload() {
   const dataRows = rows.slice(1); // skip header
   existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
 
-  allRecords = dataRows.map((row, idx) => ({
-    row,
-    sheetRow: idx + 2, // 1-based + header
-    lastEditMs: parseLastEditMs(row[6] || '')
-  }));
+  allRecords = dataRows.map((row, idx) => {
+    const normalized = normalizeSheetRow(row);
+    return {
+      row: normalized,
+      sheetRow: idx + 2,
+      lastEditMs: parseLastEditMs(normalized[COL_NOTES] || '')
+    };
+  });
 
   sortRecords(allRecords);
 
@@ -1754,10 +2212,83 @@ async function loadData(onlySelected = false) {
   } finally {
     setBusySafe('#refreshBtn', false);
     renderReminderPreview();
+    renderUpcomingExpirations();
   }
 }
 
 window.loadData = loadData;
+
+const EXP_PANEL_DISMISS_KEY = 'contactsManagerExpPanelDismissed';
+
+function getExpPanelDismissedRows() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(EXP_PANEL_DISMISS_KEY) || '[]');
+    if (!Array.isArray(raw)) return new Set();
+    return new Set(raw.map(n => Number(n)).filter(n => Number.isFinite(n) && n > 0));
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function saveExpPanelDismissedRows(set) {
+  localStorage.setItem(EXP_PANEL_DISMISS_KEY, JSON.stringify(Array.from(set)));
+}
+
+function removeExpirationFromPanel(sheetRow) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum) || rowNum <= 0) return;
+  if (!confirm('Remove this contact from Upcoming Expirations?\n\nThe row stays in your main table.')) return;
+  const dismissed = getExpPanelDismissedRows();
+  dismissed.add(rowNum);
+  saveExpPanelDismissedRows(dismissed);
+  renderUpcomingExpirations();
+}
+
+function renderUpcomingExpirations() {
+  const list = document.getElementById('expirationsList');
+  if (!list || !Array.isArray(allRecords)) return;
+  const dismissed = getExpPanelDismissedRows();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const startMs = start.getTime();
+  const endDay = new Date(start);
+  endDay.setDate(endDay.getDate() + 7);
+  endDay.setHours(23, 59, 59, 999);
+  const endMs = endDay.getTime();
+  const items = [];
+  allRecords.forEach(rec => {
+    if (dismissed.has(rec.sheetRow)) return;
+    const row = normalizeSheetRow(rec.row);
+    if (rowHasAutoPayYes(row)) return;
+    const ms = parseExpirationMs(row[COL_EXPIRATION]);
+    if (isNaN(ms) || ms < startMs || ms > endMs) return;
+    items.push({
+      sheetRow: rec.sheetRow,
+      email: row[2] || '',
+      phone: row[3] || '',
+      expMs: ms,
+      expDisplay: formatExpirationDisplay(row[COL_EXPIRATION])
+    });
+  });
+  items.sort((a, b) => a.expMs - b.expMs);
+  if (!items.length) {
+    list.innerHTML = '<p class="exp-empty">No contacts expiring in the next 7 days without AutoPay. Set AutoPay to No (or leave blank), add an expiration date, and ensure the date falls within the next week.</p>';
+    return;
+  }
+  list.innerHTML = items.map(it =>
+    '<div class="exp-item">' +
+    '<div class="exp-item-main">' +
+    '<div><span class="exp-label">Email</span>' + escapeHTML(it.email || '—') + '</div>' +
+    '<div><span class="exp-label">Phone</span>' + escapeHTML(it.phone || '—') + '</div>' +
+    '<div><span class="exp-label">Expires</span><span class="exp-date">' + it.expDisplay + '</span></div>' +
+    '</div>' +
+    '<button type="button" class="exp-remove-btn" onclick="removeExpirationFromPanel(' + it.sheetRow + ')">Remove</button>' +
+    '</div>'
+  ).join('');
+}
+
+window.removeExpirationFromPanel = removeExpirationFromPanel;
+window.renderUpcomingExpirations = renderUpcomingExpirations;
 
     /* ---------- Search (optimized with caching and debouncing) ---------- */
 function searchData() {
@@ -1767,6 +2298,8 @@ function searchData() {
   if (domCache.email) domCache.email.value = '';
   if (domCache.phone) domCache.phone.value = '';
   if (domCache.server) domCache.server.value = '';
+  if (domCache.autoPay) domCache.autoPay.value = '';
+  if (domCache.expirationDate) domCache.expirationDate.value = '';
   if (domCache.notes) domCache.notes.value = '';
   
   const raw = domCache.searchQuery.value.trim().toLowerCase();
@@ -1824,6 +2357,8 @@ window.debouncedSearch = debouncedSearch;
         if (domCache.email) domCache.email.value = '';
         if (domCache.phone) domCache.phone.value = '';
         if (domCache.server) domCache.server.value = '';
+        if (domCache.autoPay) domCache.autoPay.value = '';
+        if (domCache.expirationDate) domCache.expirationDate.value = '';
         if (domCache.notes) domCache.notes.value = '';
         if (domCache.searchQuery) domCache.searchQuery.value = '';
         
@@ -1843,6 +2378,8 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value : '',
           phone: domCache.phone ? domCache.phone.value : '',
           server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          expirationDate: domCache.expirationDate ? domCache.expirationDate.value : '',
           notes: domCache.notes ? domCache.notes.value : ''
         };
         saveUndoState('delete', currentData);
@@ -1882,7 +2419,9 @@ window.debouncedSearch = debouncedSearch;
     email: prevRow[2] || '',
     phone: prevRow[3] || '',
     server: prevRow[4] || '',
-    notes: prevRow[6] || ''
+    autoPay: prevRow[COL_AUTOPAY] || '',
+    expirationDate: expirationToInputValue(prevRow[COL_EXPIRATION]),
+    notes: prevRow[COL_NOTES] || ''
   };
   saveUndoState('edit', previousData);
 
@@ -1915,7 +2454,8 @@ window.debouncedSearch = debouncedSearch;
     email: domCache.email ? domCache.email.value.trim() : '',
     phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
     server: domCache.server ? domCache.server.value.trim() : '',
-    autoPay: sheetAutoPayForSelectedRow(),
+    autoPay: formAutoPayValue(),
+    expirationDate: formExpirationValue(),
     notes: combined
   });
 
@@ -1924,16 +2464,17 @@ window.debouncedSearch = debouncedSearch;
   fetch(scriptURL, { method: 'POST', body: params })
     .then(r => r.text())
     .then(() => {
-      const singleRange = `data!A${selectedRowIndex}:G${selectedRowIndex}`;
+      const singleRange = `data!A${selectedRowIndex}:H${selectedRowIndex}`;
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
       return fetch(url).then(res => res.json());
     })
     .then(data => {
       const row = (data && data.values && data.values[0]) ? data.values[0] : [];
-      const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+      const savedExpiration = formExpirationValue();
+      const newRow = applyExpirationToRow(row, savedExpiration);
 
       // Update local cache with server-updated row (including any server timestamps)
-      selectedRawNotes = newRow[6] || '';
+      selectedRawNotes = newRow[COL_NOTES] || '';
       const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
       if (rec) {
         rec.row = newRow;
@@ -1947,6 +2488,7 @@ window.debouncedSearch = debouncedSearch;
       // Resort by last change and re-render the visible chunk
       allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
       renderTablePage(allRecords, false);
+      renderUpcomingExpirations();
     })
     .catch(err => alert('Update failed: ' + err))
     .finally(() => setBusy('.edit-btn', false));
@@ -1963,6 +2505,8 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value : '',
           phone: domCache.phone ? domCache.phone.value : '',
           server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          expirationDate: domCache.expirationDate ? domCache.expirationDate.value : '',
           notes: domCache.notes ? domCache.notes.value : ''
         };
         saveUndoState('add', currentData);
@@ -1972,6 +2516,7 @@ window.debouncedSearch = debouncedSearch;
         if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
         if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
 
+        const savedExpiration = formExpirationValue();
         const data = {
           action: 'add',
           password: sessionPassword,
@@ -1980,7 +2525,8 @@ window.debouncedSearch = debouncedSearch;
           email: domCache.email ? domCache.email.value.trim() : '',
           phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           server: domCache.server ? domCache.server.value.trim() : '',
-          autoPay: '',
+          autoPay: formAutoPayValue(),
+          expirationDate: savedExpiration,
           notes: domCache.notes ? domCache.notes.value.trim() : ''
         };
 
@@ -2007,11 +2553,11 @@ window.debouncedSearch = debouncedSearch;
               }
               const sheetRow = 2 + foundIndex; // because A2 is index 0
 
-              const singleRange = `data!A${sheetRow}:G${sheetRow}`;
+              const singleRange = `data!A${sheetRow}:H${sheetRow}`;
               const urlRow = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
               return fetch(urlRow).then(r2 => r2.json()).then(data2 => {
                 const row = (data2 && data2.values && data2.values[0]) ? data2.values[0] : [];
-                const newRow = [0,1,2,3,4,5,6].map(i => row[i] || '');
+                const newRow = applyExpirationToRow(row, savedExpiration);
 
                 // 3) Update local caches and sort by latest change (this row)
                 existingUsernames.push(username.toLowerCase());
@@ -2026,6 +2572,7 @@ window.debouncedSearch = debouncedSearch;
 
                 sortRecords(allRecords);
                 renderTablePage(allRecords, false);
+                renderUpcomingExpirations();
 
                 clearForm();
                 return null;
@@ -2065,7 +2612,8 @@ window.debouncedSearch = debouncedSearch;
     email: domCache.email ? domCache.email.value.trim() : '',
     phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
     server: domCache.server ? domCache.server.value.trim() : '',
-    autoPay: sheetAutoPayForSelectedRow(),
+    autoPay: formAutoPayValue(),
+    expirationDate: formExpirationValue(),
     notes: combined
   });
 
@@ -2080,15 +2628,16 @@ window.debouncedSearch = debouncedSearch;
 
       const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
       if (rec) {
-        const newRow = [
+        const newRow = normalizeSheetRow([
           domCache.username ? domCache.username.value.trim() : '',
           domCache.password ? domCache.password.value.trim() : '',
           domCache.email ? domCache.email.value.trim() : '',
           normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           domCache.server ? domCache.server.value.trim() : '',
-          sheetAutoPayForSelectedRow(),
-          combined
-        ];
+          formAutoPayValue(),
+          combined,
+          formExpirationValue()
+        ]);
         rec.row = newRow;
         rec.lastEditMs = Date.now(); // treat this as latest change
         const selectedTr = document.querySelector('#dataTable tr.selected');
@@ -2134,7 +2683,8 @@ window.addCriticalAlert = addCriticalAlert;
           email: domCache.email ? domCache.email.value.trim() : '',
           phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
           server: domCache.server ? domCache.server.value.trim() : '',
-          autoPay: sheetAutoPayForSelectedRow(),
+          autoPay: formAutoPayValue(),
+          expirationDate: formExpirationValue(),
           notes: cleaned
         });
 
@@ -2150,7 +2700,8 @@ window.addCriticalAlert = addCriticalAlert;
             
             const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
             if (rec) {
-              rec.row[6] = cleaned;
+              rec.row[COL_NOTES] = cleaned;
+              rec.row = normalizeSheetRow(rec.row);
               rec.lastEditMs = Date.now();
               
               // Update the selected row in the table
