@@ -5,13 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Google Sheets Manager</title>
-  <!-- Preload login background -->
-  <link rel="preload" as="image" href="bg.jpg">
-  <!-- Preload app background -->
-  <link rel="preload" as="image"
-    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg">
-
-
   <link rel="preload" as="image" href="logo.png">
   <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
   <link rel="icon" type="image/png"
@@ -79,6 +72,11 @@
       z-index: 2;
     }
 
+    #loginSection {
+      position: relative;
+      z-index: 1;
+    }
+
     header img.logo {
       max-width: 200px;
       height: auto;
@@ -94,6 +92,13 @@
       max-width: 100%;
       margin: 0 auto;
       padding: 0 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    body.app-bg header {
+      position: relative;
+      z-index: 1;
     }
 
     body.app-bg {
@@ -1068,28 +1073,619 @@
 
     .phone-wa a { text-decoration: none; }
 
-    /* ===== Login-only background (uses bg.jpg) ===== */
-    body.login-bg {
-      min-height: 100vh;
-      background: url('bg.jpg') center / cover no-repeat;
+    /* ===== Moving abstract background (login + app) — vivid + fast ===== */
+    @keyframes orbPath1 {
+      0% { transform: translate(-30vw, -25vh) scale(0.85); }
+      25% { transform: translate(35vw, 5vh) scale(1.25); }
+      50% { transform: translate(15vw, 40vh) scale(1); }
+      75% { transform: translate(-25vw, 30vh) scale(1.2); }
+      100% { transform: translate(-30vw, -25vh) scale(0.85); }
+    }
+    @keyframes orbPath2 {
+      0% { transform: translate(28vw, -20vh) scale(1.1); }
+      33% { transform: translate(-32vw, 12vh) scale(0.9); }
+      66% { transform: translate(-10vw, 38vh) scale(1.3); }
+      100% { transform: translate(28vw, -20vh) scale(1.1); }
+    }
+    @keyframes orbPath3 {
+      0% { transform: translate(0, 0) scale(1); }
+      20% { transform: translate(-28vw, -15vh) scale(1.15); }
+      45% { transform: translate(22vw, -28vh) scale(0.88); }
+      70% { transform: translate(30vw, 22vh) scale(1.22); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes orbPath4 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+      50% { transform: translate(-35vw, 28vh) rotate(200deg) scale(1.35); }
+      100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+    }
+    @keyframes orbPath5 {
+      0% { transform: translate(25vw, -30vh) scale(0.9); }
+      50% { transform: translate(-30vw, 35vh) scale(1.3); }
+      100% { transform: translate(25vw, -30vh) scale(0.9); }
+    }
+    @keyframes orbPath6 {
+      0% { transform: translate(-20vw, 20vh) scale(1.15); }
+      33% { transform: translate(28vw, -25vh) scale(0.85); }
+      66% { transform: translate(5vw, 45vh) scale(1.25); }
+      100% { transform: translate(-20vw, 20vh) scale(1.15); }
+    }
+    @keyframes auroraSweep {
+      0% { transform: translateX(-35%) rotate(-8deg) scale(1.1); opacity: 0.55; }
+      50% { transform: translateX(35%) rotate(8deg) scale(1.15); opacity: 0.85; }
+      100% { transform: translateX(-35%) rotate(-8deg) scale(1.1); opacity: 0.55; }
+    }
+    @keyframes auroraSweepRev {
+      0% { transform: translateX(30%) rotate(10deg); opacity: 0.5; }
+      50% { transform: translateX(-30%) rotate(-10deg); opacity: 0.8; }
+      100% { transform: translateX(30%) rotate(10deg); opacity: 0.5; }
+    }
+    @keyframes prismSpin {
+      0% { transform: rotate(0deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1.2); }
+    }
+    @keyframes gridPan {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(64px, 64px); }
+    }
+    @keyframes baseGradientShift {
+      0% { filter: hue-rotate(0deg) brightness(1.05) saturate(1.35); }
+      25% { filter: hue-rotate(45deg) brightness(1.15) saturate(1.5); }
+      50% { filter: hue-rotate(90deg) brightness(1.1) saturate(1.45); }
+      75% { filter: hue-rotate(135deg) brightness(1.12) saturate(1.55); }
+      100% { filter: hue-rotate(180deg) brightness(1.05) saturate(1.35); }
     }
 
-    /* subtle dark overlay to boost contrast behind the card */
-    body.login-bg::before {
-      content: "";
+    .abstract-bg {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .35);
+      z-index: 0;
+      overflow: hidden;
       pointer-events: none;
-      z-index: -1;
+      background:
+        linear-gradient(125deg,
+          #1e1b4b 0%,
+          #7c3aed 5%,
+          #db2777 10%,
+          #f43f5e 15%,
+          #ea580c 20%,
+          #facc15 25%,
+          #84cc16 30%,
+          #22c55e 35%,
+          #10b981 40%,
+          #14b8a6 45%,
+          #06b6d4 50%,
+          #0ea5e9 55%,
+          #3b82f6 60%,
+          #6366f1 65%,
+          #8b5cf6 70%,
+          #a855f7 75%,
+          #d946ef 80%,
+          #ec4899 85%,
+          #f97316 90%,
+          #ef4444 95%,
+          #312e81 100%);
+      background-size: 300% 300%;
+      animation: baseGradientShift 10s linear infinite;
     }
 
-    /* ===== App (2nd page) background ===== */
+    .abstract-prism {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 140vmax;
+      height: 140vmax;
+      margin-left: -70vmax;
+      margin-top: -70vmax;
+      background: conic-gradient(
+        from 0deg,
+        rgba(255, 0, 128, 0.12),
+        rgba(255, 128, 0, 0.14),
+        rgba(255, 255, 0, 0.1),
+        rgba(0, 255, 128, 0.12),
+        rgba(0, 128, 255, 0.14),
+        rgba(128, 0, 255, 0.12),
+        rgba(255, 0, 128, 0.12)
+      );
+      filter: blur(50px);
+      animation: prismSpin 20s linear infinite;
+    }
+
+    .abstract-prism-2 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120vmax;
+      height: 120vmax;
+      margin-left: -60vmax;
+      margin-top: -60vmax;
+      background: conic-gradient(
+        from 120deg,
+        rgba(255, 59, 48, 0.14),
+        rgba(255, 149, 0, 0.16),
+        rgba(255, 204, 0, 0.14),
+        rgba(52, 199, 89, 0.15),
+        rgba(48, 176, 199, 0.14),
+        rgba(0, 122, 255, 0.16),
+        rgba(88, 86, 214, 0.14),
+        rgba(175, 82, 222, 0.15),
+        rgba(255, 45, 85, 0.14)
+      );
+      filter: blur(44px);
+      animation: prismSpin 14s linear infinite reverse;
+    }
+
+    .abstract-aurora,
+    .abstract-aurora-2,
+    .abstract-aurora-3 {
+      position: absolute;
+      inset: -25% -40%;
+      filter: blur(36px);
+    }
+
+    .abstract-aurora {
+      background: linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(74, 222, 128, 0.45) 12%,
+        rgba(250, 204, 21, 0.5) 25%,
+        rgba(251, 113, 133, 0.48) 38%,
+        rgba(167, 139, 250, 0.45) 52%,
+        rgba(56, 189, 248, 0.5) 65%,
+        rgba(52, 211, 153, 0.42) 78%,
+        transparent 100%
+      );
+      animation: auroraSweep 7s ease-in-out infinite;
+    }
+
+    .abstract-aurora-2 {
+      background: linear-gradient(
+        -75deg,
+        transparent 0%,
+        rgba(244, 63, 94, 0.4) 20%,
+        rgba(249, 115, 22, 0.45) 40%,
+        rgba(132, 204, 22, 0.4) 60%,
+        rgba(6, 182, 212, 0.45) 80%,
+        transparent 100%
+      );
+      animation: auroraSweepRev 9s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-aurora-3 {
+      background: linear-gradient(
+        85deg,
+        transparent 0%,
+        rgba(236, 72, 153, 0.38) 15%,
+        rgba(168, 85, 247, 0.42) 30%,
+        rgba(34, 211, 238, 0.4) 45%,
+        rgba(163, 230, 53, 0.38) 60%,
+        rgba(251, 191, 36, 0.42) 75%,
+        rgba(248, 113, 113, 0.38) 90%,
+        transparent 100%
+      );
+      animation: auroraSweep 5s ease-in-out infinite reverse;
+      mix-blend-mode: plus-lighter;
+      opacity: 0.9;
+    }
+
+    .abstract-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(52px);
+      opacity: 0.88;
+      will-change: transform;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-orb-a {
+      width: min(75vmax, 780px);
+      height: min(75vmax, 780px);
+      top: -20%;
+      left: -15%;
+      background: radial-gradient(circle, rgba(79, 70, 229, 1) 0%, rgba(79, 70, 229, 0) 62%);
+      animation: orbPath1 11s ease-in-out infinite;
+    }
+
+    .abstract-orb-b {
+      width: min(68vmax, 700px);
+      height: min(68vmax, 700px);
+      top: 5%;
+      right: -18%;
+      background: radial-gradient(circle, rgba(236, 72, 153, 1) 0%, rgba(236, 72, 153, 0) 60%);
+      animation: orbPath2 13s ease-in-out infinite;
+    }
+
+    .abstract-orb-c {
+      width: min(72vmax, 740px);
+      height: min(72vmax, 740px);
+      bottom: -22%;
+      left: 15%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 1) 0%, rgba(14, 165, 233, 0) 62%);
+      animation: orbPath3 10s ease-in-out infinite;
+    }
+
+    .abstract-orb-d {
+      width: min(58vmax, 600px);
+      height: min(58vmax, 600px);
+      bottom: 10%;
+      right: 5%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 1) 0%, rgba(168, 85, 247, 0) 65%);
+      animation: orbPath4 14s linear infinite;
+    }
+
+    .abstract-orb-e {
+      width: min(52vmax, 540px);
+      height: min(52vmax, 540px);
+      top: 30%;
+      left: 35%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 1) 0%, rgba(16, 185, 129, 0) 62%);
+      animation: orbPath2 12s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-f {
+      width: min(50vmax, 520px);
+      height: min(50vmax, 520px);
+      top: 50%;
+      left: -10%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 1) 0%, rgba(234, 88, 12, 0) 60%);
+      animation: orbPath1 15s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-g {
+      width: min(54vmax, 560px);
+      height: min(54vmax, 560px);
+      top: -5%;
+      right: 18%;
+      background: radial-gradient(circle, rgba(217, 70, 239, 1) 0%, rgba(217, 70, 239, 0) 58%);
+      animation: orbPath3 11s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-h {
+      width: min(48vmax, 500px);
+      height: min(48vmax, 500px);
+      bottom: 5%;
+      left: 50%;
+      background: radial-gradient(circle, rgba(45, 212, 191, 1) 0%, rgba(34, 211, 238, 0) 62%);
+      animation: orbPath4 16s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-i {
+      width: min(44vmax, 460px);
+      height: min(44vmax, 460px);
+      top: 18%;
+      left: 8%;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.95) 0%, rgba(239, 68, 68, 0) 60%);
+      animation: orbPath2 9s ease-in-out infinite;
+    }
+
+    .abstract-orb-j {
+      width: min(46vmax, 480px);
+      height: min(46vmax, 480px);
+      top: 62%;
+      right: 28%;
+      background: radial-gradient(circle, rgba(132, 204, 22, 0.95) 0%, rgba(132, 204, 22, 0) 62%);
+      animation: orbPath1 8s ease-in-out infinite;
+    }
+
+    .abstract-orb-k {
+      width: min(42vmax, 440px);
+      height: min(42vmax, 440px);
+      bottom: 28%;
+      right: -5%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 1) 0%, rgba(59, 130, 246, 0) 58%);
+      animation: orbPath3 12s linear infinite;
+    }
+
+    .abstract-orb-l {
+      width: min(40vmax, 420px);
+      height: min(40vmax, 420px);
+      top: 42%;
+      right: 42%;
+      background: radial-gradient(circle, rgba(251, 146, 60, 1) 0%, rgba(251, 146, 60, 0) 60%);
+      animation: orbPath4 10s ease-in-out infinite;
+    }
+
+    .abstract-orb-mini {
+      width: min(34vmax, 360px);
+      height: min(34vmax, 360px);
+      filter: blur(40px);
+      opacity: 0.86;
+    }
+
+    .abstract-orb-m { top: 8%; left: 22%; background: radial-gradient(circle, #e879f9 0%, transparent 58%); animation: orbPath5 7s ease-in-out infinite; animation-delay: -1s; }
+    .abstract-orb-n { top: 72%; left: 12%; background: radial-gradient(circle, #8b5cf6 0%, transparent 58%); animation: orbPath6 8s ease-in-out infinite; animation-delay: -2s; }
+    .abstract-orb-o { top: 25%; right: 8%; background: radial-gradient(circle, #0ea5e9 0%, transparent 58%); animation: orbPath1 9s ease-in-out infinite reverse; animation-delay: -3s; }
+    .abstract-orb-p { bottom: 18%; left: 28%; background: radial-gradient(circle, #eab308 0%, transparent 58%); animation: orbPath2 6s ease-in-out infinite; animation-delay: -0.5s; }
+    .abstract-orb-q { top: 48%; left: 2%; background: radial-gradient(circle, #10b981 0%, transparent 58%); animation: orbPath3 7.5s linear infinite; animation-delay: -4s; }
+    .abstract-orb-r { top: 12%; right: 35%; background: radial-gradient(circle, #f43f5e 0%, transparent 58%); animation: orbPath4 8.5s ease-in-out infinite reverse; animation-delay: -2.5s; }
+    .abstract-orb-s { bottom: 35%; right: 18%; background: radial-gradient(circle, #f59e0b 0%, transparent 58%); animation: orbPath5 9.5s ease-in-out infinite reverse; animation-delay: -1.5s; }
+    .abstract-orb-t { top: 38%; right: 2%; background: radial-gradient(circle, #22d3ee 0%, transparent 58%); animation: orbPath6 6.5s ease-in-out infinite; animation-delay: -3.5s; }
+    .abstract-orb-u { bottom: 8%; left: 42%; background: radial-gradient(circle, #84cc16 0%, transparent 58%); animation: orbPath1 7s ease-in-out infinite; animation-delay: -5s; }
+    .abstract-orb-v { top: 58%; left: 25%; background: radial-gradient(circle, #6366f1 0%, transparent 58%); animation: orbPath2 10s linear infinite reverse; animation-delay: -2s; }
+    .abstract-orb-w { top: 5%; left: 48%; background: radial-gradient(circle, #ec4899 0%, transparent 58%); animation: orbPath3 8s ease-in-out infinite; animation-delay: -6s; }
+    .abstract-orb-x { bottom: 42%; right: 38%; background: radial-gradient(circle, #14b8a6 0%, transparent 58%); animation: orbPath4 7s ease-in-out infinite; animation-delay: -4.5s; }
+    .abstract-orb-y { top: 22%; left: 62%; background: radial-gradient(circle, #fb923c 0%, transparent 58%); animation: orbPath5 11s ease-in-out infinite; animation-delay: -7s; }
+    .abstract-orb-z { bottom: 22%; right: 48%; background: radial-gradient(circle, #3b82f6 0%, transparent 58%); animation: orbPath6 9s ease-in-out infinite reverse; animation-delay: -1s; }
+    .abstract-orb-aa { top: 68%; left: 48%; background: radial-gradient(circle, #f472b6 0%, transparent 58%); animation: orbPath1 6s ease-in-out infinite reverse; animation-delay: -3s; }
+    .abstract-orb-ab { top: 32%; left: 15%; background: radial-gradient(circle, #fb7185 0%, transparent 58%); animation: orbPath2 8s ease-in-out infinite; animation-delay: -5.5s; }
+    .abstract-orb-ac { top: 78%; right: 12%; background: radial-gradient(circle, #4ade80 0%, transparent 58%); animation: orbPath3 7s linear infinite; animation-delay: -2.2s; }
+    .abstract-orb-ad { top: 15%; left: 78%; background: radial-gradient(circle, #a78bfa 0%, transparent 58%); animation: orbPath4 9s ease-in-out infinite reverse; animation-delay: -6.5s; }
+    .abstract-orb-ae { bottom: 12%; left: 68%; background: radial-gradient(circle, #fcd34d 0%, transparent 58%); animation: orbPath5 8s ease-in-out infinite; animation-delay: -4s; }
+    .abstract-orb-af { top: 52%; right: 55%; background: radial-gradient(circle, #ef4444 0%, transparent 58%); animation: orbPath6 10s ease-in-out infinite; animation-delay: -8s; }
+    .abstract-orb-ag { bottom: 48%; left: 58%; background: radial-gradient(circle, #2dd4bf 0%, transparent 58%); animation: orbPath1 7.5s linear infinite; animation-delay: -1.8s; }
+    .abstract-orb-ah { top: 44%; left: 72%; background: radial-gradient(circle, #c026d3 0%, transparent 58%); animation: orbPath2 6.8s ease-in-out infinite reverse; animation-delay: -3.8s; }
+    .abstract-orb-ai { bottom: 58%; right: 8%; background: radial-gradient(circle, #fdba74 0%, transparent 58%); animation: orbPath3 9.2s ease-in-out infinite; animation-delay: -5s; }
+    .abstract-orb-aj { top: 85%; left: 32%; background: radial-gradient(circle, #38bdf8 0%, transparent 58%); animation: orbPath4 6.2s ease-in-out infinite; animation-delay: -2.8s; }
+    .abstract-orb-ak { top: 3%; right: 52%; background: radial-gradient(circle, #bef264 0%, transparent 58%); animation: orbPath5 8.8s ease-in-out infinite reverse; animation-delay: -4.2s; }
+    .abstract-orb-al { bottom: 3%; right: 22%; background: radial-gradient(circle, #f97316 0%, transparent 58%); animation: orbPath6 7.2s ease-in-out infinite; animation-delay: -6.2s; }
+    .abstract-orb-am { top: 28%; right: 62%; background: radial-gradient(circle, #7dd3fc 0%, transparent 58%); animation: orbPath1 9.8s ease-in-out infinite; animation-delay: -7.5s; }
+    .abstract-orb-an { bottom: 32%; left: 5%; background: radial-gradient(circle, #fda4af 0%, transparent 58%); animation: orbPath2 7.8s linear infinite; animation-delay: -1.2s; }
+    .abstract-orb-ao { top: 65%; right: 62%; background: radial-gradient(circle, #86efac 0%, transparent 58%); animation: orbPath3 8.2s ease-in-out infinite reverse; animation-delay: -5.8s; }
+    .abstract-orb-ap { top: 18%; left: 35%; background: radial-gradient(circle, #93c5fd 0%, transparent 58%); animation: orbPath4 6.6s ease-in-out infinite; animation-delay: -3.2s; }
+    .abstract-orb-aq { bottom: 52%; right: 28%; background: radial-gradient(circle, #fde047 0%, transparent 58%); animation: orbPath5 10.5s ease-in-out infinite; animation-delay: -9s; }
+    .abstract-orb-ar { top: 40%; left: 52%; background: radial-gradient(circle, #e11d48 0%, transparent 58%); animation: orbPath6 6.4s ease-in-out infinite reverse; animation-delay: -2.4s; }
+    .abstract-orb-as { bottom: 15%; right: 58%; background: radial-gradient(circle, #059669 0%, transparent 58%); animation: orbPath1 8.4s ease-in-out infinite; animation-delay: -4.8s; }
+    .abstract-orb-at { top: 75%; left: 75%; background: radial-gradient(circle, #7c3aed 0%, transparent 58%); animation: orbPath2 9s ease-in-out infinite reverse; animation-delay: -6.8s; }
+    .abstract-orb-au { top: 10%; left: 5%; background: radial-gradient(circle, #0891b2 0%, transparent 58%); animation: orbPath3 7.4s ease-in-out infinite; animation-delay: -0.8s; }
+    .abstract-orb-av { bottom: 38%; left: 38%; background: radial-gradient(circle, #d97706 0%, transparent 58%); animation: orbPath4 8.8s linear infinite; animation-delay: -5.2s; }
+    .abstract-orb-aw { top: 50%; right: 15%; background: radial-gradient(circle, #db2777 0%, transparent 58%); animation: orbPath5 6.9s ease-in-out infinite reverse; animation-delay: -3.6s; }
+    .abstract-orb-ax { bottom: 62%; left: 18%; background: radial-gradient(circle, #65a30d 0%, transparent 58%); animation: orbPath6 10.2s ease-in-out infinite; animation-delay: -7.2s; }
+    .abstract-orb-ay { top: 35%; right: 25%; background: radial-gradient(circle, #0284c7 0%, transparent 58%); animation: orbPath1 7.1s ease-in-out infinite; animation-delay: -4.4s; }
+    .abstract-orb-az { bottom: 25%; left: 52%; background: radial-gradient(circle, #ea580c 0%, transparent 58%); animation: orbPath2 8.6s ease-in-out infinite reverse; animation-delay: -6s; }
+    .abstract-orb-ba { top: 60%; left: 65%; background: radial-gradient(circle, #a21caf 0%, transparent 58%); animation: orbPath3 9.4s linear infinite; animation-delay: -2.6s; }
+    .abstract-orb-bb { top: 20%; right: 45%; background: radial-gradient(circle, #16a34a 0%, transparent 58%); animation: orbPath4 7.3s ease-in-out infinite; animation-delay: -8.2s; }
+    .abstract-orb-bc { bottom: 5%; left: 85%; background: radial-gradient(circle, #2563eb 0%, transparent 58%); animation: orbPath5 6.7s ease-in-out infinite reverse; animation-delay: -1.6s; }
+    .abstract-orb-bd { top: 88%; right: 42%; background: radial-gradient(circle, #fbbf24 0%, transparent 58%); animation: orbPath6 8.1s ease-in-out infinite; animation-delay: -5.4s; }
+    .abstract-orb-be { top: 42%; left: 88%; background: radial-gradient(circle, #06b6d4 0%, transparent 58%); animation: orbPath1 10.8s ease-in-out infinite reverse; animation-delay: -9.5s; }
+    .abstract-orb-bf { bottom: 45%; right: 5%; background: radial-gradient(circle, #f87171 0%, transparent 58%); animation: orbPath2 7.7s ease-in-out infinite; animation-delay: -3.4s; }
+    .abstract-orb-bg { top: 55%; left: 45%; background: radial-gradient(circle, #818cf8 0%, transparent 58%); animation: orbPath3 6.3s ease-in-out infinite; animation-delay: -7.8s; }
+    .abstract-orb-bh { bottom: 68%; right: 35%; background: radial-gradient(circle, #34d399 0%, transparent 58%); animation: orbPath4 9.6s ease-in-out infinite reverse; animation-delay: -2.1s; }
+    .abstract-orb-bi { top: 8%; left: 92%; background: radial-gradient(circle, #f0abfc 0%, transparent 58%); animation: orbPath5 8.3s linear infinite; animation-delay: -4.6s; }
+    .abstract-orb-bj { bottom: 18%; left: 22%; background: radial-gradient(circle, #60a5fa 0%, transparent 58%); animation: orbPath6 7.9s ease-in-out infinite; animation-delay: -6.4s; }
+    .abstract-orb-bk { top: 72%; right: 72%; background: radial-gradient(circle, #facc15 0%, transparent 58%); animation: orbPath1 6.1s ease-in-out infinite reverse; animation-delay: -3.9s; }
+    .abstract-orb-bl { top: 48%; right: 72%; background: radial-gradient(circle, #be123c 0%, transparent 58%); animation: orbPath2 10.1s ease-in-out infinite; animation-delay: -8.8s; }
+
+    /* "Ozzie" — margin safe zones only (2× per minute via JS) */
+    @keyframes ozzieSurfaceOnce {
+      0%, 100% {
+        transform: translateX(-50%) translateY(78%);
+        opacity: 0;
+        filter: blur(14px) brightness(0.5);
+        clip-path: inset(92% 0 0 0);
+      }
+      18% {
+        transform: translateX(-50%) translateY(52%);
+        opacity: 0.1;
+        filter: blur(10px) brightness(0.68);
+        clip-path: inset(68% 0 0 0);
+      }
+      32% {
+        transform: translateX(-50%) translateY(22%);
+        opacity: 0.28;
+        filter: blur(3px) brightness(0.95);
+        clip-path: inset(32% 0 0 0);
+      }
+      42% {
+        transform: translateX(-50%) translateY(8%);
+        opacity: 0.44;
+        filter: blur(0) brightness(1.1);
+        clip-path: inset(0 0 0 0);
+      }
+      52% {
+        transform: translateX(-50%) translateY(18%);
+        opacity: 0.26;
+        filter: blur(2px) brightness(0.88);
+        clip-path: inset(22% 0 0 0);
+      }
+      68% {
+        transform: translateX(-50%) translateY(72%);
+        opacity: 0;
+        filter: blur(16px) brightness(0.45);
+        clip-path: inset(94% 0 0 0);
+      }
+    }
+
+    @keyframes ozzieWaterlineOnce {
+      0%, 100% { opacity: 0; }
+      28%, 55% { opacity: 0.6; }
+      42% { opacity: 0.82; }
+    }
+
+    @keyframes ozzieRippleOnce {
+      0%, 100% { transform: translateX(-50%) scale(0.55); opacity: 0; }
+      38% { transform: translateX(-50%) scale(1); opacity: 0.32; }
+      58% { transform: translateX(-50%) scale(1.25); opacity: 0; }
+    }
+
+    .ozzie-zone {
+      position: fixed;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .ozzie-zone.is-active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Left margin (beside calendar) */
+    .ozzie-zone-left {
+      left: 0;
+      top: clamp(92px, 13vh, 128px);
+      width: clamp(64px, 10vw, 120px);
+      height: clamp(220px, 36vh, 400px);
+    }
+
+    /* Top-left, under header beside logo */
+    .ozzie-zone-top-left {
+      left: clamp(64px, 10vw, 120px);
+      top: clamp(52px, 8vh, 88px);
+      width: clamp(60px, calc(50vw - 200px), 300px);
+      height: clamp(44px, 6vh, 64px);
+    }
+
+    /* Top-right */
+    .ozzie-zone-top-right {
+      right: clamp(64px, 10vw, 120px);
+      top: clamp(52px, 8vh, 88px);
+      width: clamp(60px, calc(50vw - 200px), 300px);
+      height: clamp(44px, 6vh, 64px);
+    }
+
+    /* Right margin (beside Upcoming) */
+    .ozzie-zone-right {
+      right: 0;
+      top: clamp(92px, 13vh, 128px);
+      width: clamp(64px, 10vw, 120px);
+      height: clamp(220px, 36vh, 400px);
+    }
+
+    /* Strip under form row — side margins only on wide screens */
+    .ozzie-zone-bottom {
+      left: clamp(8px, 1.5vw, 20px);
+      right: clamp(8px, 1.5vw, 20px);
+      top: clamp(380px, 48vh, 520px);
+      height: clamp(40px, 5vh, 56px);
+      max-width: 100%;
+    }
+
+    @media (min-width: 1100px) {
+      .ozzie-zone-bottom {
+        left: clamp(64px, 10vw, 140px);
+        right: clamp(64px, 10vw, 140px);
+      }
+    }
+
+    .abstract-ozzie-scene {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .abstract-waterline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 54%;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(186, 230, 253, 0.35) 15%,
+        rgba(224, 242, 254, 0.95) 50%,
+        rgba(186, 230, 253, 0.35) 85%,
+        transparent
+      );
+      box-shadow:
+        0 0 14px rgba(56, 189, 248, 0.5),
+        0 3px 20px rgba(14, 116, 144, 0.3);
+      opacity: 0;
+    }
+
+    .abstract-ozzie-ripple {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 72px;
+      height: 20px;
+      margin-left: -36px;
+      border-radius: 50%;
+      border: 2px solid rgba(186, 230, 253, 0.45);
+      opacity: 0;
+    }
+
+    .ozzie-zone.is-active .abstract-waterline {
+      animation: ozzieWaterlineOnce 11s ease-in-out forwards;
+    }
+
+    .ozzie-zone.is-active .abstract-ozzie-ripple {
+      animation: ozzieRippleOnce 11s ease-out forwards;
+    }
+
+    .abstract-ozzie {
+      position: absolute;
+      left: 50%;
+      bottom: -5%;
+      margin: 0;
+      transform: translateX(-50%);
+      font-size: clamp(1.35rem, 3.2vw, 2.65rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      white-space: nowrap;
+      color: rgba(224, 242, 254, 0.92);
+      text-shadow:
+        0 0 22px rgba(56, 189, 248, 0.6),
+        0 2px 14px rgba(8, 47, 73, 0.5),
+        0 1px 0 rgba(255, 255, 255, 0.32);
+      will-change: transform, opacity, clip-path, filter;
+    }
+
+    .ozzie-zone.is-active .abstract-ozzie {
+      animation: ozzieSurfaceOnce 11s ease-in-out forwards;
+    }
+
+    .abstract-grid {
+      position: absolute;
+      inset: -60%;
+      opacity: 0.45;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 75%);
+      animation: gridPan 6s linear infinite;
+    }
+
+    body.login-bg,
     body.app-bg {
       min-height: 100vh;
-      background:
-        linear-gradient(165deg, rgba(241, 245, 249, 0.92) 0%, rgba(224, 231, 255, 0.88) 45%, rgba(252, 231, 243, 0.85) 100%),
-        url('https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/pexels-codioful-6985045.jpg') center / cover no-repeat fixed;
+      background-color: #0c1222;
+    }
+
+    body.login-bg #loginSection {
+      position: relative;
+      z-index: 1;
+    }
+
+    body.login-bg header,
+    body.app-bg header {
+      position: relative;
+      z-index: 1;
+    }
+
+    body.app-bg .reminder-preview-panel,
+    body.app-bg .expirations-panel,
+    body.app-bg #searchSection,
+    body.app-bg .form-section,
+    body.app-bg .table-scroll-wrap {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .abstract-bg,
+      .abstract-orb,
+      .abstract-grid,
+      .abstract-aurora,
+      .abstract-aurora-2,
+      .abstract-aurora-3,
+      .abstract-prism,
+      .abstract-prism-2,
+      .abstract-ozzie,
+      .abstract-waterline,
+      .abstract-ozzie-ripple {
+        animation: none !important;
+      }
+      .ozzie-zone {
+        display: none;
+      }
     }
 
     /* Hide the app by default; only show it after login when body.app-bg is set */
@@ -1437,6 +2033,93 @@
 
 
 <body>
+  <div class="abstract-bg" aria-hidden="true">
+    <div class="abstract-prism"></div>
+    <div class="abstract-prism abstract-prism-2"></div>
+    <div class="abstract-aurora"></div>
+    <div class="abstract-aurora abstract-aurora-2"></div>
+    <div class="abstract-aurora abstract-aurora-3"></div>
+    <div class="abstract-orb abstract-orb-a"></div>
+    <div class="abstract-orb abstract-orb-b"></div>
+    <div class="abstract-orb abstract-orb-c"></div>
+    <div class="abstract-orb abstract-orb-d"></div>
+    <div class="abstract-orb abstract-orb-e"></div>
+    <div class="abstract-orb abstract-orb-f"></div>
+    <div class="abstract-orb abstract-orb-g"></div>
+    <div class="abstract-orb abstract-orb-h"></div>
+    <div class="abstract-orb abstract-orb-i"></div>
+    <div class="abstract-orb abstract-orb-j"></div>
+    <div class="abstract-orb abstract-orb-k"></div>
+    <div class="abstract-orb abstract-orb-l"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-m"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-n"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-o"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-p"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-q"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-r"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-s"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-t"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-u"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-v"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-w"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-x"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-y"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-z"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aa"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ab"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ac"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ad"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ae"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-af"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ag"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ah"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ai"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aj"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ak"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-al"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-am"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-an"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ao"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ap"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aq"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ar"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-as"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-at"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-au"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-av"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aw"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ax"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ay"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-az"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ba"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bb"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bc"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bd"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-be"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bf"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bg"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bh"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bi"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bj"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bk"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bl"></div>
+    <div class="ozzie-zone ozzie-zone-left" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-top-left" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-top-right" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-right" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-bottom" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="abstract-grid"></div>
+  </div>
   <header>
     <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
       class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
@@ -1616,7 +2299,47 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('login-bg');
       initDOMCache(); // Initialize DOM cache for performance
+      initOzzieZones();
     });
+
+    function initOzzieZones() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const zones = Array.from(document.querySelectorAll('[data-ozzie-zone]'));
+      if (!zones.length) return;
+      let lastIdx = -1;
+      const OZZIE_MS = 30000;
+      const SURFACE_MS = 11000;
+
+      function resetZoneAnimations(zone) {
+        zone.querySelectorAll('.abstract-ozzie, .abstract-waterline, .abstract-ozzie-ripple').forEach(el => {
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = '';
+        });
+      }
+
+      function surfaceOzzie() {
+        zones.forEach(z => {
+          z.classList.remove('is-active');
+          resetZoneAnimations(z);
+        });
+        let idx = lastIdx;
+        if (zones.length > 1) {
+          while (idx === lastIdx) idx = Math.floor(Math.random() * zones.length);
+        } else {
+          idx = 0;
+        }
+        lastIdx = idx;
+        const zone = zones[idx];
+        zone.classList.add('is-active');
+        window.setTimeout(() => {
+          if (zone.classList.contains('is-active')) zone.classList.remove('is-active');
+        }, SURFACE_MS);
+      }
+
+      surfaceOzzie();
+      window.setInterval(surfaceOzzie, OZZIE_MS);
+    }
 
     /* ---------- App constants ---------- */
     const ROW_LIMIT = 25;
