@@ -742,12 +742,18 @@
 
     .form-section .fg-user { flex: 0 0 6.5rem; }
     .form-section .fg-pass { flex: 0 0 6.5rem; }
-    .form-section .fg-email { flex: 2 1 18rem; min-width: 16rem; max-width: 22rem; }
-    .form-section .fg-phone { flex: 0 0 7.5rem; }
+    .form-section .fg-email { flex: 2 1 16.2rem; min-width: 14.4rem; max-width: 19.8rem; }
+    .form-section .fg-extend { flex: 0 0 9.75rem; min-width: 9.75rem; max-width: 11rem; }
+    .form-section .fg-extend select {
+      padding-right: 1.65rem;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .form-section .fg-phone { flex: 0 0 9.25rem; min-width: 9.25rem; }
     .form-section .fg-server { flex: 0 0 4.5rem; }
     .form-section .fg-autopay { flex: 0 0 5.25rem; }
     .form-section .fg-exp { flex: 0 0 8.75rem; }
-    .form-section .fg-notes { flex: 2.6 1 21.9rem; min-width: 18.25rem; max-width: 29.2rem; }
+    .form-section .fg-notes { flex: 1 1 18rem; min-width: 15rem; max-width: none; }
 
     .form-group input[type="date"] {
       min-height: 42px;
@@ -2269,6 +2275,18 @@
         <label for="notes">Notes</label>
         <textarea id="notes" rows="1" title="Focus to expand and scroll long notes"></textarea>
       </div>
+      <div class="form-group fg-extend">
+        <label for="extendExpiration">Extend</label>
+        <select id="extendExpiration" onchange="applyExtendExpiration()">
+          <option value="">—</option>
+          <option value="24h">24 hours</option>
+          <option value="48h">48 hours</option>
+          <option value="1m">1 month</option>
+          <option value="3m">3 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select>
+      </div>
       <input type="hidden" id="rowIndex" />
     </div>
 
@@ -2720,6 +2738,7 @@
       server: null,
       autoPay: null,
       expirationDate: null,
+      extendExpiration: null,
       notes: null,
       dataTable: null,
       tbody: null
@@ -2735,6 +2754,7 @@
       domCache.server = document.getElementById('server');
       domCache.autoPay = document.getElementById('autoPay');
       domCache.expirationDate = document.getElementById('expirationDate');
+      domCache.extendExpiration = document.getElementById('extendExpiration');
       domCache.notes = document.getElementById('notes');
       domCache.dataTable = document.getElementById('dataTable');
       domCache.tbody = document.querySelector('#dataTable tbody');
@@ -2899,6 +2919,7 @@
         domCache.autoPay.value = (ap === 'Yes' || ap === 'No') ? ap : '';
       }
       if (domCache.expirationDate) domCache.expirationDate.value = expirationToInputValue(row[COL_EXPIRATION]);
+      if (domCache.extendExpiration) domCache.extendExpiration.value = '';
 
       selectedRawNotes = row[COL_NOTES] || '';
       if (domCache.notes) domCache.notes.value = '';
@@ -3293,6 +3314,7 @@ window.debouncedSearch = debouncedSearch;
         if (domCache.server) domCache.server.value = '';
         if (domCache.autoPay) domCache.autoPay.value = '';
         if (domCache.expirationDate) domCache.expirationDate.value = '';
+        if (domCache.extendExpiration) domCache.extendExpiration.value = '';
         if (domCache.notes) domCache.notes.value = '';
         if (domCache.searchQuery) domCache.searchQuery.value = '';
         
@@ -3333,6 +3355,121 @@ window.debouncedSearch = debouncedSearch;
 
 
       window.confirmDelete = confirmDelete;
+
+      function addExpirationPeriod(baseDate, code) {
+        const d = new Date(baseDate.getTime());
+        switch (code) {
+          case '24h': d.setTime(d.getTime() + 86400000); break;
+          case '48h': d.setTime(d.getTime() + 2 * 86400000); break;
+          case '1m': d.setMonth(d.getMonth() + 1); break;
+          case '3m': d.setMonth(d.getMonth() + 3); break;
+          case '6m': d.setMonth(d.getMonth() + 6); break;
+          case '1y': d.setFullYear(d.getFullYear() + 1); break;
+          default: return d;
+        }
+        return d;
+      }
+
+      function dateToExpirationInput(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function currentRecordExpirationMs() {
+        const formVal = formExpirationValue();
+        if (formVal) {
+          const t = Date.parse(formVal + 'T12:00:00');
+          if (!isNaN(t)) return t;
+        }
+        if (selectedRowIndex === null) return NaN;
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        if (!rec) return NaN;
+        return parseExpirationMs(rec.row[COL_EXPIRATION]);
+      }
+
+      function applyRowEditFromServer(savedExpiration) {
+        const singleRange = `data!A${selectedRowIndex}:H${selectedRowIndex}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+        return fetch(url).then(res => res.json()).then(data => {
+          const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+          const newRow = applyExpirationToRow(row, savedExpiration);
+          selectedRawNotes = newRow[COL_NOTES] || '';
+          const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+          if (rec) {
+            rec.row = newRow;
+            rec.lastEditMs = Date.now();
+          }
+          const selectedTr = document.querySelector('#dataTable tr.selected');
+          if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+          allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+          renderTablePage(allRecords, false);
+          renderUpcomingExpirations();
+        });
+      }
+
+      function saveExpirationOnly(newExpirationYmd) {
+        if (selectedRowIndex === null) return;
+        setBusy('.edit-btn', true);
+
+        const recForUndo = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        const prevRow = recForUndo ? recForUndo.row : [];
+        saveUndoState('edit', {
+          username: prevRow[0] || '',
+          password: prevRow[1] || '',
+          email: prevRow[2] || '',
+          phone: prevRow[3] || '',
+          server: prevRow[4] || '',
+          autoPay: prevRow[COL_AUTOPAY] || '',
+          expirationDate: expirationToInputValue(prevRow[COL_EXPIRATION]),
+          notes: prevRow[COL_NOTES] || ''
+        });
+
+        const existingNotes = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: domCache.username ? domCache.username.value.trim() : '',
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: formAutoPayValue(),
+          expirationDate: newExpirationYmd,
+          notes: existingNotes
+        });
+
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => applyRowEditFromServer(newExpirationYmd))
+          .catch(err => alert('Extend failed: ' + err))
+          .finally(() => setBusy('.edit-btn', false));
+      }
+
+      function applyExtendExpiration() {
+        const sel = domCache.extendExpiration;
+        if (!sel || !sel.value) return;
+        const code = sel.value;
+
+        if (selectedRowIndex === null) {
+          alert('Select a row first!');
+          sel.value = '';
+          return;
+        }
+
+        let baseMs = currentRecordExpirationMs();
+        if (isNaN(baseMs)) {
+          const today = new Date();
+          baseMs = Date.parse(dateToExpirationInput(today) + 'T12:00:00');
+        }
+
+        const newStr = dateToExpirationInput(addExpirationPeriod(new Date(baseMs), code));
+        if (domCache.expirationDate) domCache.expirationDate.value = newStr;
+        saveExpirationOnly(newStr);
+      }
+      window.applyExtendExpiration = applyExtendExpiration;
 
       function confirmEdit() {
         if (selectedRowIndex === null) { alert('Select a row first!'); return; }
@@ -3397,33 +3534,7 @@ window.debouncedSearch = debouncedSearch;
   // ✅ mark it as latest change, resort, and re-render.
   fetch(scriptURL, { method: 'POST', body: params })
     .then(r => r.text())
-    .then(() => {
-      const singleRange = `data!A${selectedRowIndex}:H${selectedRowIndex}`;
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
-      return fetch(url).then(res => res.json());
-    })
-    .then(data => {
-      const row = (data && data.values && data.values[0]) ? data.values[0] : [];
-      const savedExpiration = formExpirationValue();
-      const newRow = applyExpirationToRow(row, savedExpiration);
-
-      // Update local cache with server-updated row (including any server timestamps)
-      selectedRawNotes = newRow[COL_NOTES] || '';
-      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
-      if (rec) {
-        rec.row = newRow;
-        rec.lastEditMs = Date.now(); // treat this edit as latest change
-      }
-
-      // Update the currently selected table row in place
-      const selectedTr = document.querySelector('#dataTable tr.selected');
-      if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
-
-      // Resort by last change and re-render the visible chunk
-      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
-      renderTablePage(allRecords, false);
-      renderUpcomingExpirations();
-    })
+    .then(() => applyRowEditFromServer(formExpirationValue()))
     .catch(err => alert('Update failed: ' + err))
     .finally(() => setBusy('.edit-btn', false));
 }
