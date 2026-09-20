@@ -1142,31 +1142,72 @@
       z-index: 0;
       overflow: hidden;
       pointer-events: none;
+      background-color: #1a1040;
+      background-size: 100% 100%;
+      background-attachment: fixed;
+    }
+
+    .abstract-static-colorwash {
+      position: absolute;
+      inset: -20%;
+      opacity: 0.75;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-static-mesh {
+      position: absolute;
+      inset: 0;
+      opacity: 0.9;
       background:
-        linear-gradient(125deg,
-          #1e1b4b 0%,
-          #7c3aed 5%,
-          #db2777 10%,
-          #f43f5e 15%,
-          #ea580c 20%,
-          #facc15 25%,
-          #84cc16 30%,
-          #22c55e 35%,
-          #10b981 40%,
-          #14b8a6 45%,
-          #06b6d4 50%,
-          #0ea5e9 55%,
-          #3b82f6 60%,
-          #6366f1 65%,
-          #8b5cf6 70%,
-          #a855f7 75%,
-          #d946ef 80%,
-          #ec4899 85%,
-          #f97316 90%,
-          #ef4444 95%,
-          #312e81 100%);
-      background-size: 300% 300%;
-      animation: baseGradientShift 10s linear infinite;
+        repeating-linear-gradient(
+          122deg,
+          transparent 0,
+          transparent 72px,
+          rgba(255, 200, 255, 0.04) 72px,
+          rgba(200, 230, 255, 0.04) 73px
+        ),
+        repeating-linear-gradient(
+          -38deg,
+          transparent 0,
+          transparent 96px,
+          rgba(200, 255, 220, 0.035) 96px,
+          rgba(255, 220, 200, 0.035) 97px
+        );
+      mix-blend-mode: overlay;
+    }
+
+    .abstract-static-shapes {
+      position: absolute;
+      inset: 0;
+    }
+
+    .abs-shape {
+      position: absolute;
+      opacity: 0.5;
+      mix-blend-mode: screen;
+    }
+
+    .abs-shape.abs-line {
+      mix-blend-mode: normal;
+      border-radius: 2px;
+    }
+
+    .abstract-static-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 88% 78% at 50% 44%, black 12%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse 88% 78% at 50% 44%, black 12%, transparent 72%);
+      opacity: 0.55;
+    }
+
+    .abstract-static-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
     }
 
     .abstract-prism {
@@ -1669,14 +1710,10 @@
       -webkit-backdrop-filter: none;
     }
 
-    /* Frozen background — no animation (keeps static rainbow gradient only) */
+    /* Static abstract background — no motion, lightweight layers */
     .abstract-bg,
     .abstract-bg * {
       animation: none !important;
-    }
-    .abstract-bg {
-      filter: none !important;
-      background-size: 100% 100% !important;
     }
     .abstract-bg .abstract-orb,
     .abstract-bg .abstract-prism,
@@ -2054,6 +2091,22 @@
 
 <body>
   <div class="abstract-bg" aria-hidden="true">
+    <div class="abstract-static-colorwash"></div>
+    <div class="abstract-static-mesh"></div>
+    <div class="abstract-static-shapes">
+      <span class="abs-shape abs-shape-1"></span>
+      <span class="abs-shape abs-shape-2"></span>
+      <span class="abs-shape abs-shape-3"></span>
+      <span class="abs-shape abs-shape-4"></span>
+      <span class="abs-shape abs-shape-5"></span>
+      <span class="abs-shape abs-shape-6"></span>
+      <span class="abs-shape abs-shape-7"></span>
+      <span class="abs-shape abs-shape-8"></span>
+      <span class="abs-shape abs-shape-9"></span>
+      <span class="abs-shape abs-shape-10"></span>
+    </div>
+    <div class="abstract-static-grid"></div>
+    <div class="abstract-static-vignette"></div>
     <div class="abstract-prism"></div>
     <div class="abstract-prism abstract-prism-2"></div>
     <div class="abstract-aurora"></div>
@@ -2319,7 +2372,185 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('login-bg');
       initDOMCache(); // Initialize DOM cache for performance
+      applyDailyAbstractBackground();
+      scheduleDailyAbstractRefresh();
     });
+
+    /* ---------- 365 daily abstract backgrounds (one per calendar day) ---------- */
+    function abstractDayOfYear(d) {
+      const date = d || new Date();
+      const y = date.getFullYear();
+      const start = Date.UTC(y, 0, 0);
+      const today = Date.UTC(y, date.getMonth(), date.getDate());
+      return Math.min(365, Math.max(1, Math.floor((today - start) / 86400000)));
+    }
+
+    function abstractRng(seed) {
+      let s = seed >>> 0;
+      return function next() {
+        s = (s + 0x6D2B79F5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function abstractPickHsl(rng) {
+      return {
+        h: Math.floor(rng() * 360),
+        s: 58 + Math.floor(rng() * 34),
+        l: 38 + Math.floor(rng() * 28)
+      };
+    }
+
+    function abstractHsl(c, alpha) {
+      if (alpha != null) return `hsla(${c.h},${c.s}%,${c.l}%,${alpha})`;
+      return `hsl(${c.h},${c.s}%,${c.l}%)`;
+    }
+
+    function abstractOrganicRadius(rng) {
+      const p = () => 28 + Math.floor(rng() * 44);
+      return `${p()}% ${p()}% ${p()}% ${p()}% / ${p()}% ${p()}% ${p()}% ${p()}%`;
+    }
+
+    function applyDailyAbstractBackground() {
+      const day = abstractDayOfYear();
+      const rng = abstractRng(day * 9973 + 365);
+
+      const bg = document.querySelector('.abstract-bg');
+      if (!bg) return;
+      bg.dataset.abstractDay = String(day);
+
+      const layers = [];
+      const blobCount = 6 + Math.floor(rng() * 3);
+      for (let i = 0; i < blobCount; i++) {
+        const x = 4 + Math.floor(rng() * 92);
+        const y = 4 + Math.floor(rng() * 92);
+        const ew = 40 + Math.floor(rng() * 55);
+        const eh = 35 + Math.floor(rng() * 50);
+        const alpha = 0.5 + rng() * 0.28;
+        layers.push(
+          `radial-gradient(ellipse ${ew}% ${eh}% at ${x}% ${y}%, ${abstractHsl(abstractPickHsl(rng), alpha)} 0%, transparent 54%)`
+        );
+      }
+
+      const angle = Math.floor(rng() * 360);
+      const g1 = abstractPickHsl(rng);
+      const g2 = abstractPickHsl(rng);
+      const g3 = abstractPickHsl(rng);
+      const g4 = abstractPickHsl(rng);
+      g1.l = Math.max(22, g1.l - 12);
+      g4.l = Math.max(20, g4.l - 14);
+      layers.push(
+        `linear-gradient(${angle}deg, ${abstractHsl(g1)} 0%, ${abstractHsl(g2)} 30%, ${abstractHsl(g3)} 62%, ${abstractHsl(g4)} 100%)`
+      );
+
+      const base = abstractPickHsl(rng);
+      base.l = 14 + Math.floor(rng() * 12);
+      base.s = 45 + Math.floor(rng() * 35);
+      bg.style.backgroundColor = abstractHsl(base);
+      bg.style.backgroundImage = layers.join(', ');
+
+      const wash = bg.querySelector('.abstract-static-colorwash');
+      if (wash) {
+        const from = Math.floor(rng() * 360);
+        const seg = 7 + Math.floor(rng() * 3);
+        const parts = [];
+        for (let i = 0; i < seg; i++) {
+          parts.push(abstractHsl(abstractPickHsl(rng), 0.11 + rng() * 0.14));
+        }
+        wash.style.background = `conic-gradient(from ${from}deg at 50% 50%, ${parts.join(', ')}, ${parts[0]})`;
+      }
+
+      const mesh = bg.querySelector('.abstract-static-mesh');
+      if (mesh) {
+        const a1 = 64 + Math.floor(rng() * 48);
+        const a2 = 80 + Math.floor(rng() * 40);
+        const d1 = 105 + Math.floor(rng() * 45);
+        const d2 = -15 - Math.floor(rng() * 45);
+        mesh.style.background =
+          `repeating-linear-gradient(${d1}deg, transparent 0, transparent ${a1}px, rgba(255,255,255,0.04) ${a1}px, rgba(255,255,255,0.04) ${a1 + 1}px),` +
+          `repeating-linear-gradient(${d2}deg, transparent 0, transparent ${a2}px, rgba(255,255,255,0.032) ${a2}px, rgba(255,255,255,0.032) ${a2 + 1}px)`;
+      }
+
+      const shapes = bg.querySelectorAll('.abstract-static-shapes .abs-shape');
+      shapes.forEach((el, idx) => {
+        const sr = abstractRng(day * 1009 + idx * 7919);
+        el.classList.remove('abs-line');
+        el.style.cssText = 'position:absolute;mix-blend-mode:screen;';
+
+        if (idx >= 8) {
+          el.classList.add('abs-line');
+          el.style.mixBlendMode = 'normal';
+          const cA = abstractPickHsl(sr);
+          const cB = abstractPickHsl(sr);
+          const cC = abstractPickHsl(sr);
+          if (idx === 8) {
+            el.style.width = '3px';
+            el.style.height = (42 + Math.floor(sr() * 22)) + 'vh';
+            el.style.top = Math.floor(sr() * 28) + '%';
+            el.style.left = (8 + Math.floor(sr() * 84)) + '%';
+            el.style.background = `linear-gradient(to bottom, transparent, ${abstractHsl(cA)}, ${abstractHsl(cB)}, transparent)`;
+            el.style.opacity = String(0.4 + sr() * 0.25);
+          } else {
+            el.style.width = (28 + Math.floor(sr() * 38)) + 'vw';
+            el.style.height = '3px';
+            el.style.top = (15 + Math.floor(sr() * 65)) + '%';
+            el.style.left = (5 + Math.floor(sr() * 55)) + '%';
+            el.style.background = `linear-gradient(to right, transparent, ${abstractHsl(cA)}, ${abstractHsl(cB)}, ${abstractHsl(cC)}, transparent)`;
+            el.style.opacity = String(0.35 + sr() * 0.28);
+          }
+          return;
+        }
+
+        const size = 16 + Math.floor(sr() * 40);
+        el.style.width = `min(${size}vmax, ${size * 10}px)`;
+        el.style.height = el.style.width;
+        el.style.top = `${Math.floor(sr() * 78)}%`;
+        if (sr() > 0.45) {
+          el.style.left = `${Math.floor(sr() * 75)}%`;
+          el.style.right = 'auto';
+        } else {
+          el.style.right = `${Math.floor(sr() * 35)}%`;
+          el.style.left = 'auto';
+        }
+        el.style.borderRadius = abstractOrganicRadius(sr);
+        const gradAng = Math.floor(sr() * 360);
+        const useRadial = sr() > 0.55;
+        if (useRadial) {
+          el.style.background = `radial-gradient(circle, ${abstractHsl(abstractPickHsl(sr))} 0%, ${abstractHsl(abstractPickHsl(sr))} 42%, transparent 70%)`;
+        } else {
+          el.style.background = `linear-gradient(${gradAng}deg, ${abstractHsl(abstractPickHsl(sr))}, ${abstractHsl(abstractPickHsl(sr))} 52%, ${abstractHsl(abstractPickHsl(sr))})`;
+        }
+        el.style.transform = `rotate(${Math.floor(sr() * 56 - 28)}deg)`;
+        el.style.opacity = String(0.38 + sr() * 0.28);
+      });
+
+      const grid = bg.querySelector('.abstract-static-grid');
+      if (grid) {
+        const gs = 40 + Math.floor(rng() * 28);
+        grid.style.backgroundSize = `${gs}px ${gs}px`;
+        grid.style.opacity = String(0.38 + rng() * 0.28);
+      }
+
+      const vig = bg.querySelector('.abstract-static-vignette');
+      if (vig) {
+        const v = abstractPickHsl(rng);
+        v.l = 12 + Math.floor(rng() * 14);
+        vig.style.background = `radial-gradient(ellipse 82% 76% at 50% 48%, transparent 40%, ${abstractHsl(v, 0.48)} 100%)`;
+      }
+    }
+
+    function scheduleDailyAbstractRefresh() {
+      const now = new Date();
+      const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1, 0);
+      const ms = Math.max(1000, next - now);
+      window.setTimeout(function onMidnight() {
+        applyDailyAbstractBackground();
+        scheduleDailyAbstractRefresh();
+      }, ms);
+    }
 
     /* ---------- App constants ---------- */
     const ROW_LIMIT = 25;
