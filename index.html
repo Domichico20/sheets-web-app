@@ -1665,8 +1665,28 @@
     body.app-bg #searchSection,
     body.app-bg .form-section,
     body.app-bg .table-scroll-wrap {
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Frozen background — no animation (keeps static rainbow gradient only) */
+    .abstract-bg,
+    .abstract-bg * {
+      animation: none !important;
+    }
+    .abstract-bg {
+      filter: none !important;
+      background-size: 100% 100% !important;
+    }
+    .abstract-bg .abstract-orb,
+    .abstract-bg .abstract-prism,
+    .abstract-bg .abstract-prism-2,
+    .abstract-bg .abstract-aurora,
+    .abstract-bg .abstract-aurora-2,
+    .abstract-bg .abstract-aurora-3,
+    .abstract-bg .abstract-grid,
+    .abstract-bg .ozzie-zone {
+      display: none !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2299,47 +2319,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('login-bg');
       initDOMCache(); // Initialize DOM cache for performance
-      initOzzieZones();
     });
-
-    function initOzzieZones() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const zones = Array.from(document.querySelectorAll('[data-ozzie-zone]'));
-      if (!zones.length) return;
-      let lastIdx = -1;
-      const OZZIE_MS = 30000;
-      const SURFACE_MS = 11000;
-
-      function resetZoneAnimations(zone) {
-        zone.querySelectorAll('.abstract-ozzie, .abstract-waterline, .abstract-ozzie-ripple').forEach(el => {
-          el.style.animation = 'none';
-          void el.offsetWidth;
-          el.style.animation = '';
-        });
-      }
-
-      function surfaceOzzie() {
-        zones.forEach(z => {
-          z.classList.remove('is-active');
-          resetZoneAnimations(z);
-        });
-        let idx = lastIdx;
-        if (zones.length > 1) {
-          while (idx === lastIdx) idx = Math.floor(Math.random() * zones.length);
-        } else {
-          idx = 0;
-        }
-        lastIdx = idx;
-        const zone = zones[idx];
-        zone.classList.add('is-active');
-        window.setTimeout(() => {
-          if (zone.classList.contains('is-active')) zone.classList.remove('is-active');
-        }, SURFACE_MS);
-      }
-
-      surfaceOzzie();
-      window.setInterval(surfaceOzzie, OZZIE_MS);
-    }
 
     /* ---------- App constants ---------- */
     const ROW_LIMIT = 25;
