@@ -2277,7 +2277,7 @@
       </div>
       <div class="form-group fg-extend">
         <label for="extendExpiration">Extend</label>
-        <select id="extendExpiration" onchange="applyExtendExpiration()">
+        <select id="extendExpiration">
           <option value="">—</option>
           <option value="24h">24 hours</option>
           <option value="48h">48 hours</option>
@@ -3409,56 +3409,12 @@ window.debouncedSearch = debouncedSearch;
         });
       }
 
-      function saveExpirationOnly(newExpirationYmd) {
-        if (selectedRowIndex === null) return;
-        setBusy('.edit-btn', true);
-
-        const recForUndo = allRecords.find(r => r.sheetRow === selectedRowIndex);
-        const prevRow = recForUndo ? recForUndo.row : [];
-        saveUndoState('edit', {
-          username: prevRow[0] || '',
-          password: prevRow[1] || '',
-          email: prevRow[2] || '',
-          phone: prevRow[3] || '',
-          server: prevRow[4] || '',
-          autoPay: prevRow[COL_AUTOPAY] || '',
-          expirationDate: expirationToInputValue(prevRow[COL_EXPIRATION]),
-          notes: prevRow[COL_NOTES] || ''
-        });
-
-        const existingNotes = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
-        const params = new URLSearchParams({
-          action: 'edit',
-          password: sessionPassword,
-          row: selectedRowIndex,
-          username: domCache.username ? domCache.username.value.trim() : '',
-          passwordField: domCache.password ? domCache.password.value.trim() : '',
-          email: domCache.email ? domCache.email.value.trim() : '',
-          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
-          server: domCache.server ? domCache.server.value.trim() : '',
-          autoPay: formAutoPayValue(),
-          expirationDate: newExpirationYmd,
-          notes: existingNotes
-        });
-
-        fetch(scriptURL, { method: 'POST', body: params })
-          .then(r => r.text())
-          .then(() => applyRowEditFromServer(newExpirationYmd))
-          .catch(err => alert('Extend failed: ' + err))
-          .finally(() => setBusy('.edit-btn', false));
-      }
-
-      function applyExtendExpiration() {
+      /** Apply pending Extend choice to the Expiration field (saved only via Add/Update). */
+      function commitPendingExtendToForm() {
         const sel = domCache.extendExpiration;
         if (!sel || !sel.value) return;
+
         const code = sel.value;
-
-        if (selectedRowIndex === null) {
-          alert('Select a row first!');
-          sel.value = '';
-          return;
-        }
-
         let baseMs = currentRecordExpirationMs();
         if (isNaN(baseMs)) {
           const today = new Date();
@@ -3467,9 +3423,8 @@ window.debouncedSearch = debouncedSearch;
 
         const newStr = dateToExpirationInput(addExpirationPeriod(new Date(baseMs), code));
         if (domCache.expirationDate) domCache.expirationDate.value = newStr;
-        saveExpirationOnly(newStr);
+        sel.value = '';
       }
-      window.applyExtendExpiration = applyExtendExpiration;
 
       function confirmEdit() {
         if (selectedRowIndex === null) { alert('Select a row first!'); return; }
@@ -3495,6 +3450,8 @@ window.debouncedSearch = debouncedSearch;
     notes: prevRow[COL_NOTES] || ''
   };
   saveUndoState('edit', previousData);
+
+  commitPendingExtendToForm();
 
   // Use cached DOM elements for better performance
   const rawNew = domCache.notes ? domCache.notes.value.trim() : '';
@@ -3560,6 +3517,8 @@ window.debouncedSearch = debouncedSearch;
         const username = domCache.username ? domCache.username.value.trim() : '';
         if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
         if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
+
+        commitPendingExtendToForm();
 
         const savedExpiration = formExpirationValue();
         const data = {
