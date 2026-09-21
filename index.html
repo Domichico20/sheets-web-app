@@ -3428,7 +3428,6 @@ window.debouncedSearch = debouncedSearch;
 
       function confirmEdit() {
         if (selectedRowIndex === null) { alert('Select a row first!'); return; }
-        if (!confirm('Update this row?')) return;
         editRow();
       }
       window.confirmEdit = confirmEdit;
