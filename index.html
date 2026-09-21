@@ -2281,6 +2281,8 @@
           <option value="">—</option>
           <option value="24h">24 hours</option>
           <option value="48h">48 hours</option>
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
           <option value="1m">1 month</option>
           <option value="3m">3 months</option>
           <option value="6m">6 months</option>
@@ -3361,6 +3363,8 @@ window.debouncedSearch = debouncedSearch;
         switch (code) {
           case '24h': d.setTime(d.getTime() + 86400000); break;
           case '48h': d.setTime(d.getTime() + 2 * 86400000); break;
+          case '1w': d.setTime(d.getTime() + 7 * 86400000); break;
+          case '2w': d.setTime(d.getTime() + 14 * 86400000); break;
           case '1m': d.setMonth(d.getMonth() + 1); break;
           case '3m': d.setMonth(d.getMonth() + 3); break;
           case '6m': d.setMonth(d.getMonth() + 6); break;
