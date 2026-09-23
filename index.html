@@ -176,7 +176,7 @@
       flex: 1;
       min-width: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
+      grid-template-columns: 1fr 1fr minmax(4.5rem, auto) auto;
       gap: 10px 14px;
       font-size: 0.86rem;
       color: var(--app-text);
@@ -190,6 +190,19 @@
       color: var(--app-muted);
       display: block;
       margin-bottom: 2px;
+    }
+
+    .exp-item-main .exp-autopay {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .exp-item-main .exp-autopay-yes {
+      color: #15803d;
+    }
+
+    .exp-item-main .exp-autopay-no {
+      color: #b45309;
     }
 
     .exp-item-main .exp-date {
@@ -2241,7 +2254,7 @@
     </div>
 
     <div id="expirationsPanel" class="expirations-panel rpc-card">
-      <h3>Upcoming Expirations <span style="font-weight:500;font-size:0.78rem;color:var(--app-muted)">(next 7 days · no AutoPay · Remove hides from this list only)</span></h3>
+      <h3>Upcoming Expirations <span style="font-weight:500;font-size:0.78rem;color:var(--app-muted)">(next 7 days · Remove hides from this list only)</span></h3>
       <div id="expirationsList" class="expirations-list"></div>
     </div>
 
@@ -3216,32 +3229,37 @@ function renderUpcomingExpirations() {
   allRecords.forEach(rec => {
     if (dismissed.has(rec.sheetRow)) return;
     const row = normalizeSheetRow(rec.row);
-    if (rowHasAutoPayYes(row)) return;
     const ms = parseExpirationMs(row[COL_EXPIRATION]);
     if (isNaN(ms) || ms < startMs || ms > endMs) return;
+    const autoPay = normalizeAutoPayDisplay(row[COL_AUTOPAY]);
     items.push({
       sheetRow: rec.sheetRow,
       email: row[2] || '',
       phone: row[3] || '',
+      autoPay: autoPay || '—',
       expMs: ms,
       expDisplay: formatExpirationDisplay(row[COL_EXPIRATION])
     });
   });
   items.sort((a, b) => a.expMs - b.expMs);
   if (!items.length) {
-    list.innerHTML = '<p class="exp-empty">No contacts expiring in the next 7 days without AutoPay. Set AutoPay to No (or leave blank), add an expiration date, and ensure the date falls within the next week.</p>';
+    list.innerHTML = '<p class="exp-empty">No contacts expiring in the next 7 days. Add an expiration date within the next week to see them here.</p>';
     return;
   }
-  list.innerHTML = items.map(it =>
-    '<div class="exp-item">' +
-    '<div class="exp-item-main">' +
-    '<div><span class="exp-label">Email</span>' + escapeHTML(it.email || '—') + '</div>' +
-    '<div><span class="exp-label">Phone</span>' + escapeHTML(it.phone || '—') + '</div>' +
-    '<div><span class="exp-label">Expires</span><span class="exp-date">' + it.expDisplay + '</span></div>' +
-    '</div>' +
-    '<button type="button" class="exp-remove-btn" onclick="removeExpirationFromPanel(' + it.sheetRow + ')">Remove</button>' +
-    '</div>'
-  ).join('');
+  list.innerHTML = items.map(it => {
+    const apClass = it.autoPay === 'Yes' ? ' exp-autopay-yes' : (it.autoPay === 'No' ? ' exp-autopay-no' : '');
+    return (
+      '<div class="exp-item">' +
+      '<div class="exp-item-main">' +
+      '<div><span class="exp-label">Email</span>' + escapeHTML(it.email || '—') + '</div>' +
+      '<div><span class="exp-label">Phone</span>' + escapeHTML(it.phone || '—') + '</div>' +
+      '<div><span class="exp-label">AutoPay</span><span class="exp-autopay' + apClass + '">' + escapeHTML(it.autoPay) + '</span></div>' +
+      '<div><span class="exp-label">Expires</span><span class="exp-date">' + it.expDisplay + '</span></div>' +
+      '</div>' +
+      '<button type="button" class="exp-remove-btn" onclick="removeExpirationFromPanel(' + it.sheetRow + ')">Remove</button>' +
+      '</div>'
+    );
+  }).join('');
 }
 
 window.removeExpirationFromPanel = removeExpirationFromPanel;
