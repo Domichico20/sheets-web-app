@@ -454,12 +454,59 @@
     }
 
     .reminder-preview-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
       padding: 12px 0;
       border-bottom: 1px solid #e2e8f0;
     }
 
     .reminder-preview-item:last-child {
       border-bottom: none;
+    }
+
+    .reminder-preview-item .rv-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reminder-preview-item .rv-actions {
+      display: flex;
+      flex-shrink: 0;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reminder-preview-item .rv-btn-edit,
+    .reminder-preview-item .rv-btn-done {
+      padding: 7px 12px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 34px;
+    }
+
+    .reminder-preview-item .rv-btn-edit {
+      background: #f8fafc;
+      color: #1e3a5f;
+    }
+
+    .reminder-preview-item .rv-btn-edit:hover {
+      background: #e2e8f0;
+    }
+
+    .reminder-preview-item .rv-btn-done {
+      background: #15803d;
+      color: #fff;
+      border-color: #15803d;
+    }
+
+    .reminder-preview-item .rv-btn-done:hover {
+      background: #166534;
     }
 
     .reminder-preview-item .rv-title {
@@ -3793,12 +3840,14 @@ window.addCriticalAlert = addCriticalAlert;
         if (!r || r.completed || r.id == null) return;
         if (r.due != null && !isNaN(Number(r.due))) {
           merged.push({
+            id: r.id,
             text: r.text || 'Reminder',
             due: Number(r.due),
             username: r.username || ''
           });
         } else if (r.text && String(r.text).trim()) {
           merged.push({
+            id: r.id,
             text: r.text,
             due: null,
             username: r.username || ''
@@ -3884,10 +3933,62 @@ window.addCriticalAlert = addCriticalAlert;
           const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
           meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
         } else {
-          meta = (user ? user + ' · ' : '') + 'No date set — edit in Add Reminder to add a due time';
+          meta = (user ? user + ' · ' : '') + 'No due date — use Edit to set one';
         }
-        return '<div class="reminder-preview-item"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>';
+        const rid = Number(r.id);
+        return (
+          '<div class="reminder-preview-item">' +
+          '<div class="rv-body"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>' +
+          '<div class="rv-actions">' +
+          '<button type="button" class="rv-btn-edit" onclick="editReminderFromPreview(' + rid + ')">Edit</button>' +
+          '<button type="button" class="rv-btn-done" onclick="completeReminderFromPreview(' + rid + ')">Done</button>' +
+          '</div></div>'
+        );
       }).join('');
+    }
+
+    let editingReminderId = null;
+
+    function reminderModalTitle(text) {
+      const h3 = document.querySelector('#reminderModal .reminder-modal h3');
+      if (h3) h3.textContent = text;
+    }
+
+    function dueToDatetimeLocalValue(ms) {
+      if (ms == null || isNaN(ms)) return '';
+      const d = new Date(ms);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return y + '-' + m + '-' + day + 'T' + h + ':' + min;
+    }
+
+    function editReminderFromPreview(id) {
+      const rid = Number(id);
+      const r = reminders.find(x => x.id === rid);
+      if (!r || r.completed) return;
+      editingReminderId = rid;
+      reminderModalTitle('Edit Reminder');
+      const userInput = document.getElementById('reminderUsername');
+      const textInput = document.getElementById('reminderText');
+      const dueInput = document.getElementById('reminderDue');
+      if (userInput) userInput.value = r.username || '';
+      if (textInput) textInput.value = r.text || '';
+      if (dueInput) dueInput.value = dueToDatetimeLocalValue(r.due);
+      renderUserReminders(r.username || '');
+      const modal = document.getElementById('reminderModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function completeReminderFromPreview(id) {
+      const rid = Number(id);
+      const idx = reminders.findIndex(x => x.id === rid);
+      if (idx === -1) return;
+      reminders[idx].completed = true;
+      saveReminders();
+      renderReminderPreview();
     }
 
     function openReminderModal() {
@@ -3903,6 +4004,8 @@ window.addCriticalAlert = addCriticalAlert;
         alert('Select a row first: click on a row in the table, then click Add Reminder.');
         return;
       }
+      editingReminderId = null;
+      reminderModalTitle('Add Reminder');
       const modal = document.getElementById('reminderModal');
       const userInput = document.getElementById('reminderUsername');
       const textInput = document.getElementById('reminderText');
@@ -3917,6 +4020,8 @@ window.addCriticalAlert = addCriticalAlert;
     function closeReminderModal() {
       const modal = document.getElementById('reminderModal');
       if (modal) modal.classList.remove('open');
+      editingReminderId = null;
+      reminderModalTitle('Add Reminder');
     }
 
     function renderUserReminders(username) {
@@ -3941,15 +4046,27 @@ window.addCriticalAlert = addCriticalAlert;
       if (!username) { alert('Username is required.'); return; }
       if (!text) { alert('Enter a reminder.'); return; }
       const due = dueVal ? new Date(dueVal).getTime() : null;
-      reminders.push({
-        id: Date.now(),
-        username,
-        text,
-        due,
-        completed: false,
-        alertShown: false,
-        createdAt: Date.now()
-      });
+      if (editingReminderId != null) {
+        const idx = reminders.findIndex(x => x.id === editingReminderId);
+        if (idx !== -1) {
+          reminders[idx].username = username;
+          reminders[idx].text = text;
+          reminders[idx].due = due;
+          reminders[idx].completed = false;
+          reminders[idx].alertShown = false;
+        }
+        editingReminderId = null;
+      } else {
+        reminders.push({
+          id: Date.now(),
+          username,
+          text,
+          due,
+          completed: false,
+          alertShown: false,
+          createdAt: Date.now()
+        });
+      }
       saveReminders();
       renderReminderPreview();
       closeReminderModal();
@@ -4023,6 +4140,8 @@ window.addCriticalAlert = addCriticalAlert;
     window.closeReminderModal = closeReminderModal;
     window.saveReminderFromModal = saveReminderFromModal;
     window.handleReminderAction = handleReminderAction;
+    window.editReminderFromPreview = editReminderFromPreview;
+    window.completeReminderFromPreview = completeReminderFromPreview;
 
   </script>
 
