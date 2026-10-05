@@ -1,0 +1,4303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Google Sheets Manager</title>
+  <link rel="preload" as="image" href="logo.png">
+  <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
+  <link rel="icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="shortcut icon" type="image/png"
+    href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
+
+
+
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- speed: warm up API connections -->
+  <link rel="preconnect" href="https://sheets.googleapis.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sheets.googleapis.com">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://script.google.com">
+
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --app-primary: #1e40af;
+      --app-primary-hover: #2563eb;
+      --app-primary-dark: #1e3a8a;
+      --app-accent: #0ea5e9;
+      --app-surface: rgba(255, 255, 255, 0.97);
+      --app-text: #0f172a;
+      --app-muted: #64748b;
+      --app-border: rgba(15, 23, 42, 0.1);
+      --app-radius: 12px;
+      --app-radius-lg: 16px;
+      --app-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 28px rgba(15, 23, 42, 0.08);
+      --notes-table-col: 30%;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 20px;
+      background-color: #f0f0f0;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    #loginSection {
+      position: relative;
+      z-index: 1;
+    }
+
+    header img.logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    body.app-bg .reminder-preview-panel,
+    body.app-bg .expirations-panel {
+      display: block;
+    }
+
+    body.app-bg #appSection {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    body.app-bg header {
+      position: relative;
+      z-index: 1;
+    }
+
+    body.app-bg {
+      overflow-x: hidden;
+    }
+
+    .table-scroll-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      border: 1px solid var(--app-border, #ccc);
+      background: white;
+    }
+
+    body.app-bg #searchSection {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--app-radius-lg);
+      box-shadow: var(--app-shadow);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    body.app-bg .form-section {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--app-radius-lg);
+      box-shadow: var(--app-shadow);
+      padding: 12px 14px 14px;
+    }
+
+    body.app-bg #dataTable {
+      box-shadow: var(--app-shadow);
+      border: 1px solid var(--app-border);
+    }
+
+    .expirations-panel {
+      display: none;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto 20px;
+      padding: 16px 18px 14px;
+    }
+
+    .expirations-panel h3 {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--app-text);
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .expirations-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .exp-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+      border-radius: var(--app-radius);
+      transition: background 0.15s ease;
+    }
+
+    .exp-item:hover {
+      background: #f8fafc;
+    }
+
+    .exp-item:focus-visible {
+      outline: 2px solid var(--app-primary);
+      outline-offset: 2px;
+    }
+
+    .exp-item:last-child {
+      border-bottom: none;
+    }
+
+    .exp-item-main {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr minmax(4.5rem, auto) auto;
+      gap: 10px 14px;
+      font-size: 0.86rem;
+      color: var(--app-text);
+    }
+
+    .exp-item-main .exp-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--app-muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .exp-item-main .exp-autopay {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .exp-item-main .exp-autopay-yes {
+      color: #15803d;
+    }
+
+    .exp-item-main .exp-autopay-no {
+      color: #b45309;
+    }
+
+    .exp-item-main .exp-date {
+      font-weight: 700;
+      color: var(--app-primary-dark);
+      white-space: nowrap;
+    }
+
+    .exp-remove-btn {
+      flex-shrink: 0;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--app-radius);
+      background: #f8fafc;
+      color: #334155;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    .exp-remove-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .exp-empty {
+      color: var(--app-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      padding: 4px 0 8px;
+    }
+
+    @media (max-width: 640px) {
+      .exp-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .exp-item-main {
+        grid-template-columns: 1fr;
+      }
+      .exp-remove-btn {
+        width: 100%;
+      }
+    }
+
+    .reminder-preview-panel {
+      display: none;
+      position: static;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto 20px;
+      font-size: 0.8125rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .reminder-preview-row {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 14px;
+    }
+
+    .rpc-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 20px rgba(15, 23, 42, 0.07);
+      overflow: hidden;
+    }
+
+    .rpc-calendar-wrap {
+      flex: 0 0 auto;
+      width: min(300px, 38vw);
+      min-width: 252px;
+    }
+
+    .rpc-calendar-wrap .reminder-mini-cal {
+      padding: 16px 16px 14px;
+    }
+
+    .rpc-upcoming-wrap {
+      flex: 1 1 auto;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 0 14px;
+    }
+
+    .rpc-upcoming-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      margin: 0 18px 12px;
+      padding: 0;
+    }
+
+    .rpc-upcoming-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 280px;
+      padding: 0 10px 0 18px;
+      margin-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(37, 99, 235, 0.35) transparent;
+    }
+
+    .rpc-upcoming-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .rpc-upcoming-list::-webkit-scrollbar-thumb {
+      background: rgba(37, 99, 235, 0.35);
+      border-radius: 10px;
+    }
+
+    .rpc-cal-head {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .rpc-kicker {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #64748b;
+      grid-column: 1;
+    }
+
+    .rpc-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      grid-column: 2;
+    }
+
+    .rpc-nav-btn {
+      appearance: none;
+      border: none;
+      background: #f1f5f9;
+      color: #334155;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rpc-nav-btn:hover {
+      background: #e0e7ff;
+      color: #1e3a8a;
+    }
+
+    .rpc-month-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 0 8px;
+      min-width: 7.5rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .reminder-mini-cal table {
+      width: 100%;
+      margin: 0;
+      font-size: 0.75rem;
+      border-collapse: separate;
+      border-spacing: 4px;
+      background: transparent;
+      border-radius: 0;
+      border: none;
+    }
+
+    .reminder-mini-cal thead th {
+      text-align: center;
+      padding: 8px 0 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #eff6ff;
+      border: none;
+    }
+
+    .reminder-mini-cal tbody td {
+      text-align: center;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    .reminder-mini-cal td .rpc-day-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      aspect-ratio: 1;
+      max-height: 36px;
+      margin: 0 auto;
+      border-radius: 8px;
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 0.8rem;
+    }
+
+    .reminder-mini-cal .rpc-day-muted .rpc-day-cell {
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    .reminder-mini-cal .cal-day-event .rpc-day-cell {
+      box-shadow: inset 0 0 0 2px #2563eb;
+      color: #1e3a8a;
+      background: #f8fafc;
+    }
+
+    .reminder-mini-cal .cal-day-today .rpc-day-cell {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+
+    .reminder-mini-cal .cal-day-today.cal-day-event .rpc-day-cell {
+      box-shadow:
+        0 2px 8px rgba(37, 99, 235, 0.35),
+        inset 0 0 0 2px rgba(191, 219, 254, 0.95);
+    }
+
+    .rpc-cal-foot {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .reminder-preview-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .reminder-preview-item:last-child {
+      border-bottom: none;
+    }
+
+    .reminder-preview-item .rv-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reminder-preview-item .rv-actions {
+      display: flex;
+      flex-shrink: 0;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reminder-preview-item .rv-btn-edit,
+    .reminder-preview-item .rv-btn-done {
+      padding: 7px 12px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 34px;
+    }
+
+    .reminder-preview-item .rv-btn-edit {
+      background: #f8fafc;
+      color: #1e3a5f;
+    }
+
+    .reminder-preview-item .rv-btn-edit:hover {
+      background: #e2e8f0;
+    }
+
+    .reminder-preview-item .rv-btn-done {
+      background: #15803d;
+      color: #fff;
+      border-color: #15803d;
+    }
+
+    .reminder-preview-item .rv-btn-done:hover {
+      background: #166534;
+    }
+
+    .reminder-preview-item .rv-title {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #0f172a;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    .reminder-preview-item .rv-meta {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 5px;
+      line-height: 1.3;
+    }
+
+    .rpc-empty {
+      margin: 0;
+      padding: 8px 18px 16px;
+      color: #64748b;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px) {
+      .reminder-preview-panel {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .reminder-preview-row {
+        flex-direction: column;
+      }
+
+      .rpc-calendar-wrap {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+      }
+
+      .rpc-nav-btn {
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      .rpc-upcoming-title {
+        margin-left: 14px;
+        margin-right: 14px;
+      }
+
+      .rpc-upcoming-list {
+        max-height: 220px;
+        padding-left: 14px;
+        padding-right: 8px;
+      }
+
+      .rpc-empty {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+
+    /* Email/notes sizing is controlled in .form-section (single row) */
+
+    h2 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg,
+          #003366, #0066CC, #3399FF, #ff3333, #ffa733, #9a9c21, #54cc25, #1a8371, #229ea7, #33b4ff, #339cff);
+      background-size: 200% auto;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 10s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      h2 {
+        animation: none;
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* --- Login section as a centered card --- */
+    #loginSection {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      /* ⬅️ no vertical centering */
+      padding: 8px 16px 40px;
+      /* small top padding only */
+      min-height: auto;
+      /* ⬅️ remove forced height */
+    }
+
+    .login-card { margin-top: 4px; }
+
+    .login-card {
+      position: relative;
+      width: min(420px, 92vw);
+      padding: 28px 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+      backdrop-filter: blur(6px);
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(14px);
+      z-index: -1;
+      opacity: .30;
+      animation: glowRainbow 20s linear infinite;
+    }
+
+    .login-card .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+      color: #003366;
+    }
+
+    .inputbox { position: relative; margin: 12px 0 6px; }
+
+    .inputbox input {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 1rem; /* >=16px on most browsers => no iOS zoom */
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .inputbox label {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      padding: 0 6px;
+      color: #666;
+      pointer-events: none;
+      transition: .18s ease;
+    }
+
+    .inputbox input:focus+label,
+    .inputbox input:not(:placeholder-shown)+label {
+      top: 0;
+      font-size: .8rem;
+      color: #003366;
+    }
+
+    /* ========= Shared glow animation ========= */
+    @keyframes glowRainbow {
+      0% { background-position: 0 0; }
+      50% { background-position: 400% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* Unlock button base */
+    #loginSection .unlock-btn {
+      margin-left: 0;
+      padding: 15px 40px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      border-radius: 12px;
+      background-color: #2952db;
+      color: #FFF;
+      font-size: 1.1rem;
+      isolation: isolate;
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    /* ====== Rest of your styles (unchanged) ====== */
+    #searchSection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #searchSection input[type="text"] {
+      flex: 0 0 50%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+    }
+
+    #searchSection button.search-btn,
+    #searchSection button.add-reminder-btn {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      margin-left: 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+    }
+    #searchSection button.search-btn { background-color: #10b981; color: #fff; font-weight: 600; }
+    #searchSection button.add-reminder-btn { background-color: var(--app-primary-dark); color: white; font-weight: 600; }
+    #searchSection button.add-reminder-btn:hover { background-color: var(--app-primary); }
+
+    .critical-btn { background-color: #fc933d; color: #fff; }
+    .remove-alert-btn { background-color: #d93025; color: #fff; }
+
+    .form-section {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 16px;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+
+    .form-section .form-group label {
+      font-weight: 600;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      color: var(--app-muted);
+    }
+
+    .form-section .form-group input,
+    .form-section .form-group select,
+    .form-section .form-group textarea {
+      box-sizing: border-box;
+      width: 100%;
+      height: 42px;
+      min-height: 42px;
+      max-height: 42px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      line-height: 1.25;
+      border: 1px solid #d6d6d6;
+      border-radius: var(--app-radius);
+      background: #fff;
+      color: var(--app-text);
+      resize: none;
+      overflow-y: auto;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .form-section .form-group textarea {
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-family: inherit;
+    }
+
+    .form-section .form-group textarea:focus {
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 120px;
+      height: auto;
+      min-height: 42px;
+    }
+
+    .form-section .fg-user { flex: 0 0 6.5rem; }
+    .form-section .fg-pass { flex: 0 0 6.5rem; }
+    .form-section .fg-email { flex: 2 1 16.2rem; min-width: 14.4rem; max-width: 19.8rem; }
+    .form-section .fg-extend { flex: 0 0 9.75rem; min-width: 9.75rem; max-width: 11rem; }
+    .form-section .fg-extend select {
+      padding-right: 1.65rem;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .form-section .fg-phone { flex: 0 0 9.25rem; min-width: 9.25rem; }
+    .form-section .fg-server { flex: 0 0 4.5rem; }
+    .form-section .fg-autopay { flex: 0 0 5.25rem; }
+    .form-section .fg-exp { flex: 0 0 8.75rem; }
+    .form-section .fg-notes { flex: 1 1 18rem; min-width: 15rem; max-width: none; }
+
+    .form-group input[type="date"] {
+      min-height: 42px;
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* center the whole bar */
+      margin: 20px 0;
+    }
+
+    .button-group.center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap; /* all buttons on one line */
+    }
+    .button-group.center button {
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+
+    /* If the screen is small, allow wrapping (optional) */
+    @media (max-width: 700px) {
+      .button-group.center {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    .button-group { display: flex; gap: 10px; }
+    .button-group button {
+      padding: 20px 40px;
+      font-size: 1.25rem;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .add-btn    { background-color: var(--app-primary-dark); }
+    .edit-btn   { background-color: var(--app-primary-hover); }
+    .clear-btn  { background-color: #059669; }
+    .refresh-btn{ background-color: #eab308; color: #1e293b; }
+    .delete-btn { background-color: #dc2626; }
+    .undo-btn { background-color: #ea580c; }
+
+    .table-pagination {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin: 16px auto 12px;
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .table-page-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #003366;
+      color: white;
+      min-height: 44px;
+    }
+
+    .table-page-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .table-page-info {
+      font-size: 0.92rem;
+      color: #0f172a;
+      font-weight: 600;
+      text-align: center;
+      min-width: min(100%, 280px);
+    }
+
+    @media (max-width: 768px) {
+      .table-pagination {
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 4px;
+      }
+      .table-page-btn {
+        width: 100%;
+        max-width: 320px;
+      }
+    }
+
+    #dataTable {
+      margin: 0 auto;
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    #dataTable th,
+    #dataTable td {
+      border: 1px solid #ccc;
+      padding: 6px 5px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      font-size: 0.84rem;
+    }
+
+    #dataTable th:nth-child(1),
+    #dataTable td:nth-child(1),
+    #dataTable th:nth-child(2),
+    #dataTable td:nth-child(2),
+    #dataTable th:nth-child(3),
+    #dataTable td:nth-child(3),
+    #dataTable th:nth-child(4),
+    #dataTable td:nth-child(4),
+    #dataTable th:nth-child(5),
+    #dataTable td:nth-child(5),
+    #dataTable th:nth-child(6),
+    #dataTable td:nth-child(6),
+    #dataTable th:nth-child(7),
+    #dataTable td:nth-child(7) {
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #dataTable td.notes-td,
+    #dataTable td.notes-td .notes-cell,
+    #dataTable td.notes-td .note-entry,
+    #dataTable td.notes-td .txt {
+      white-space: normal;
+    }
+
+    #dataTable th:nth-child(3),
+    #dataTable td:nth-child(3) {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      vertical-align: middle;
+      text-overflow: clip;
+    }
+
+    #dataTable th.th-stack {
+      white-space: normal;
+      line-height: 1.25;
+      font-size: 0.82rem;
+      padding: 8px 6px;
+    }
+
+    #dataTable th {
+      background: linear-gradient(180deg, var(--app-primary) 0%, var(--app-primary-dark) 100%);
+      color: white;
+      font-weight: 600;
+    }
+    tr.selected { background-color: rgb(238, 217, 217); }
+
+    /* ========= SAME gradient glow for ALL buttons ========= */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      position: relative;
+      isolation: isolate;
+      z-index: 0;
+    }
+
+    .button-group button::before,
+    #searchSection .search-btn::before,
+    #loginSection .unlock-btn::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg,
+          #FF0000, #FF7300, #FFFB00, #48FF00,
+          #00FFD5, #002BFF, #FF00C8, #FF0000);
+      background-size: 600%;
+      filter: blur(8px);
+      animation: glowRainbow 20s linear infinite;
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      z-index: -1;
+    }
+
+    .button-group button:hover::before,
+    #searchSection .search-btn:hover::before,
+    #loginSection .unlock-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* --- Expiration date column (fits e.g. Sep 22, 2026) --- */
+    #dataTable td:nth-child(7) {
+      white-space: nowrap;
+    }
+
+    /* --- Notes column (centered card + scroll, shares table width) --- */
+    #dataTable th.col-notes-header,
+    #dataTable th:nth-child(8) {
+      min-width: 0;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    #dataTable col.col-notes {
+      width: var(--notes-table-col);
+    }
+
+    #dataTable td.notes-td {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      height: 12.5rem;
+      padding: 10px 12px;
+      vertical-align: middle;
+      text-align: center;
+      white-space: normal;
+      overflow: hidden;
+      background: #eef2ff;
+    }
+
+    #dataTable td.notes-td .notes-cell-wrap {
+      display: block;
+      width: 100%;
+      height: calc(12.5rem - 20px);
+      max-height: calc(12.5rem - 20px);
+    }
+
+    #dataTable td.notes-td .notes-cell {
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #c7d2fe;
+      box-shadow: 0 2px 8px rgba(30, 41, 59, 0.08);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #6366f1 #e0e7ff;
+    }
+
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar {
+      width: 9px;
+    }
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar-track {
+      background: #e0e7ff;
+      border-radius: 8px;
+      margin: 4px 0;
+    }
+    #dataTable td.notes-td .notes-cell::-webkit-scrollbar-thumb {
+      background: #6366f1;
+      border-radius: 8px;
+    }
+
+    #dataTable td.notes-td .notes-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 6rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    .note-entry {
+      margin: 0 0 10px;
+      padding: 0 4px 10px;
+      text-align: center;
+      border-bottom: 1px dashed #e2e8f0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .note-entry:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .note-entry .ts {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #be123c;
+      letter-spacing: 0.01em;
+      margin-bottom: 5px;
+    }
+    .note-entry .txt {
+      display: block;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #334155;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+      max-width: 100%;
+    }
+
+    /* 🔴 Critical alert highlight */
+    .note-entry.critical {
+      background: #d93025; /* Google red */
+      color: #fff;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 6px 10px;
+      display: block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .phone-wa a { text-decoration: none; }
+
+    /* ===== Moving abstract background (login + app) — vivid + fast ===== */
+    @keyframes orbPath1 {
+      0% { transform: translate(-30vw, -25vh) scale(0.85); }
+      25% { transform: translate(35vw, 5vh) scale(1.25); }
+      50% { transform: translate(15vw, 40vh) scale(1); }
+      75% { transform: translate(-25vw, 30vh) scale(1.2); }
+      100% { transform: translate(-30vw, -25vh) scale(0.85); }
+    }
+    @keyframes orbPath2 {
+      0% { transform: translate(28vw, -20vh) scale(1.1); }
+      33% { transform: translate(-32vw, 12vh) scale(0.9); }
+      66% { transform: translate(-10vw, 38vh) scale(1.3); }
+      100% { transform: translate(28vw, -20vh) scale(1.1); }
+    }
+    @keyframes orbPath3 {
+      0% { transform: translate(0, 0) scale(1); }
+      20% { transform: translate(-28vw, -15vh) scale(1.15); }
+      45% { transform: translate(22vw, -28vh) scale(0.88); }
+      70% { transform: translate(30vw, 22vh) scale(1.22); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    @keyframes orbPath4 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+      50% { transform: translate(-35vw, 28vh) rotate(200deg) scale(1.35); }
+      100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+    }
+    @keyframes orbPath5 {
+      0% { transform: translate(25vw, -30vh) scale(0.9); }
+      50% { transform: translate(-30vw, 35vh) scale(1.3); }
+      100% { transform: translate(25vw, -30vh) scale(0.9); }
+    }
+    @keyframes orbPath6 {
+      0% { transform: translate(-20vw, 20vh) scale(1.15); }
+      33% { transform: translate(28vw, -25vh) scale(0.85); }
+      66% { transform: translate(5vw, 45vh) scale(1.25); }
+      100% { transform: translate(-20vw, 20vh) scale(1.15); }
+    }
+    @keyframes auroraSweep {
+      0% { transform: translateX(-35%) rotate(-8deg) scale(1.1); opacity: 0.55; }
+      50% { transform: translateX(35%) rotate(8deg) scale(1.15); opacity: 0.85; }
+      100% { transform: translateX(-35%) rotate(-8deg) scale(1.1); opacity: 0.55; }
+    }
+    @keyframes auroraSweepRev {
+      0% { transform: translateX(30%) rotate(10deg); opacity: 0.5; }
+      50% { transform: translateX(-30%) rotate(-10deg); opacity: 0.8; }
+      100% { transform: translateX(30%) rotate(10deg); opacity: 0.5; }
+    }
+    @keyframes prismSpin {
+      0% { transform: rotate(0deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1.2); }
+    }
+    @keyframes gridPan {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(64px, 64px); }
+    }
+    @keyframes baseGradientShift {
+      0% { filter: hue-rotate(0deg) brightness(1.05) saturate(1.35); }
+      25% { filter: hue-rotate(45deg) brightness(1.15) saturate(1.5); }
+      50% { filter: hue-rotate(90deg) brightness(1.1) saturate(1.45); }
+      75% { filter: hue-rotate(135deg) brightness(1.12) saturate(1.55); }
+      100% { filter: hue-rotate(180deg) brightness(1.05) saturate(1.35); }
+    }
+
+    .abstract-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background-color: #1a1040;
+      background-size: 100% 100%;
+      background-attachment: fixed;
+    }
+
+    .abstract-static-colorwash {
+      position: absolute;
+      inset: -20%;
+      opacity: 0.75;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-static-mesh {
+      position: absolute;
+      inset: 0;
+      opacity: 0.9;
+      background:
+        repeating-linear-gradient(
+          122deg,
+          transparent 0,
+          transparent 72px,
+          rgba(255, 200, 255, 0.04) 72px,
+          rgba(200, 230, 255, 0.04) 73px
+        ),
+        repeating-linear-gradient(
+          -38deg,
+          transparent 0,
+          transparent 96px,
+          rgba(200, 255, 220, 0.035) 96px,
+          rgba(255, 220, 200, 0.035) 97px
+        );
+      mix-blend-mode: overlay;
+    }
+
+    .abstract-static-shapes {
+      position: absolute;
+      inset: 0;
+    }
+
+    .abs-shape {
+      position: absolute;
+      opacity: 0.5;
+      mix-blend-mode: screen;
+    }
+
+    .abs-shape.abs-line {
+      mix-blend-mode: normal;
+      border-radius: 2px;
+    }
+
+    .abstract-static-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 88% 78% at 50% 44%, black 12%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse 88% 78% at 50% 44%, black 12%, transparent 72%);
+      opacity: 0.55;
+    }
+
+    .abstract-static-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .abstract-prism {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 140vmax;
+      height: 140vmax;
+      margin-left: -70vmax;
+      margin-top: -70vmax;
+      background: conic-gradient(
+        from 0deg,
+        rgba(255, 0, 128, 0.12),
+        rgba(255, 128, 0, 0.14),
+        rgba(255, 255, 0, 0.1),
+        rgba(0, 255, 128, 0.12),
+        rgba(0, 128, 255, 0.14),
+        rgba(128, 0, 255, 0.12),
+        rgba(255, 0, 128, 0.12)
+      );
+      filter: blur(50px);
+      animation: prismSpin 20s linear infinite;
+    }
+
+    .abstract-prism-2 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120vmax;
+      height: 120vmax;
+      margin-left: -60vmax;
+      margin-top: -60vmax;
+      background: conic-gradient(
+        from 120deg,
+        rgba(255, 59, 48, 0.14),
+        rgba(255, 149, 0, 0.16),
+        rgba(255, 204, 0, 0.14),
+        rgba(52, 199, 89, 0.15),
+        rgba(48, 176, 199, 0.14),
+        rgba(0, 122, 255, 0.16),
+        rgba(88, 86, 214, 0.14),
+        rgba(175, 82, 222, 0.15),
+        rgba(255, 45, 85, 0.14)
+      );
+      filter: blur(44px);
+      animation: prismSpin 14s linear infinite reverse;
+    }
+
+    .abstract-aurora,
+    .abstract-aurora-2,
+    .abstract-aurora-3 {
+      position: absolute;
+      inset: -25% -40%;
+      filter: blur(36px);
+    }
+
+    .abstract-aurora {
+      background: linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(74, 222, 128, 0.45) 12%,
+        rgba(250, 204, 21, 0.5) 25%,
+        rgba(251, 113, 133, 0.48) 38%,
+        rgba(167, 139, 250, 0.45) 52%,
+        rgba(56, 189, 248, 0.5) 65%,
+        rgba(52, 211, 153, 0.42) 78%,
+        transparent 100%
+      );
+      animation: auroraSweep 7s ease-in-out infinite;
+    }
+
+    .abstract-aurora-2 {
+      background: linear-gradient(
+        -75deg,
+        transparent 0%,
+        rgba(244, 63, 94, 0.4) 20%,
+        rgba(249, 115, 22, 0.45) 40%,
+        rgba(132, 204, 22, 0.4) 60%,
+        rgba(6, 182, 212, 0.45) 80%,
+        transparent 100%
+      );
+      animation: auroraSweepRev 9s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-aurora-3 {
+      background: linear-gradient(
+        85deg,
+        transparent 0%,
+        rgba(236, 72, 153, 0.38) 15%,
+        rgba(168, 85, 247, 0.42) 30%,
+        rgba(34, 211, 238, 0.4) 45%,
+        rgba(163, 230, 53, 0.38) 60%,
+        rgba(251, 191, 36, 0.42) 75%,
+        rgba(248, 113, 113, 0.38) 90%,
+        transparent 100%
+      );
+      animation: auroraSweep 5s ease-in-out infinite reverse;
+      mix-blend-mode: plus-lighter;
+      opacity: 0.9;
+    }
+
+    .abstract-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(52px);
+      opacity: 0.88;
+      will-change: transform;
+      mix-blend-mode: screen;
+    }
+
+    .abstract-orb-a {
+      width: min(75vmax, 780px);
+      height: min(75vmax, 780px);
+      top: -20%;
+      left: -15%;
+      background: radial-gradient(circle, rgba(79, 70, 229, 1) 0%, rgba(79, 70, 229, 0) 62%);
+      animation: orbPath1 11s ease-in-out infinite;
+    }
+
+    .abstract-orb-b {
+      width: min(68vmax, 700px);
+      height: min(68vmax, 700px);
+      top: 5%;
+      right: -18%;
+      background: radial-gradient(circle, rgba(236, 72, 153, 1) 0%, rgba(236, 72, 153, 0) 60%);
+      animation: orbPath2 13s ease-in-out infinite;
+    }
+
+    .abstract-orb-c {
+      width: min(72vmax, 740px);
+      height: min(72vmax, 740px);
+      bottom: -22%;
+      left: 15%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 1) 0%, rgba(14, 165, 233, 0) 62%);
+      animation: orbPath3 10s ease-in-out infinite;
+    }
+
+    .abstract-orb-d {
+      width: min(58vmax, 600px);
+      height: min(58vmax, 600px);
+      bottom: 10%;
+      right: 5%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 1) 0%, rgba(168, 85, 247, 0) 65%);
+      animation: orbPath4 14s linear infinite;
+    }
+
+    .abstract-orb-e {
+      width: min(52vmax, 540px);
+      height: min(52vmax, 540px);
+      top: 30%;
+      left: 35%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 1) 0%, rgba(16, 185, 129, 0) 62%);
+      animation: orbPath2 12s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-f {
+      width: min(50vmax, 520px);
+      height: min(50vmax, 520px);
+      top: 50%;
+      left: -10%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 1) 0%, rgba(234, 88, 12, 0) 60%);
+      animation: orbPath1 15s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-g {
+      width: min(54vmax, 560px);
+      height: min(54vmax, 560px);
+      top: -5%;
+      right: 18%;
+      background: radial-gradient(circle, rgba(217, 70, 239, 1) 0%, rgba(217, 70, 239, 0) 58%);
+      animation: orbPath3 11s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-h {
+      width: min(48vmax, 500px);
+      height: min(48vmax, 500px);
+      bottom: 5%;
+      left: 50%;
+      background: radial-gradient(circle, rgba(45, 212, 191, 1) 0%, rgba(34, 211, 238, 0) 62%);
+      animation: orbPath4 16s ease-in-out infinite reverse;
+    }
+
+    .abstract-orb-i {
+      width: min(44vmax, 460px);
+      height: min(44vmax, 460px);
+      top: 18%;
+      left: 8%;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.95) 0%, rgba(239, 68, 68, 0) 60%);
+      animation: orbPath2 9s ease-in-out infinite;
+    }
+
+    .abstract-orb-j {
+      width: min(46vmax, 480px);
+      height: min(46vmax, 480px);
+      top: 62%;
+      right: 28%;
+      background: radial-gradient(circle, rgba(132, 204, 22, 0.95) 0%, rgba(132, 204, 22, 0) 62%);
+      animation: orbPath1 8s ease-in-out infinite;
+    }
+
+    .abstract-orb-k {
+      width: min(42vmax, 440px);
+      height: min(42vmax, 440px);
+      bottom: 28%;
+      right: -5%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 1) 0%, rgba(59, 130, 246, 0) 58%);
+      animation: orbPath3 12s linear infinite;
+    }
+
+    .abstract-orb-l {
+      width: min(40vmax, 420px);
+      height: min(40vmax, 420px);
+      top: 42%;
+      right: 42%;
+      background: radial-gradient(circle, rgba(251, 146, 60, 1) 0%, rgba(251, 146, 60, 0) 60%);
+      animation: orbPath4 10s ease-in-out infinite;
+    }
+
+    .abstract-orb-mini {
+      width: min(34vmax, 360px);
+      height: min(34vmax, 360px);
+      filter: blur(40px);
+      opacity: 0.86;
+    }
+
+    .abstract-orb-m { top: 8%; left: 22%; background: radial-gradient(circle, #e879f9 0%, transparent 58%); animation: orbPath5 7s ease-in-out infinite; animation-delay: -1s; }
+    .abstract-orb-n { top: 72%; left: 12%; background: radial-gradient(circle, #8b5cf6 0%, transparent 58%); animation: orbPath6 8s ease-in-out infinite; animation-delay: -2s; }
+    .abstract-orb-o { top: 25%; right: 8%; background: radial-gradient(circle, #0ea5e9 0%, transparent 58%); animation: orbPath1 9s ease-in-out infinite reverse; animation-delay: -3s; }
+    .abstract-orb-p { bottom: 18%; left: 28%; background: radial-gradient(circle, #eab308 0%, transparent 58%); animation: orbPath2 6s ease-in-out infinite; animation-delay: -0.5s; }
+    .abstract-orb-q { top: 48%; left: 2%; background: radial-gradient(circle, #10b981 0%, transparent 58%); animation: orbPath3 7.5s linear infinite; animation-delay: -4s; }
+    .abstract-orb-r { top: 12%; right: 35%; background: radial-gradient(circle, #f43f5e 0%, transparent 58%); animation: orbPath4 8.5s ease-in-out infinite reverse; animation-delay: -2.5s; }
+    .abstract-orb-s { bottom: 35%; right: 18%; background: radial-gradient(circle, #f59e0b 0%, transparent 58%); animation: orbPath5 9.5s ease-in-out infinite reverse; animation-delay: -1.5s; }
+    .abstract-orb-t { top: 38%; right: 2%; background: radial-gradient(circle, #22d3ee 0%, transparent 58%); animation: orbPath6 6.5s ease-in-out infinite; animation-delay: -3.5s; }
+    .abstract-orb-u { bottom: 8%; left: 42%; background: radial-gradient(circle, #84cc16 0%, transparent 58%); animation: orbPath1 7s ease-in-out infinite; animation-delay: -5s; }
+    .abstract-orb-v { top: 58%; left: 25%; background: radial-gradient(circle, #6366f1 0%, transparent 58%); animation: orbPath2 10s linear infinite reverse; animation-delay: -2s; }
+    .abstract-orb-w { top: 5%; left: 48%; background: radial-gradient(circle, #ec4899 0%, transparent 58%); animation: orbPath3 8s ease-in-out infinite; animation-delay: -6s; }
+    .abstract-orb-x { bottom: 42%; right: 38%; background: radial-gradient(circle, #14b8a6 0%, transparent 58%); animation: orbPath4 7s ease-in-out infinite; animation-delay: -4.5s; }
+    .abstract-orb-y { top: 22%; left: 62%; background: radial-gradient(circle, #fb923c 0%, transparent 58%); animation: orbPath5 11s ease-in-out infinite; animation-delay: -7s; }
+    .abstract-orb-z { bottom: 22%; right: 48%; background: radial-gradient(circle, #3b82f6 0%, transparent 58%); animation: orbPath6 9s ease-in-out infinite reverse; animation-delay: -1s; }
+    .abstract-orb-aa { top: 68%; left: 48%; background: radial-gradient(circle, #f472b6 0%, transparent 58%); animation: orbPath1 6s ease-in-out infinite reverse; animation-delay: -3s; }
+    .abstract-orb-ab { top: 32%; left: 15%; background: radial-gradient(circle, #fb7185 0%, transparent 58%); animation: orbPath2 8s ease-in-out infinite; animation-delay: -5.5s; }
+    .abstract-orb-ac { top: 78%; right: 12%; background: radial-gradient(circle, #4ade80 0%, transparent 58%); animation: orbPath3 7s linear infinite; animation-delay: -2.2s; }
+    .abstract-orb-ad { top: 15%; left: 78%; background: radial-gradient(circle, #a78bfa 0%, transparent 58%); animation: orbPath4 9s ease-in-out infinite reverse; animation-delay: -6.5s; }
+    .abstract-orb-ae { bottom: 12%; left: 68%; background: radial-gradient(circle, #fcd34d 0%, transparent 58%); animation: orbPath5 8s ease-in-out infinite; animation-delay: -4s; }
+    .abstract-orb-af { top: 52%; right: 55%; background: radial-gradient(circle, #ef4444 0%, transparent 58%); animation: orbPath6 10s ease-in-out infinite; animation-delay: -8s; }
+    .abstract-orb-ag { bottom: 48%; left: 58%; background: radial-gradient(circle, #2dd4bf 0%, transparent 58%); animation: orbPath1 7.5s linear infinite; animation-delay: -1.8s; }
+    .abstract-orb-ah { top: 44%; left: 72%; background: radial-gradient(circle, #c026d3 0%, transparent 58%); animation: orbPath2 6.8s ease-in-out infinite reverse; animation-delay: -3.8s; }
+    .abstract-orb-ai { bottom: 58%; right: 8%; background: radial-gradient(circle, #fdba74 0%, transparent 58%); animation: orbPath3 9.2s ease-in-out infinite; animation-delay: -5s; }
+    .abstract-orb-aj { top: 85%; left: 32%; background: radial-gradient(circle, #38bdf8 0%, transparent 58%); animation: orbPath4 6.2s ease-in-out infinite; animation-delay: -2.8s; }
+    .abstract-orb-ak { top: 3%; right: 52%; background: radial-gradient(circle, #bef264 0%, transparent 58%); animation: orbPath5 8.8s ease-in-out infinite reverse; animation-delay: -4.2s; }
+    .abstract-orb-al { bottom: 3%; right: 22%; background: radial-gradient(circle, #f97316 0%, transparent 58%); animation: orbPath6 7.2s ease-in-out infinite; animation-delay: -6.2s; }
+    .abstract-orb-am { top: 28%; right: 62%; background: radial-gradient(circle, #7dd3fc 0%, transparent 58%); animation: orbPath1 9.8s ease-in-out infinite; animation-delay: -7.5s; }
+    .abstract-orb-an { bottom: 32%; left: 5%; background: radial-gradient(circle, #fda4af 0%, transparent 58%); animation: orbPath2 7.8s linear infinite; animation-delay: -1.2s; }
+    .abstract-orb-ao { top: 65%; right: 62%; background: radial-gradient(circle, #86efac 0%, transparent 58%); animation: orbPath3 8.2s ease-in-out infinite reverse; animation-delay: -5.8s; }
+    .abstract-orb-ap { top: 18%; left: 35%; background: radial-gradient(circle, #93c5fd 0%, transparent 58%); animation: orbPath4 6.6s ease-in-out infinite; animation-delay: -3.2s; }
+    .abstract-orb-aq { bottom: 52%; right: 28%; background: radial-gradient(circle, #fde047 0%, transparent 58%); animation: orbPath5 10.5s ease-in-out infinite; animation-delay: -9s; }
+    .abstract-orb-ar { top: 40%; left: 52%; background: radial-gradient(circle, #e11d48 0%, transparent 58%); animation: orbPath6 6.4s ease-in-out infinite reverse; animation-delay: -2.4s; }
+    .abstract-orb-as { bottom: 15%; right: 58%; background: radial-gradient(circle, #059669 0%, transparent 58%); animation: orbPath1 8.4s ease-in-out infinite; animation-delay: -4.8s; }
+    .abstract-orb-at { top: 75%; left: 75%; background: radial-gradient(circle, #7c3aed 0%, transparent 58%); animation: orbPath2 9s ease-in-out infinite reverse; animation-delay: -6.8s; }
+    .abstract-orb-au { top: 10%; left: 5%; background: radial-gradient(circle, #0891b2 0%, transparent 58%); animation: orbPath3 7.4s ease-in-out infinite; animation-delay: -0.8s; }
+    .abstract-orb-av { bottom: 38%; left: 38%; background: radial-gradient(circle, #d97706 0%, transparent 58%); animation: orbPath4 8.8s linear infinite; animation-delay: -5.2s; }
+    .abstract-orb-aw { top: 50%; right: 15%; background: radial-gradient(circle, #db2777 0%, transparent 58%); animation: orbPath5 6.9s ease-in-out infinite reverse; animation-delay: -3.6s; }
+    .abstract-orb-ax { bottom: 62%; left: 18%; background: radial-gradient(circle, #65a30d 0%, transparent 58%); animation: orbPath6 10.2s ease-in-out infinite; animation-delay: -7.2s; }
+    .abstract-orb-ay { top: 35%; right: 25%; background: radial-gradient(circle, #0284c7 0%, transparent 58%); animation: orbPath1 7.1s ease-in-out infinite; animation-delay: -4.4s; }
+    .abstract-orb-az { bottom: 25%; left: 52%; background: radial-gradient(circle, #ea580c 0%, transparent 58%); animation: orbPath2 8.6s ease-in-out infinite reverse; animation-delay: -6s; }
+    .abstract-orb-ba { top: 60%; left: 65%; background: radial-gradient(circle, #a21caf 0%, transparent 58%); animation: orbPath3 9.4s linear infinite; animation-delay: -2.6s; }
+    .abstract-orb-bb { top: 20%; right: 45%; background: radial-gradient(circle, #16a34a 0%, transparent 58%); animation: orbPath4 7.3s ease-in-out infinite; animation-delay: -8.2s; }
+    .abstract-orb-bc { bottom: 5%; left: 85%; background: radial-gradient(circle, #2563eb 0%, transparent 58%); animation: orbPath5 6.7s ease-in-out infinite reverse; animation-delay: -1.6s; }
+    .abstract-orb-bd { top: 88%; right: 42%; background: radial-gradient(circle, #fbbf24 0%, transparent 58%); animation: orbPath6 8.1s ease-in-out infinite; animation-delay: -5.4s; }
+    .abstract-orb-be { top: 42%; left: 88%; background: radial-gradient(circle, #06b6d4 0%, transparent 58%); animation: orbPath1 10.8s ease-in-out infinite reverse; animation-delay: -9.5s; }
+    .abstract-orb-bf { bottom: 45%; right: 5%; background: radial-gradient(circle, #f87171 0%, transparent 58%); animation: orbPath2 7.7s ease-in-out infinite; animation-delay: -3.4s; }
+    .abstract-orb-bg { top: 55%; left: 45%; background: radial-gradient(circle, #818cf8 0%, transparent 58%); animation: orbPath3 6.3s ease-in-out infinite; animation-delay: -7.8s; }
+    .abstract-orb-bh { bottom: 68%; right: 35%; background: radial-gradient(circle, #34d399 0%, transparent 58%); animation: orbPath4 9.6s ease-in-out infinite reverse; animation-delay: -2.1s; }
+    .abstract-orb-bi { top: 8%; left: 92%; background: radial-gradient(circle, #f0abfc 0%, transparent 58%); animation: orbPath5 8.3s linear infinite; animation-delay: -4.6s; }
+    .abstract-orb-bj { bottom: 18%; left: 22%; background: radial-gradient(circle, #60a5fa 0%, transparent 58%); animation: orbPath6 7.9s ease-in-out infinite; animation-delay: -6.4s; }
+    .abstract-orb-bk { top: 72%; right: 72%; background: radial-gradient(circle, #facc15 0%, transparent 58%); animation: orbPath1 6.1s ease-in-out infinite reverse; animation-delay: -3.9s; }
+    .abstract-orb-bl { top: 48%; right: 72%; background: radial-gradient(circle, #be123c 0%, transparent 58%); animation: orbPath2 10.1s ease-in-out infinite; animation-delay: -8.8s; }
+
+    /* "Ozzie" — margin safe zones only (2× per minute via JS) */
+    @keyframes ozzieSurfaceOnce {
+      0%, 100% {
+        transform: translateX(-50%) translateY(78%);
+        opacity: 0;
+        filter: blur(14px) brightness(0.5);
+        clip-path: inset(92% 0 0 0);
+      }
+      18% {
+        transform: translateX(-50%) translateY(52%);
+        opacity: 0.1;
+        filter: blur(10px) brightness(0.68);
+        clip-path: inset(68% 0 0 0);
+      }
+      32% {
+        transform: translateX(-50%) translateY(22%);
+        opacity: 0.28;
+        filter: blur(3px) brightness(0.95);
+        clip-path: inset(32% 0 0 0);
+      }
+      42% {
+        transform: translateX(-50%) translateY(8%);
+        opacity: 0.44;
+        filter: blur(0) brightness(1.1);
+        clip-path: inset(0 0 0 0);
+      }
+      52% {
+        transform: translateX(-50%) translateY(18%);
+        opacity: 0.26;
+        filter: blur(2px) brightness(0.88);
+        clip-path: inset(22% 0 0 0);
+      }
+      68% {
+        transform: translateX(-50%) translateY(72%);
+        opacity: 0;
+        filter: blur(16px) brightness(0.45);
+        clip-path: inset(94% 0 0 0);
+      }
+    }
+
+    @keyframes ozzieWaterlineOnce {
+      0%, 100% { opacity: 0; }
+      28%, 55% { opacity: 0.6; }
+      42% { opacity: 0.82; }
+    }
+
+    @keyframes ozzieRippleOnce {
+      0%, 100% { transform: translateX(-50%) scale(0.55); opacity: 0; }
+      38% { transform: translateX(-50%) scale(1); opacity: 0.32; }
+      58% { transform: translateX(-50%) scale(1.25); opacity: 0; }
+    }
+
+    .ozzie-zone {
+      position: fixed;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .ozzie-zone.is-active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Left margin (beside calendar) */
+    .ozzie-zone-left {
+      left: 0;
+      top: clamp(92px, 13vh, 128px);
+      width: clamp(64px, 10vw, 120px);
+      height: clamp(220px, 36vh, 400px);
+    }
+
+    /* Top-left, under header beside logo */
+    .ozzie-zone-top-left {
+      left: clamp(64px, 10vw, 120px);
+      top: clamp(52px, 8vh, 88px);
+      width: clamp(60px, calc(50vw - 200px), 300px);
+      height: clamp(44px, 6vh, 64px);
+    }
+
+    /* Top-right */
+    .ozzie-zone-top-right {
+      right: clamp(64px, 10vw, 120px);
+      top: clamp(52px, 8vh, 88px);
+      width: clamp(60px, calc(50vw - 200px), 300px);
+      height: clamp(44px, 6vh, 64px);
+    }
+
+    /* Right margin (beside Upcoming) */
+    .ozzie-zone-right {
+      right: 0;
+      top: clamp(92px, 13vh, 128px);
+      width: clamp(64px, 10vw, 120px);
+      height: clamp(220px, 36vh, 400px);
+    }
+
+    /* Strip under form row — side margins only on wide screens */
+    .ozzie-zone-bottom {
+      left: clamp(8px, 1.5vw, 20px);
+      right: clamp(8px, 1.5vw, 20px);
+      top: clamp(380px, 48vh, 520px);
+      height: clamp(40px, 5vh, 56px);
+      max-width: 100%;
+    }
+
+    @media (min-width: 1100px) {
+      .ozzie-zone-bottom {
+        left: clamp(64px, 10vw, 140px);
+        right: clamp(64px, 10vw, 140px);
+      }
+    }
+
+    .abstract-ozzie-scene {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .abstract-waterline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 54%;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(186, 230, 253, 0.35) 15%,
+        rgba(224, 242, 254, 0.95) 50%,
+        rgba(186, 230, 253, 0.35) 85%,
+        transparent
+      );
+      box-shadow:
+        0 0 14px rgba(56, 189, 248, 0.5),
+        0 3px 20px rgba(14, 116, 144, 0.3);
+      opacity: 0;
+    }
+
+    .abstract-ozzie-ripple {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 72px;
+      height: 20px;
+      margin-left: -36px;
+      border-radius: 50%;
+      border: 2px solid rgba(186, 230, 253, 0.45);
+      opacity: 0;
+    }
+
+    .ozzie-zone.is-active .abstract-waterline {
+      animation: ozzieWaterlineOnce 11s ease-in-out forwards;
+    }
+
+    .ozzie-zone.is-active .abstract-ozzie-ripple {
+      animation: ozzieRippleOnce 11s ease-out forwards;
+    }
+
+    .abstract-ozzie {
+      position: absolute;
+      left: 50%;
+      bottom: -5%;
+      margin: 0;
+      transform: translateX(-50%);
+      font-size: clamp(1.35rem, 3.2vw, 2.65rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      white-space: nowrap;
+      color: rgba(224, 242, 254, 0.92);
+      text-shadow:
+        0 0 22px rgba(56, 189, 248, 0.6),
+        0 2px 14px rgba(8, 47, 73, 0.5),
+        0 1px 0 rgba(255, 255, 255, 0.32);
+      will-change: transform, opacity, clip-path, filter;
+    }
+
+    .ozzie-zone.is-active .abstract-ozzie {
+      animation: ozzieSurfaceOnce 11s ease-in-out forwards;
+    }
+
+    .abstract-grid {
+      position: absolute;
+      inset: -60%;
+      opacity: 0.45;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 75%);
+      animation: gridPan 6s linear infinite;
+    }
+
+    body.login-bg,
+    body.app-bg {
+      min-height: 100vh;
+      background-color: #0c1222;
+    }
+
+    body.login-bg #loginSection {
+      position: relative;
+      z-index: 1;
+    }
+
+    body.login-bg header,
+    body.app-bg header {
+      position: relative;
+      z-index: 1;
+    }
+
+    body.app-bg .reminder-preview-panel,
+    body.app-bg .expirations-panel,
+    body.app-bg #searchSection,
+    body.app-bg .form-section,
+    body.app-bg .table-scroll-wrap {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Static abstract background — no motion, lightweight layers */
+    .abstract-bg,
+    .abstract-bg * {
+      animation: none !important;
+    }
+    .abstract-bg .abstract-orb,
+    .abstract-bg .abstract-prism,
+    .abstract-bg .abstract-prism-2,
+    .abstract-bg .abstract-aurora,
+    .abstract-bg .abstract-aurora-2,
+    .abstract-bg .abstract-aurora-3,
+    .abstract-bg .abstract-grid,
+    .abstract-bg .ozzie-zone {
+      display: none !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .abstract-bg,
+      .abstract-orb,
+      .abstract-grid,
+      .abstract-aurora,
+      .abstract-aurora-2,
+      .abstract-aurora-3,
+      .abstract-prism,
+      .abstract-prism-2,
+      .abstract-ozzie,
+      .abstract-waterline,
+      .abstract-ozzie-ripple {
+        animation: none !important;
+      }
+      .ozzie-zone {
+        display: none;
+      }
+    }
+
+    /* Hide the app by default; only show it after login when body.app-bg is set */
+    #appSection { display: none; }
+    body.app-bg #appSection { display: block; }
+
+    /* =========================================================
+       ✅ MOBILE + PERFORMANCE ADDITIONS (ONLY NEW STUFF BELOW)
+       ========================================================= */
+
+    /* Touch targets & smoother taps */
+    .button-group button,
+    #searchSection .search-btn,
+    #loginSection .unlock-btn {
+      min-height: 44px;             /* thumb-friendly */
+      will-change: transform;       /* (the line that was cut off) */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: 900px) {
+      body { margin: 10px; }
+      header img.logo { max-width: 150px; }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        margin: 8px;
+        padding-left: max(0px, env(safe-area-inset-left, 0px));
+        padding-right: max(0px, env(safe-area-inset-right, 0px));
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+      }
+
+      #appSection {
+        max-width: 100%;
+      }
+
+      /* Stack the search bar */
+      #searchSection { 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 10px;
+        max-width: 100%;
+      }
+      #searchSection input[type="text"] {
+        flex: 1 1 auto;
+        max-width: none;
+        width: 100%;
+        min-height: 48px;
+        font-size: 16px;
+      }
+      #searchSection button.search-btn,
+      #searchSection button.add-reminder-btn {
+        margin-left: 0;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.05rem;
+        min-height: 48px;
+      }
+
+      .form-section {
+        flex-wrap: wrap;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 0 2px;
+        overflow-x: visible;
+      }
+
+      .form-section .form-group {
+        flex: 1 1 calc(50% - 12px);
+        min-width: calc(50% - 12px);
+        max-width: 100%;
+      }
+
+      .form-section .fg-notes,
+      .form-section .fg-email {
+        flex: 1 1 100%;
+        min-width: 100%;
+        max-width: 100%;
+      }
+
+      .form-section .form-group input,
+      .form-section .form-group select,
+      .form-section .form-group textarea {
+        width: 100%;
+        min-height: 48px;
+        height: 48px;
+        max-height: 48px;
+        font-size: 16px;
+      }
+
+      .form-section .form-group textarea:focus {
+        max-height: 160px;
+      }
+
+      /* Button group wraps nicely */
+      .button-group.center { flex-wrap: wrap; }
+      .button-group.center button {
+        flex: 1 1 48%;
+        padding: 14px 16px;
+        font-size: 1rem;
+        min-height: 48px;
+      }
+
+      /* Table scrolls horizontally in .table-scroll-wrap — keep real table layout */
+      #dataTable th:nth-child(3),
+      #dataTable td:nth-child(3) {
+        min-width: 9rem;
+        max-width: 12rem;
+      }
+      .table-scroll-wrap {
+        overflow-x: auto;
+      }
+      #dataTable {
+        width: 100%;
+        min-width: 720px;
+      }
+      #dataTable td.notes-td {
+        height: 11rem;
+        padding: 8px 10px;
+      }
+      #dataTable td.notes-td .notes-cell-wrap {
+        min-height: 9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card { width: 100%; padding: 20px 16px; }
+      .button-group.center button { flex-basis: 100%; }
+      h2 { font-size: 1.25rem; }
+    }
+
+    /* Disable heavy glow/animation on phones & reduced motion for snappier taps */
+    @media (prefers-reduced-motion: reduce), (max-width: 768px) {
+      h2 { animation: none !important; }
+      .button-group button::before,
+      #searchSection .search-btn::before,
+      #loginSection .unlock-btn::before,
+      .login-card::before {
+        display: none !important;   /* remove blurred gradient layer */
+        animation: none !important;
+      }
+    }
+
+    /* Reminder modal */
+    .reminder-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .reminder-modal-overlay.open {
+      display: flex;
+      pointer-events: auto;
+    }
+    .reminder-modal {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      min-width: 0;
+      width: min(480px, calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+      max-width: calc(100vw - 24px);
+      max-height: min(90vh, 900px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      pointer-events: auto;
+      margin: 12px;
+    }
+    .reminder-modal h3 { margin-bottom: 16px; color: #003366; font-size: 1.2rem; }
+    .reminder-modal .field { margin-bottom: 16px; }
+    .reminder-modal .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .reminder-modal .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d6d6d6;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 48px;
+      box-sizing: border-box;
+    }
+    .reminder-modal .field input[readonly] { background: #f5f5f5; color: #333; }
+    .reminder-modal .field textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d6d6d6;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .reminder-modal #reminderText {
+      min-height: 160px;
+      resize: vertical;
+    }
+    .reminder-modal .actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .reminder-modal .actions button {
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      min-height: 48px;
+    }
+
+    @media (max-width: 480px) {
+      .reminder-modal {
+        padding: 20px 16px;
+        border-radius: 14px;
+      }
+      .reminder-modal .actions {
+        flex-direction: column;
+      }
+      .reminder-modal .actions button {
+        width: 100%;
+      }
+    }
+    .reminder-modal .actions .save-btn { background: #003366; color: white; }
+    .reminder-modal .actions .cancel-btn { background: #ccc; color: #333; }
+    .reminder-modal .user-reminders { margin-top: 16px; max-height: 160px; overflow-y: auto; }
+    .reminder-modal .user-reminders h4 { font-size: 0.95rem; margin-bottom: 8px; color: #555; }
+    .reminder-modal .reminder-chip {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 4px;
+      background: #e8f0fe;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* Reminder notification popup */
+    .reminder-notification-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .reminder-notification-overlay.open {
+      display: flex;
+    }
+    .reminder-notification-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 20px;
+      min-width: 0;
+      width: min(520px, calc(100vw - 24px));
+      max-width: calc(100vw - 24px);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .reminder-notification-header {
+      background: linear-gradient(135deg, #003366 0%, #004080 100%);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .reminder-notification-header .icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .reminder-notification-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .reminder-notification-header .sub {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+    .reminder-notification-body {
+      padding: 24px;
+    }
+    .reminder-notification-body .message {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #1a1a2e;
+      margin-bottom: 20px;
+    }
+    .reminder-notification-body .username-tag {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #e8f0fe;
+      color: #1967d2;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .reminder-notification-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .reminder-notification-actions button {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      min-height: 48px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .reminder-notification-actions button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .reminder-notification-actions button:active {
+      transform: translateY(0);
+    }
+    .reminder-btn-done {
+      background: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+      color: white;
+    }
+    .reminder-btn-snooze {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .reminder-btn-snooze:hover { background: #e2e8f0; }
+  </style>
+</head>
+
+
+<body>
+  <div class="abstract-bg" aria-hidden="true">
+    <div class="abstract-static-colorwash"></div>
+    <div class="abstract-static-mesh"></div>
+    <div class="abstract-static-shapes">
+      <span class="abs-shape abs-shape-1"></span>
+      <span class="abs-shape abs-shape-2"></span>
+      <span class="abs-shape abs-shape-3"></span>
+      <span class="abs-shape abs-shape-4"></span>
+      <span class="abs-shape abs-shape-5"></span>
+      <span class="abs-shape abs-shape-6"></span>
+      <span class="abs-shape abs-shape-7"></span>
+      <span class="abs-shape abs-shape-8"></span>
+      <span class="abs-shape abs-shape-9"></span>
+      <span class="abs-shape abs-shape-10"></span>
+    </div>
+    <div class="abstract-static-grid"></div>
+    <div class="abstract-static-vignette"></div>
+    <div class="abstract-prism"></div>
+    <div class="abstract-prism abstract-prism-2"></div>
+    <div class="abstract-aurora"></div>
+    <div class="abstract-aurora abstract-aurora-2"></div>
+    <div class="abstract-aurora abstract-aurora-3"></div>
+    <div class="abstract-orb abstract-orb-a"></div>
+    <div class="abstract-orb abstract-orb-b"></div>
+    <div class="abstract-orb abstract-orb-c"></div>
+    <div class="abstract-orb abstract-orb-d"></div>
+    <div class="abstract-orb abstract-orb-e"></div>
+    <div class="abstract-orb abstract-orb-f"></div>
+    <div class="abstract-orb abstract-orb-g"></div>
+    <div class="abstract-orb abstract-orb-h"></div>
+    <div class="abstract-orb abstract-orb-i"></div>
+    <div class="abstract-orb abstract-orb-j"></div>
+    <div class="abstract-orb abstract-orb-k"></div>
+    <div class="abstract-orb abstract-orb-l"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-m"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-n"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-o"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-p"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-q"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-r"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-s"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-t"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-u"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-v"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-w"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-x"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-y"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-z"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aa"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ab"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ac"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ad"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ae"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-af"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ag"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ah"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ai"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aj"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ak"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-al"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-am"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-an"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ao"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ap"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aq"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ar"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-as"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-at"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-au"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-av"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-aw"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ax"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ay"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-az"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-ba"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bb"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bc"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bd"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-be"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bf"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bg"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bh"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bi"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bj"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bk"></div>
+    <div class="abstract-orb abstract-orb-mini abstract-orb-bl"></div>
+    <div class="ozzie-zone ozzie-zone-left" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-top-left" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-top-right" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-right" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="ozzie-zone ozzie-zone-bottom" data-ozzie-zone aria-hidden="true">
+      <div class="abstract-ozzie-scene"><div class="abstract-ozzie-ripple"></div><div class="abstract-waterline"></div><p class="abstract-ozzie">Ozzie</p></div>
+    </div>
+    <div class="abstract-grid"></div>
+  </div>
+  <header>
+    <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
+      class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
+      onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
+  </header>
+
+  <div id="loginSection">
+    <div class="login-card">
+      <h1 class="brand">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+          style="margin-right:4px;color:#2952db">
+          <path
+            d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z" />
+        </svg>
+        Osvaldo Nuñez
+      </h1>
+
+      <div class="inputbox">
+        <input type="password" id="appPassword" placeholder=" "
+          onkeydown="if(event.key==='Enter'){event.preventDefault();checkPassword();}">
+        <label for="appPassword">Enter Password</label>
+      </div>
+
+      <button class="unlock-btn" onclick="checkPassword()">Unlock</button>
+    </div>
+  </div>
+
+  <!-- App UI: hidden by CSS until body gets class 'app-bg' after login -->
+  <div id="appSection">
+    <div id="reminderPreviewPanel" class="reminder-preview-panel">
+      <div class="reminder-preview-row">
+        <div class="rpc-card rpc-calendar-wrap">
+          <div id="reminderPreviewCalendar" class="reminder-mini-cal"></div>
+        </div>
+        <div class="rpc-card rpc-upcoming-wrap">
+          <h3 class="rpc-upcoming-title">Upcoming</h3>
+          <div id="reminderPreviewList" class="rpc-upcoming-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="expirationsPanel" class="expirations-panel rpc-card">
+      <h3>Upcoming Expirations <span style="font-weight:500;font-size:0.78rem;color:var(--app-muted)">(next 7 days · Remove hides this expiration only)</span></h3>
+      <div id="expirationsList" class="expirations-list"></div>
+    </div>
+
+    <form id="searchForm" onsubmit="event.preventDefault(); searchData();">
+      <div id="searchSection">
+        <input type="text" id="searchQuery" placeholder="Search by username, phone, or email">
+        <button type="submit" class="search-btn">Search</button>
+        <button type="button" class="add-reminder-btn" onclick="openReminderModal()">Add Reminder</button>
+      </div>
+    </form>
+
+    <div class="form-section">
+      <div class="form-group fg-user"><label for="username">Username</label><input type="text" id="username" autocomplete="off"></div>
+      <div class="form-group fg-pass"><label for="password">Password</label><input type="text" id="password" autocomplete="off"></div>
+      <div class="form-group fg-email"><label for="email">Email</label><textarea id="email" rows="1" title="Scroll or focus to edit full email"></textarea></div>
+      <div class="form-group fg-phone"><label for="phone">Phone #</label><input type="text" id="phone"></div>
+      <div class="form-group fg-server"><label for="server">Server</label><input type="text" id="server"></div>
+      <div class="form-group fg-autopay">
+        <label for="autoPay">AutoPay</label>
+        <select id="autoPay">
+          <option value="">—</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+      <div class="form-group fg-exp">
+        <label for="expirationDate">Expiration</label>
+        <input type="date" id="expirationDate">
+      </div>
+      <div class="form-group fg-notes">
+        <label for="notes">Notes</label>
+        <textarea id="notes" rows="1" title="Focus to expand and scroll long notes"></textarea>
+      </div>
+      <div class="form-group fg-extend">
+        <label for="extendExpiration">Extend</label>
+        <select id="extendExpiration">
+          <option value="">—</option>
+          <option value="24h">24 hours</option>
+          <option value="48h">48 hours</option>
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
+          <option value="1m">1 month</option>
+          <option value="3m">3 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select>
+      </div>
+      <input type="hidden" id="rowIndex" />
+    </div>
+
+    <div class="button-row">
+      <div class="button-group center">
+        <button class="add-btn" onclick="addRow()">Add</button>
+        <button class="edit-btn" onclick="confirmEdit()">Update</button>
+        <button class="clear-btn" onclick="clearForm()">Clear</button>
+        <button class="refresh-btn" onclick="loadData(false)">Refresh</button>
+        <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+        <button class="undo-btn" onclick="undoLastChange()">Undo</button>
+        <button type="button" class="critical-btn" onclick="addCriticalAlert()">Add Critical Alert</button>
+        <button type="button" class="remove-alert-btn" onclick="removeCriticalAlert()">Remove Alert</button>
+      </div>
+    </div>
+
+
+    <div class="table-scroll-wrap">
+    <table id="dataTable">
+      <colgroup>
+        <col class="col-user" style="width: 9.2%">
+        <col class="col-pass" style="width: 9.2%">
+        <col class="col-email" style="width: 21.3%">
+        <col class="col-phone" style="width: 10%">
+        <col class="col-server" style="width: 5%">
+        <col class="col-autopay" style="width: 6%">
+        <col class="col-exp" style="width: 9%">
+        <col class="col-notes" style="width: 30.1%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Server</th>
+          <th class="th-stack">Auto<br>Pay</th>
+          <th class="th-stack">Expiration<br>Date</th>
+          <th class="col-notes-header">Notes</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    </div>
+
+    <div id="tablePagination" class="table-pagination">
+      <button type="button" id="tablePrevPage" class="table-page-btn" onclick="tablePrevPage()">← Back Page</button>
+      <span id="tablePageInfo" class="table-page-info"></span>
+      <button type="button" id="tableNextPage" class="table-page-btn" onclick="tableNextPage()">Next Page →</button>
+    </div>
+  </div>
+
+  <div id="reminderNotification" class="reminder-notification-overlay">
+    <div class="reminder-notification-card">
+      <div class="reminder-notification-header">
+        <div class="icon">⏰</div>
+        <div>
+          <h3>Reminder</h3>
+          <div class="sub" id="reminderNotifSub"></div>
+        </div>
+      </div>
+      <div class="reminder-notification-body">
+        <div id="reminderNotifUser" class="username-tag" style="display:none;"></div>
+        <div class="message" id="reminderNotifMsg"></div>
+        <div class="reminder-notification-actions">
+          <button type="button" class="reminder-btn-done" onclick="handleReminderAction('done')">Done</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze30')">Snooze 30 mins</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze60')">Snooze 1 hr</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze360')">Snooze 6 hrs</button>
+          <button type="button" class="reminder-btn-snooze" onclick="handleReminderAction('snooze1440')">Snooze 24 hrs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="reminderModal" class="reminder-modal-overlay" onclick="if(event.target===this)closeReminderModal()">
+    <div class="reminder-modal" onclick="event.stopPropagation()">
+      <h3>Add Reminder</h3>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="reminderUsername" readonly>
+      </div>
+      <div class="field">
+        <label>Reminder</label>
+        <textarea id="reminderText" placeholder="What to remember?" rows="6"></textarea>
+      </div>
+      <div class="field">
+        <label>Due date & time (optional)</label>
+        <input type="datetime-local" id="reminderDue">
+      </div>
+      <div class="user-reminders" id="userRemindersList"></div>
+      <div class="actions">
+        <button type="button" class="save-btn" onclick="saveReminderFromModal()">Save Reminder</button>
+        <button type="button" class="cancel-btn" onclick="closeReminderModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- Login background on first load ---------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('login-bg');
+      initDOMCache(); // Initialize DOM cache for performance
+      applyDailyAbstractBackground();
+      scheduleDailyAbstractRefresh();
+    });
+
+    /* ---------- 365 daily abstract backgrounds (one per calendar day) ---------- */
+    function abstractDayOfYear(d) {
+      const date = d || new Date();
+      const y = date.getFullYear();
+      const start = Date.UTC(y, 0, 0);
+      const today = Date.UTC(y, date.getMonth(), date.getDate());
+      return Math.min(365, Math.max(1, Math.floor((today - start) / 86400000)));
+    }
+
+    function abstractRng(seed) {
+      let s = seed >>> 0;
+      return function next() {
+        s = (s + 0x6D2B79F5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function abstractPickHsl(rng) {
+      return {
+        h: Math.floor(rng() * 360),
+        s: 58 + Math.floor(rng() * 34),
+        l: 38 + Math.floor(rng() * 28)
+      };
+    }
+
+    function abstractHsl(c, alpha) {
+      if (alpha != null) return `hsla(${c.h},${c.s}%,${c.l}%,${alpha})`;
+      return `hsl(${c.h},${c.s}%,${c.l}%)`;
+    }
+
+    function abstractOrganicRadius(rng) {
+      const p = () => 28 + Math.floor(rng() * 44);
+      return `${p()}% ${p()}% ${p()}% ${p()}% / ${p()}% ${p()}% ${p()}% ${p()}%`;
+    }
+
+    function applyDailyAbstractBackground() {
+      const day = abstractDayOfYear();
+      const rng = abstractRng(day * 9973 + 365);
+
+      const bg = document.querySelector('.abstract-bg');
+      if (!bg) return;
+      bg.dataset.abstractDay = String(day);
+
+      const layers = [];
+      const blobCount = 6 + Math.floor(rng() * 3);
+      for (let i = 0; i < blobCount; i++) {
+        const x = 4 + Math.floor(rng() * 92);
+        const y = 4 + Math.floor(rng() * 92);
+        const ew = 40 + Math.floor(rng() * 55);
+        const eh = 35 + Math.floor(rng() * 50);
+        const alpha = 0.5 + rng() * 0.28;
+        layers.push(
+          `radial-gradient(ellipse ${ew}% ${eh}% at ${x}% ${y}%, ${abstractHsl(abstractPickHsl(rng), alpha)} 0%, transparent 54%)`
+        );
+      }
+
+      const angle = Math.floor(rng() * 360);
+      const g1 = abstractPickHsl(rng);
+      const g2 = abstractPickHsl(rng);
+      const g3 = abstractPickHsl(rng);
+      const g4 = abstractPickHsl(rng);
+      g1.l = Math.max(22, g1.l - 12);
+      g4.l = Math.max(20, g4.l - 14);
+      layers.push(
+        `linear-gradient(${angle}deg, ${abstractHsl(g1)} 0%, ${abstractHsl(g2)} 30%, ${abstractHsl(g3)} 62%, ${abstractHsl(g4)} 100%)`
+      );
+
+      const base = abstractPickHsl(rng);
+      base.l = 14 + Math.floor(rng() * 12);
+      base.s = 45 + Math.floor(rng() * 35);
+      bg.style.backgroundColor = abstractHsl(base);
+      bg.style.backgroundImage = layers.join(', ');
+
+      const wash = bg.querySelector('.abstract-static-colorwash');
+      if (wash) {
+        const from = Math.floor(rng() * 360);
+        const seg = 7 + Math.floor(rng() * 3);
+        const parts = [];
+        for (let i = 0; i < seg; i++) {
+          parts.push(abstractHsl(abstractPickHsl(rng), 0.11 + rng() * 0.14));
+        }
+        wash.style.background = `conic-gradient(from ${from}deg at 50% 50%, ${parts.join(', ')}, ${parts[0]})`;
+      }
+
+      const mesh = bg.querySelector('.abstract-static-mesh');
+      if (mesh) {
+        const a1 = 64 + Math.floor(rng() * 48);
+        const a2 = 80 + Math.floor(rng() * 40);
+        const d1 = 105 + Math.floor(rng() * 45);
+        const d2 = -15 - Math.floor(rng() * 45);
+        mesh.style.background =
+          `repeating-linear-gradient(${d1}deg, transparent 0, transparent ${a1}px, rgba(255,255,255,0.04) ${a1}px, rgba(255,255,255,0.04) ${a1 + 1}px),` +
+          `repeating-linear-gradient(${d2}deg, transparent 0, transparent ${a2}px, rgba(255,255,255,0.032) ${a2}px, rgba(255,255,255,0.032) ${a2 + 1}px)`;
+      }
+
+      const shapes = bg.querySelectorAll('.abstract-static-shapes .abs-shape');
+      shapes.forEach((el, idx) => {
+        const sr = abstractRng(day * 1009 + idx * 7919);
+        el.classList.remove('abs-line');
+        el.style.cssText = 'position:absolute;mix-blend-mode:screen;';
+
+        if (idx >= 8) {
+          el.classList.add('abs-line');
+          el.style.mixBlendMode = 'normal';
+          const cA = abstractPickHsl(sr);
+          const cB = abstractPickHsl(sr);
+          const cC = abstractPickHsl(sr);
+          if (idx === 8) {
+            el.style.width = '3px';
+            el.style.height = (42 + Math.floor(sr() * 22)) + 'vh';
+            el.style.top = Math.floor(sr() * 28) + '%';
+            el.style.left = (8 + Math.floor(sr() * 84)) + '%';
+            el.style.background = `linear-gradient(to bottom, transparent, ${abstractHsl(cA)}, ${abstractHsl(cB)}, transparent)`;
+            el.style.opacity = String(0.4 + sr() * 0.25);
+          } else {
+            el.style.width = (28 + Math.floor(sr() * 38)) + 'vw';
+            el.style.height = '3px';
+            el.style.top = (15 + Math.floor(sr() * 65)) + '%';
+            el.style.left = (5 + Math.floor(sr() * 55)) + '%';
+            el.style.background = `linear-gradient(to right, transparent, ${abstractHsl(cA)}, ${abstractHsl(cB)}, ${abstractHsl(cC)}, transparent)`;
+            el.style.opacity = String(0.35 + sr() * 0.28);
+          }
+          return;
+        }
+
+        const size = 16 + Math.floor(sr() * 40);
+        el.style.width = `min(${size}vmax, ${size * 10}px)`;
+        el.style.height = el.style.width;
+        el.style.top = `${Math.floor(sr() * 78)}%`;
+        if (sr() > 0.45) {
+          el.style.left = `${Math.floor(sr() * 75)}%`;
+          el.style.right = 'auto';
+        } else {
+          el.style.right = `${Math.floor(sr() * 35)}%`;
+          el.style.left = 'auto';
+        }
+        el.style.borderRadius = abstractOrganicRadius(sr);
+        const gradAng = Math.floor(sr() * 360);
+        const useRadial = sr() > 0.55;
+        if (useRadial) {
+          el.style.background = `radial-gradient(circle, ${abstractHsl(abstractPickHsl(sr))} 0%, ${abstractHsl(abstractPickHsl(sr))} 42%, transparent 70%)`;
+        } else {
+          el.style.background = `linear-gradient(${gradAng}deg, ${abstractHsl(abstractPickHsl(sr))}, ${abstractHsl(abstractPickHsl(sr))} 52%, ${abstractHsl(abstractPickHsl(sr))})`;
+        }
+        el.style.transform = `rotate(${Math.floor(sr() * 56 - 28)}deg)`;
+        el.style.opacity = String(0.38 + sr() * 0.28);
+      });
+
+      const grid = bg.querySelector('.abstract-static-grid');
+      if (grid) {
+        const gs = 40 + Math.floor(rng() * 28);
+        grid.style.backgroundSize = `${gs}px ${gs}px`;
+        grid.style.opacity = String(0.38 + rng() * 0.28);
+      }
+
+      const vig = bg.querySelector('.abstract-static-vignette');
+      if (vig) {
+        const v = abstractPickHsl(rng);
+        v.l = 12 + Math.floor(rng() * 14);
+        vig.style.background = `radial-gradient(ellipse 82% 76% at 50% 48%, transparent 40%, ${abstractHsl(v, 0.48)} 100%)`;
+      }
+    }
+
+    function scheduleDailyAbstractRefresh() {
+      const now = new Date();
+      const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1, 0);
+      const ms = Math.max(1000, next - now);
+      window.setTimeout(function onMidnight() {
+        applyDailyAbstractBackground();
+        scheduleDailyAbstractRefresh();
+      }, ms);
+    }
+
+    /* ---------- App constants ---------- */
+    const ROW_LIMIT = 25;
+    let currentTablePage = 0;
+    let currentTableRecords = [];
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzB8lRPMU0nZRSoU6CoRL_fcYstdq9pWPeZKdwuSp6O0QSsa95Oh49UnfV6uB9wt9w/exec';
+    const sheetId = '1IR2TT4isrhET-3krSHV1BC8mE6xAhy0MEnR0h5-xBzs';
+    const apiKey = 'AIzaSyC5rmJA1nl0LRhbGe-TsZwOSBfP97SzsHk';
+    const range = 'data!A1:I3000';
+    const SHEET_COL_COUNT = 9;
+    const COL_AUTOPAY = 5;
+    const COL_NOTES = 6;
+    const COL_HELPER = 7; /* legacy “Helper 1” column — not shown in the app UI */
+    const COL_EXPIRATION = 8; /* column I — persisted expiration date */
+
+    function normalizeSheetRow(row) {
+      const r = Array.isArray(row) ? row.slice() : [];
+      while (r.length < SHEET_COL_COUNT) r.push('');
+      return r.slice(0, SHEET_COL_COUNT);
+    }
+
+    function sheetSerialToMs(n) {
+      if (typeof n !== 'number' || !isFinite(n)) return NaN;
+      if (n < 20000 || n > 60000) return NaN;
+      return Math.round((n - 25569) * 86400 * 1000);
+    }
+
+    function isExpirationColumnValue(cell) {
+      if (cell == null || cell === '') return false;
+      if (typeof cell === 'number') return !isNaN(sheetSerialToMs(cell));
+      const s = String(cell).trim();
+      if (!s) return false;
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return true;
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) return true;
+      if (/\b(AM|PM)\s*:\s*\S/i.test(s)) return false;
+      if ((s.match(/:/g) || []).length >= 2 && !/^\d{4}-\d{2}-\d{2}/.test(s)) return false;
+      if (s.length > 80) return false;
+      return !isNaN(Date.parse(s));
+    }
+
+    function parseExpirationMs(cell) {
+      if (cell == null || cell === '') return NaN;
+      if (typeof cell === 'number') {
+        const serial = sheetSerialToMs(cell);
+        if (!isNaN(serial)) return serial;
+      }
+      if (!isExpirationColumnValue(cell)) return NaN;
+      const s = String(cell).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const t = Date.parse(s.slice(0, 10) + 'T12:00:00');
+        return isNaN(t) ? NaN : t;
+      }
+      const slash = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (slash) {
+        const month = Number(slash[1]);
+        const day = Number(slash[2]);
+        const year = Number(slash[3]);
+        const t = new Date(year, month - 1, day, 12, 0, 0, 0).getTime();
+        return isNaN(t) ? NaN : t;
+      }
+      const t = Date.parse(s);
+      return isNaN(t) ? NaN : t;
+    }
+
+    function applyExpirationToRow(row, expirationStr) {
+      const r = normalizeSheetRow(row);
+      if (expirationStr != null && String(expirationStr).trim() !== '') {
+        r[COL_EXPIRATION] = String(expirationStr).trim();
+      }
+      return r;
+    }
+
+    function rowHasAutoPayYes(row) {
+      const ap = normalizeAutoPayDisplay(normalizeSheetRow(row)[COL_AUTOPAY]).toLowerCase();
+      return ap === 'yes' || ap === 'y';
+    }
+
+    function expirationToInputValue(cell) {
+      const ms = parseExpirationMs(cell);
+      if (isNaN(ms)) return '';
+      return new Date(ms).toISOString().slice(0, 10);
+    }
+
+    function formatExpirationDisplay(cell) {
+      const ms = parseExpirationMs(cell);
+      if (isNaN(ms)) return '';
+      return escapeHTML(new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
+    }
+
+    function normalizeAutoPayDisplay(val) {
+      const v = String(val || '').trim().toLowerCase();
+      if (v === 'yes' || v === 'y') return 'Yes';
+      if (v === 'no' || v === 'n') return 'No';
+      return String(val || '').trim();
+    }
+
+    function formAutoPayValue() {
+      return domCache.autoPay ? domCache.autoPay.value : '';
+    }
+
+    function formExpirationValue() {
+      return domCache.expirationDate ? domCache.expirationDate.value : '';
+    }
+
+    let sessionPassword = "";
+    let selectedRowIndex = null;   // 1-based sheet row
+    let selectedRawNotes = '';
+    let existingUsernames = [];
+    let allRecords = [];           // { row:[...], sheetRow:Number, lastEditMs:Number }
+    let totalRows = 0;
+    
+    // Undo functionality
+    let undoStack = [];
+    let maxUndoSteps = 10;
+    
+    function saveUndoState(action, data) {
+      undoStack.push({
+        action: action,
+        data: data,
+        timestamp: Date.now()
+      });
+      
+      // Keep only last N undo steps
+      if (undoStack.length > maxUndoSteps) {
+        undoStack.shift();
+      }
+    }
+    
+    function undoLastChange() {
+      if (undoStack.length === 0) {
+        alert('No changes to undo');
+        return;
+      }
+      
+      const lastChange = undoStack.pop();
+      
+      switch (lastChange.action) {
+        case 'add':
+          alert('Cannot undo add operation automatically. Please delete the row manually.');
+          break;
+        case 'edit':
+          if (lastChange.data && selectedRowIndex) {
+            restoreRowData(lastChange.data);
+            selectedRawNotes = lastChange.data.notes || '';
+            alert('Row data restored');
+          } else {
+            alert('Select a row first to restore.');
+          }
+          break;
+        case 'delete':
+          alert('Cannot undo delete operation automatically. Please add the row back manually.');
+          break;
+        default:
+          alert('Unknown operation type');
+      }
+    }
+    
+    function restoreRowData(data) {
+      if (domCache.username) domCache.username.value = data.username || '';
+      if (domCache.password) domCache.password.value = data.password || '';
+      if (domCache.email) domCache.email.value = data.email || '';
+      if (domCache.phone) domCache.phone.value = data.phone || '';
+      if (domCache.server) domCache.server.value = data.server || '';
+      if (domCache.autoPay) domCache.autoPay.value = data.autoPay || '';
+      if (domCache.expirationDate) domCache.expirationDate.value = data.expirationDate || '';
+      if (domCache.notes) domCache.notes.value = data.notes || '';
+    }
+    
+    // Performance optimization: Cache DOM elements
+    const domCache = {
+      searchQuery: null,
+      username: null,
+      password: null,
+      email: null,
+      phone: null,
+      server: null,
+      autoPay: null,
+      expirationDate: null,
+      extendExpiration: null,
+      notes: null,
+      dataTable: null,
+      tbody: null
+    };
+    
+    // Initialize DOM cache
+    function initDOMCache() {
+      domCache.searchQuery = document.getElementById('searchQuery');
+      domCache.username = document.getElementById('username');
+      domCache.password = document.getElementById('password');
+      domCache.email = document.getElementById('email');
+      domCache.phone = document.getElementById('phone');
+      domCache.server = document.getElementById('server');
+      domCache.autoPay = document.getElementById('autoPay');
+      domCache.expirationDate = document.getElementById('expirationDate');
+      domCache.extendExpiration = document.getElementById('extendExpiration');
+      domCache.notes = document.getElementById('notes');
+      domCache.dataTable = document.getElementById('dataTable');
+      domCache.tbody = document.querySelector('#dataTable tbody');
+    }
+    
+    // Debounce search to prevent excessive calls
+    let searchTimeout = null;
+    function debounceSearch(func, delay = 300) {
+      return function(...args) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+    
+    // Request cache to prevent duplicate API calls
+    const requestCache = new Map();
+    const CACHE_DURATION = 5000; // 5 seconds
+    
+    function getCachedRequest(url) {
+      const cached = requestCache.get(url);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+      return null;
+    }
+    
+    function setCachedRequest(url, data) {
+      requestCache.set(url, {
+        data: data,
+        timestamp: Date.now()
+      });
+    }
+
+    // speed helper: disable/enable a button by selector (prevents double submits)
+    function setBusy(selector, on) {
+      const btn = document.querySelector(selector);
+      if (btn) btn.disabled = !!on;
+    }
+
+    /* ---------- Login ---------- */
+    function checkPassword() {
+      const pass = document.getElementById('appPassword').value.trim();
+      if (pass === 'Google#2020') {
+        sessionPassword = pass;
+        document.body.classList.remove('login-bg');
+        document.body.classList.add('app-bg');
+        document.getElementById('loginSection').style.display = 'none';
+        loadData();
+      } else {
+        alert('Incorrect password');
+      }
+    }
+    window.checkPassword = checkPassword; // keep inline onclick working
+
+    /* ---------- Helpers (formatting + search) ---------- */
+    const TS_REGEX = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)/;
+
+    function parseLastEditMs(notesCell) {
+      if (!notesCell) return 0;
+      const firstLine = String(notesCell).split('\n')[0].trim();
+      const m = firstLine.match(TS_REGEX);
+      if (!m) return 0;
+      const ms = Date.parse(m[0]);
+      return isNaN(ms) ? 0 : ms;
+    }
+
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function normalizePhone(s) {
+      const d = (s || '').replace(/\D/g, '');
+      if (d.length === 10) return d.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+      if (d.length === 11 && d.startsWith('1'))
+        return d.replace(/^1(\d{3})(\d{3})(\d{4})/, '1 ($1) $2-$3');
+      return s || '';
+    }
+
+    function digitsOnly(s) { return (s || '').replace(/\D/g, ''); }
+
+    function phoneLink(s) {
+      const d = digitsOnly(s);
+      if (!d) return '';
+      const wa = (d.length === 10) ? ('1' + d) : (d.length === 11 && d.startsWith('1') ? d : d);
+      const display = normalizePhone(s);
+      return `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" title="Message on WhatsApp">${escapeHTML(display)} 📲</a>`;
+    }
+
+    function canonicalEmail(s) {
+      return (s || '')
+        .toLowerCase()
+        .replace(/^mailto:\s*/, '')
+        .replace(/^mail\s*to:\s*/, '')
+        .replace(/\s+/g, '')
+        .trim();
+    }
+
+    function formatNotes(cell) {
+      const stripped = (cell || '').replace(/#\d+:\s*/g, '').trim();
+      if (!stripped) return '';
+
+      const lines = stripped.split('\n');
+      const criticalLines = [];
+      const otherLines = [];
+
+      lines.forEach(line => {
+        const c = line.match(/^\[CRITICAL_ALERT\]\s*(.*)$/);
+        if (c) {
+          const msg = c[1] || '';
+          criticalLines.push(`<div class="note-entry critical">CRITICAL ALERT: ${escapeHTML(msg)}</div>`);
+        } else {
+          const m = line.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4},?\s\d{2}:\d{2}\s(?:AM|PM)):\s*(.*)$/);
+          if (!m) otherLines.push(`<div class="note-entry"><span class="txt">${escapeHTML(line)}</span></div>`);
+          else otherLines.push(`<div class="note-entry"><span class="ts">${escapeHTML(m[1])}</span><span class="txt">${escapeHTML(m[2])}</span></div>`);
+        }
+      });
+
+      // Critical Alert always on top
+      return criticalLines.join('') + otherLines.join('');
+    }
+
+    /* helper: show CRITICAL alert notification without auto-delete */
+    function showCriticalAlert(rec) {
+      const noteCell = (rec && rec.row && rec.row[COL_NOTES]) ? rec.row[COL_NOTES] : '';
+      const m = (noteCell || '').match(/\[CRITICAL_ALERT\]\s*(.+)/);
+      if (!m) return;
+
+      const message = m[1].trim();
+      // Just show the alert without prompting for deletion
+      setTimeout(() => {
+        alert(`⚠️ CRITICAL ALERT\n\n${message}\n\nThis alert will remain until manually removed.`);
+      }, 100);
+    }
+
+
+    /* ---------- Data load + render ---------- */
+    function renderTable(records){
+  if (!domCache.tbody) return;
+  domCache.tbody.innerHTML = '';
+  const frag = document.createDocumentFragment();
+
+  records.forEach(rec => {
+    const row = rec.row;
+    const tr = document.createElement('tr');
+    tr.dataset.row = rec.sheetRow;
+    tr.innerHTML = tdHTML(row);
+
+    tr.addEventListener('click', () => {
+      selectedRowIndex = rec.sheetRow; // exact sheet row for edit/delete
+      document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+      tr.classList.add('selected');
+
+      // Use cached DOM elements for better performance
+      if (domCache.username) domCache.username.value = row[0] || '';
+      if (domCache.password) domCache.password.value = row[1] || '';
+      if (domCache.email) domCache.email.value = row[2] || '';
+      if (domCache.phone) domCache.phone.value = row[3] || '';
+      if (domCache.server) domCache.server.value = row[4] || '';
+      if (domCache.autoPay) {
+        const ap = normalizeAutoPayDisplay(row[COL_AUTOPAY]);
+        domCache.autoPay.value = (ap === 'Yes' || ap === 'No') ? ap : '';
+      }
+      if (domCache.expirationDate) domCache.expirationDate.value = expirationToInputValue(row[COL_EXPIRATION]);
+      if (domCache.extendExpiration) domCache.extendExpiration.value = '';
+
+      selectedRawNotes = row[COL_NOTES] || '';
+      if (domCache.notes) domCache.notes.value = '';
+      const idxEl = document.getElementById('rowIndex');
+      if (idxEl) idxEl.value = selectedRowIndex;
+
+      // Show Critical Alert popup only when row is selected (not on Search)
+      showCriticalAlert(rec);
+    });
+
+    frag.appendChild(tr);
+  });
+
+  domCache.tbody.appendChild(frag);
+}
+
+function getTablePageSlice(records) {
+  const start = currentTablePage * ROW_LIMIT;
+  return records.slice(start, start + ROW_LIMIT);
+}
+
+function updateTablePaginationUI(records) {
+  const panel = document.getElementById('tablePagination');
+  if (!panel) return;
+  const total = records.length;
+  const totalPages = Math.max(1, Math.ceil(total / ROW_LIMIT));
+  if (currentTablePage >= totalPages) currentTablePage = Math.max(0, totalPages - 1);
+  const prevBtn = document.getElementById('tablePrevPage');
+  const nextBtn = document.getElementById('tableNextPage');
+  const info = document.getElementById('tablePageInfo');
+  if (prevBtn) prevBtn.disabled = currentTablePage <= 0;
+  if (nextBtn) nextBtn.disabled = currentTablePage >= totalPages - 1 || total === 0;
+  if (info) {
+    if (total === 0) {
+      info.textContent = 'No rows';
+    } else {
+      const from = currentTablePage * ROW_LIMIT + 1;
+      const to = Math.min((currentTablePage + 1) * ROW_LIMIT, total);
+      info.textContent = 'Page ' + (currentTablePage + 1) + ' of ' + totalPages + ' · rows ' + from + '–' + to + ' of ' + total;
+    }
+  }
+  panel.style.display = total > 0 ? 'flex' : 'none';
+}
+
+function renderTablePage(records, resetPage) {
+  if (resetPage !== false) currentTablePage = 0;
+  currentTableRecords = Array.isArray(records) ? records : [];
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+function tablePrevPage() {
+  if (currentTablePage <= 0) return;
+  currentTablePage--;
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+function tableNextPage() {
+  const totalPages = Math.ceil(currentTableRecords.length / ROW_LIMIT);
+  if (currentTablePage >= totalPages - 1) return;
+  currentTablePage++;
+  renderTable(getTablePageSlice(currentTableRecords));
+  updateTablePaginationUI(currentTableRecords);
+}
+
+window.tablePrevPage = tablePrevPage;
+window.tableNextPage = tableNextPage;
+window.renderTablePage = renderTablePage;
+
+   // Tunables
+const REFRESH_COLS = 'A:I';
+const SHEET_TAB    = 'data';
+
+// Safe busy helper (does nothing if not present)
+function setBusySafe(sel, on) {
+  const el = document.querySelector(sel);
+  if (!el) return;
+  el.disabled = !!on;
+  el.style.opacity = on ? .6 : 1;
+  el.style.pointerEvents = on ? 'none' : 'auto';
+}
+
+// Optimized sort helper with better performance
+function sortByRecent(a, b) {
+  // Use bitwise operations for faster comparison
+  const timeDiff = b.lastEditMs - a.lastEditMs;
+  return timeDiff !== 0 ? timeDiff : (b.sheetRow - a.sheetRow);
+}
+
+// Optimized sorting for large datasets
+function sortRecords(records) {
+  // Use native sort with optimized comparison
+  return records.sort(sortByRecent);
+}
+
+// Build the inner <td> HTML for a row (column order matches table header, not raw sheet index order)
+function tdHTML(rowArr) {
+  const row = normalizeSheetRow(rowArr);
+  const displayOrder = [0, 1, 2, 3, 4, COL_AUTOPAY, COL_EXPIRATION, COL_NOTES];
+  const parts = [];
+  displayOrder.forEach(ci => {
+    const cell = row[ci] || '';
+    if (ci === COL_NOTES) {
+      const notesBody = formatNotes(cell);
+      const inner = notesBody
+        ? '<div class="notes-cell" tabindex="0" role="region" aria-label="Notes (scroll to read all)">' + notesBody + '</div>'
+        : '<div class="notes-empty">No notes</div>';
+      parts.push('<td class="notes-td"><div class="notes-cell-wrap">' + inner + '</div></td>');
+    }
+    else if (ci === COL_EXPIRATION) parts.push('<td>' + formatExpirationDisplay(cell) + '</td>');
+    else if (ci === COL_AUTOPAY) parts.push('<td>' + escapeHTML(normalizeAutoPayDisplay(cell) || cell) + '</td>');
+    else if (ci === 3) parts.push('<td class="phone-wa">' + phoneLink(cell) + '</td>');
+    else parts.push('<td>' + escapeHTML(cell) + '</td>');
+  });
+  return parts.join('');
+}
+
+
+// Fetch and update a set of sheet rows via one batchGet
+async function refreshRowsBatch(sheetRowNums) {
+  if (!sheetRowNums.length) return;
+
+  const ranges = sheetRowNums.map(r => `${SHEET_TAB}!${REFRESH_COLS.split(':')[0]}${r}:${REFRESH_COLS.split(':')[1]}${r}`);
+  const qs = ranges.map(r => `ranges=${encodeURIComponent(r)}`).join('&');
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${qs}&fields=valueRanges(range,values)&key=${apiKey}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const payload = await res.json();
+  const list = (payload && payload.valueRanges) || [];
+
+  // Map “A123:G123” -> 123
+  const rowNumFromRange = (rng) => {
+    const m = String(rng || '').match(/!.*?([A-Z]+)(\d+):/i);
+    return m ? parseInt(m[2], 10) : null;
+  };
+
+  list.forEach(vr => {
+    const rnum = rowNumFromRange(vr.range);
+    if (!rnum) return;
+
+    const row = (vr.values && vr.values[0]) ? vr.values[0] : [];
+    const newRow = normalizeSheetRow(row);
+
+    // update selected notes cache if applicable
+    if (typeof selectedRowIndex === 'number' && rnum === selectedRowIndex) {
+      selectedRawNotes = newRow[COL_NOTES] || '';
+    }
+
+    // upsert into allRecords - use timestamp from notes for correct sort order
+    const lastEdit = parseLastEditMs(newRow[COL_NOTES] || '') || 0;
+    let rec = allRecords.find(x => x.sheetRow === rnum);
+    if (rec) {
+      rec.row = newRow;
+      rec.lastEditMs = lastEdit || rec.lastEditMs;
+    } else {
+      rec = {
+        row: newRow,
+        sheetRow: rnum,
+        lastEditMs: lastEdit || Date.now()
+      };
+      allRecords.push(rec);
+    }
+
+    // update DOM cell contents if this row is currently rendered
+    const tr = document.querySelector(`#dataTable tbody tr[data-row="${rnum}"]`);
+    if (tr) tr.innerHTML = tdHTML(newRow);
+  });
+}
+
+// Full reload (reduced payload using fields=values)
+async function fullReload() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?fields=values&key=${apiKey}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.json();
+
+  const rows = data.values || [];
+  totalRows = rows.length;
+
+  const dataRows = rows.slice(1); // skip header
+  existingUsernames = dataRows.map(r => (r[0] || '').toLowerCase());
+
+  allRecords = dataRows.map((row, idx) => {
+    const normalized = normalizeSheetRow(row);
+    return {
+      row: normalized,
+      sheetRow: idx + 2,
+      lastEditMs: parseLastEditMs(normalized[COL_NOTES] || '')
+    };
+  });
+
+  sortRecords(allRecords);
+
+  if (domCache.searchQuery) domCache.searchQuery.value = '';
+  if (domCache.password) domCache.password.value = '';
+  if (domCache.tbody) domCache.tbody.innerHTML = '';
+
+  renderTablePage(allRecords);
+}
+
+// === Optimized loader ===
+// - onlySelected === true -> refresh selected row if any,
+//   otherwise refresh all VISIBLE rows (no selection required).
+// - onlySelected === false -> full reload (lightweight payload).
+async function loadData(onlySelected = false) {
+  // Clear form password input on Refresh (table row data stays)
+  if (domCache.password) domCache.password.value = '';
+  setBusySafe('#refreshBtn', true);
+
+  try {
+    if (onlySelected) {
+      let targets = [];
+
+      // If a row is selected, prefer that…
+      if (Number.isInteger(selectedRowIndex)) {
+        targets = [selectedRowIndex];
+      } else {
+        // …otherwise grab all rows currently rendered in the table
+        targets = Array.from(document.querySelectorAll('#dataTable tbody tr'))
+          .map(tr => parseInt(tr.dataset.row, 10))
+          .filter(Boolean);
+      }
+
+      // Fallback to top chunk if table is empty (e.g., first load)
+      if (targets.length === 0 && Array.isArray(allRecords) && allRecords.length) {
+        targets = getTablePageSlice(allRecords).map(r => r.sheetRow);
+      }
+
+      if (targets.length) {
+        await refreshRowsBatch(Array.from(new Set(targets)));
+        // keep table sorted by latest change, then show top chunk (fast)
+        sortRecords(allRecords);
+        renderTablePage(allRecords, false);
+        return;
+      }
+      // If we still have nothing, do a full reload.
+    }
+
+    await fullReload();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load data from Google Sheets.');
+  } finally {
+    setBusySafe('#refreshBtn', false);
+    renderReminderPreview();
+    renderUpcomingExpirations();
+  }
+}
+
+window.loadData = loadData;
+
+const EXP_PANEL_DISMISS_KEY = 'contactsManagerExpPanelDismissed';
+
+function expirationDayKey(cell) {
+  const ms = parseExpirationMs(cell);
+  if (isNaN(ms)) return '';
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function expirationLocalDayStart(cell) {
+  const ms = parseExpirationMs(cell);
+  if (isNaN(ms)) return NaN;
+  const d = new Date(ms);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+function isExpirationInUpcomingWindow(cell) {
+  const expDayStart = expirationLocalDayStart(cell);
+  if (isNaN(expDayStart)) return false;
+  const today = new Date();
+  const windowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const lastDayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7).getTime();
+  return expDayStart >= windowStart && expDayStart <= lastDayStart;
+}
+
+function getExpPanelDismissals() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(EXP_PANEL_DISMISS_KEY) || '[]');
+    if (!Array.isArray(raw)) return [];
+    const list = [];
+    raw.forEach(item => {
+      if (item && typeof item === 'object' && item.sheetRow != null) {
+        const rowNum = Number(item.sheetRow);
+        if (Number.isFinite(rowNum) && rowNum > 0) {
+          list.push({ sheetRow: rowNum, expKey: String(item.expKey || '') });
+        }
+        return;
+      }
+      /* Legacy: plain row numbers hid the contact forever — ignore so rows can show again */
+    });
+    return list;
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveExpPanelDismissals(list) {
+  localStorage.setItem(EXP_PANEL_DISMISS_KEY, JSON.stringify(list));
+}
+
+function isExpPanelDismissed(sheetRow, expirationCell) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum)) return false;
+  const expKey = expirationDayKey(expirationCell);
+  const list = getExpPanelDismissals();
+  return list.some(d => d.sheetRow === rowNum && d.expKey === expKey);
+}
+
+function addExpPanelDismissal(sheetRow, expirationCell) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum) || rowNum <= 0) return;
+  const expKey = expirationDayKey(expirationCell);
+  let list = getExpPanelDismissals().filter(d => d.sheetRow !== rowNum);
+  list.push({ sheetRow: rowNum, expKey: expKey });
+  saveExpPanelDismissals(list);
+}
+
+function clearExpPanelDismissalsForRow(sheetRow) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum)) return;
+  const list = getExpPanelDismissals().filter(d => d.sheetRow !== rowNum);
+  saveExpPanelDismissals(list);
+}
+
+function removeExpirationFromPanel(sheetRow) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum) || rowNum <= 0) return;
+  if (!confirm('Remove this contact from Upcoming Expirations?\n\nThe row stays in your main table.')) return;
+  const rec = allRecords.find(r => r.sheetRow === rowNum);
+  const expCell = rec ? normalizeSheetRow(rec.row)[COL_EXPIRATION] : '';
+  addExpPanelDismissal(rowNum, expCell);
+  renderUpcomingExpirations();
+}
+
+function syncUpcomingExpPanelAfterExpirationChange(sheetRow, expirationStr) {
+  const rowNum = Number(sheetRow);
+  if (Number.isFinite(rowNum) && rowNum > 0 && !isExpirationInUpcomingWindow(expirationStr)) {
+    clearExpPanelDismissalsForRow(rowNum);
+  }
+  renderUpcomingExpirations();
+}
+
+function selectTableRowBySheetRow(sheetRow) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum)) return;
+  const tr = document.querySelector('#dataTable tbody tr[data-row="' + rowNum + '"]');
+  if (tr) {
+    tr.click();
+    tr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function searchQueryForRecord(row) {
+  const username = String(row[0] || '').trim();
+  if (username) return username;
+  const emailRaw = String(row[2] || '').trim();
+  if (emailRaw) {
+    const firstEmail = emailRaw.split(/[,;]+/).map(s => s.trim()).find(p => p.includes('@'));
+    if (firstEmail) return firstEmail;
+    return emailRaw;
+  }
+  return String(row[3] || '').trim();
+}
+
+function searchFromExpirationPanel(sheetRow) {
+  const rowNum = Number(sheetRow);
+  if (!Number.isFinite(rowNum)) return;
+  const rec = allRecords.find(r => r.sheetRow === rowNum);
+  if (!rec) return;
+
+  const row = normalizeSheetRow(rec.row);
+  const query = searchQueryForRecord(row);
+  if (domCache.searchQuery && query) domCache.searchQuery.value = query;
+
+  renderTablePage([rec]);
+  setTimeout(function () { selectTableRowBySheetRow(rowNum); }, 0);
+
+  const searchEl = document.getElementById('searchSection');
+  if (searchEl && searchEl.scrollIntoView) {
+    searchEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function renderUpcomingExpirations() {
+  const list = document.getElementById('expirationsList');
+  if (!list || !Array.isArray(allRecords)) return;
+  const items = [];
+  allRecords.forEach(rec => {
+    const row = normalizeSheetRow(rec.row);
+    const expCell = row[COL_EXPIRATION];
+    if (isExpPanelDismissed(rec.sheetRow, expCell)) return;
+    if (!isExpirationInUpcomingWindow(expCell)) return;
+    const ms = parseExpirationMs(expCell);
+    if (isNaN(ms)) return;
+    const autoPay = normalizeAutoPayDisplay(row[COL_AUTOPAY]);
+    items.push({
+      sheetRow: rec.sheetRow,
+      username: row[0] || '',
+      email: row[2] || '',
+      phone: row[3] || '',
+      autoPay: autoPay || '—',
+      expMs: ms,
+      expDisplay: formatExpirationDisplay(row[COL_EXPIRATION])
+    });
+  });
+  items.sort((a, b) => a.expMs - b.expMs);
+  if (!items.length) {
+    list.innerHTML = '<p class="exp-empty">No contacts expiring in the next 7 days. Add an expiration date within the next week to see them here.</p>';
+    return;
+  }
+  list.innerHTML = items.map(it => {
+    const apClass = it.autoPay === 'Yes' ? ' exp-autopay-yes' : (it.autoPay === 'No' ? ' exp-autopay-no' : '');
+    return (
+      '<div class="exp-item" role="button" tabindex="0" title="Search for this contact in the table"' +
+      ' onclick="searchFromExpirationPanel(' + it.sheetRow + ')"' +
+      ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();searchFromExpirationPanel(' + it.sheetRow + ');}">' +
+      '<div class="exp-item-main">' +
+      '<div><span class="exp-label">Email</span>' + escapeHTML(it.email || '—') + '</div>' +
+      '<div><span class="exp-label">Phone</span>' + escapeHTML(it.phone || '—') + '</div>' +
+      '<div><span class="exp-label">AutoPay</span><span class="exp-autopay' + apClass + '">' + escapeHTML(it.autoPay) + '</span></div>' +
+      '<div><span class="exp-label">Expires</span><span class="exp-date">' + it.expDisplay + '</span></div>' +
+      '</div>' +
+      '<button type="button" class="exp-remove-btn" onclick="event.stopPropagation(); removeExpirationFromPanel(' + it.sheetRow + ')">Remove</button>' +
+      '</div>'
+    );
+  }).join('');
+}
+
+window.removeExpirationFromPanel = removeExpirationFromPanel;
+window.renderUpcomingExpirations = renderUpcomingExpirations;
+window.searchFromExpirationPanel = searchFromExpirationPanel;
+
+    /* ---------- Search (optimized with caching and debouncing) ---------- */
+function searchData() {
+  // Clear form input boxes when search is performed (table row data stays)
+  if (domCache.username) domCache.username.value = '';
+  if (domCache.password) domCache.password.value = '';
+  if (domCache.email) domCache.email.value = '';
+  if (domCache.phone) domCache.phone.value = '';
+  if (domCache.server) domCache.server.value = '';
+  if (domCache.autoPay) domCache.autoPay.value = '';
+  if (domCache.expirationDate) domCache.expirationDate.value = '';
+  if (domCache.notes) domCache.notes.value = '';
+  
+  const raw = domCache.searchQuery.value.trim().toLowerCase();
+  if (!raw) { 
+    renderTablePage(allRecords); 
+    return; 
+  }
+
+  // Pre-compile regex patterns for better performance
+  const qDigits = (raw.match(/\d/g) || []).join('');
+  const qEmail = canonicalEmail(raw);
+  const hasPhoneQuery = qDigits.length >= 7;
+  const hasEmailQuery = qEmail.includes('@');
+
+  // Use for loop instead of filter for better performance on large datasets
+  const filtered = [];
+  for (let i = 0; i < allRecords.length; i++) {
+    const rec = allRecords[i];
+    const row = rec.row;
+    const baseMatch = row.join(' ').toLowerCase().includes(raw);
+
+    let phoneMatch = false;
+    if (hasPhoneQuery) {
+      const rp = (row[3] || '').replace(/\D/g, '');
+      const last10 = s => s.slice(-10);
+      if (rp) phoneMatch = rp.includes(qDigits) || last10(rp) === last10(qDigits);
+    }
+
+    let emailMatch = false;
+    if (hasEmailQuery) {
+      const re = canonicalEmail(row[2] || '');
+      emailMatch = re.includes(qEmail);
+    }
+
+    if (baseMatch || phoneMatch || emailMatch) {
+      filtered.push(rec);
+    }
+  }
+
+  renderTablePage(filtered);
+}
+
+// Create debounced version of search
+const debouncedSearch = debounceSearch(searchData, 300);
+window.searchData = searchData;
+window.debouncedSearch = debouncedSearch;
+
+
+
+      /* ---------- Add/Edit/Delete (same behavior as before) ---------- */
+      function clearForm() {
+        // Clear form inputs (table row data stays)
+        if (domCache.username) domCache.username.value = '';
+        if (domCache.password) domCache.password.value = '';
+        if (domCache.email) domCache.email.value = '';
+        if (domCache.phone) domCache.phone.value = '';
+        if (domCache.server) domCache.server.value = '';
+        if (domCache.autoPay) domCache.autoPay.value = '';
+        if (domCache.expirationDate) domCache.expirationDate.value = '';
+        if (domCache.extendExpiration) domCache.extendExpiration.value = '';
+        if (domCache.notes) domCache.notes.value = '';
+        if (domCache.searchQuery) domCache.searchQuery.value = '';
+        
+        document.querySelectorAll('#dataTable tr.selected').forEach(r => r.classList.remove('selected'));
+        selectedRowIndex = null;
+      }
+      window.clearForm = clearForm;
+
+      function confirmDelete() {
+        if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+        if (!confirm('Delete selected row?')) return;
+
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          password: domCache.password ? domCache.password.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          expirationDate: domCache.expirationDate ? domCache.expirationDate.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('delete', currentData);
+
+        setBusy('.delete-btn', true);
+        fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({ action: 'delete', password: sessionPassword, row: selectedRowIndex })
+        })
+          .then(res => res.text())
+          .then(() => { selectedRowIndex = null; loadData(); })
+          .catch(err => alert('Delete failed: ' + err))
+          .finally(() => setBusy('.delete-btn', false));
+      }
+
+
+
+
+      window.confirmDelete = confirmDelete;
+
+      function addExpirationPeriod(baseDate, code) {
+        const d = new Date(baseDate.getTime());
+        switch (code) {
+          case '24h': d.setTime(d.getTime() + 86400000); break;
+          case '48h': d.setTime(d.getTime() + 2 * 86400000); break;
+          case '1w': d.setTime(d.getTime() + 7 * 86400000); break;
+          case '2w': d.setTime(d.getTime() + 14 * 86400000); break;
+          case '1m': d.setMonth(d.getMonth() + 1); break;
+          case '3m': d.setMonth(d.getMonth() + 3); break;
+          case '6m': d.setMonth(d.getMonth() + 6); break;
+          case '1y': d.setFullYear(d.getFullYear() + 1); break;
+          default: return d;
+        }
+        return d;
+      }
+
+      function dateToExpirationInput(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function currentRecordExpirationMs() {
+        const formVal = formExpirationValue();
+        if (formVal) {
+          const t = Date.parse(formVal + 'T12:00:00');
+          if (!isNaN(t)) return t;
+        }
+        if (selectedRowIndex === null) return NaN;
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        if (!rec) return NaN;
+        return parseExpirationMs(rec.row[COL_EXPIRATION]);
+      }
+
+      function verifyExpirationSavedToSheet(sheetRow, expectedYmd) {
+        if (!expectedYmd || !sheetRow) return;
+        const rec = allRecords.find(r => r.sheetRow === Number(sheetRow));
+        if (!rec) return;
+        const got = parseExpirationMs(normalizeSheetRow(rec.row)[COL_EXPIRATION]);
+        const want = parseExpirationMs(expectedYmd);
+        if (!isNaN(want) && isNaN(got)) {
+          alert(
+            'Expiration did not save to the sheet (column I).\n\n' +
+            'Update the Google Apps Script: use apps-script/Code.gs in this project, deploy a new web app version, then click Update again.'
+          );
+        }
+      }
+
+      function applyRowEditFromServer(savedExpiration) {
+        const singleRange = `data!A${selectedRowIndex}:I${selectedRowIndex}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+        return fetch(url).then(res => res.json()).then(data => {
+          const row = (data && data.values && data.values[0]) ? data.values[0] : [];
+          if (savedExpiration && !parseExpirationMs(normalizeSheetRow(row)[COL_EXPIRATION])) {
+            console.warn('Expiration missing from sheet column I after save — redeploy Apps Script (apps-script/Code.gs).');
+          }
+          const newRow = applyExpirationToRow(row, savedExpiration);
+          selectedRawNotes = newRow[COL_NOTES] || '';
+          const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+          if (rec) {
+            rec.row = newRow;
+            rec.lastEditMs = Date.now();
+          }
+          const selectedTr = document.querySelector('#dataTable tr.selected');
+          if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+          allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+          renderTablePage(allRecords, false);
+          syncUpcomingExpPanelAfterExpirationChange(selectedRowIndex, savedExpiration);
+        });
+      }
+
+      /** Apply pending Extend choice to the Expiration field (saved only via Add/Update). */
+      function commitPendingExtendToForm() {
+        const sel = domCache.extendExpiration;
+        if (!sel || !sel.value) return;
+
+        const code = sel.value;
+        let baseMs = currentRecordExpirationMs();
+        if (isNaN(baseMs)) {
+          const today = new Date();
+          baseMs = Date.parse(dateToExpirationInput(today) + 'T12:00:00');
+        }
+
+        const newStr = dateToExpirationInput(addExpirationPeriod(new Date(baseMs), code));
+        if (domCache.expirationDate) domCache.expirationDate.value = newStr;
+        sel.value = '';
+      }
+
+      function confirmEdit() {
+        if (selectedRowIndex === null) { alert('Select a row first!'); return; }
+        editRow();
+      }
+      window.confirmEdit = confirmEdit;
+
+      function editRow() {
+  setBusy('.edit-btn', true);
+
+  // Save previous row data for Undo (before we overwrite)
+  const recForUndo = allRecords.find(r => r.sheetRow === selectedRowIndex);
+  const prevRow = recForUndo ? recForUndo.row : [];
+  const previousData = {
+    username: prevRow[0] || '',
+    password: prevRow[1] || '',
+    email: prevRow[2] || '',
+    phone: prevRow[3] || '',
+    server: prevRow[4] || '',
+    autoPay: prevRow[COL_AUTOPAY] || '',
+    expirationDate: expirationToInputValue(prevRow[COL_EXPIRATION]),
+    notes: prevRow[COL_NOTES] || ''
+  };
+  saveUndoState('edit', previousData);
+
+  commitPendingExtendToForm();
+
+  // Use cached DOM elements for better performance
+  const rawNew = domCache.notes ? domCache.notes.value.trim() : '';
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+
+  let combined = existing;
+  if (rawNew) {
+    const ts = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Chicago', // match server timezone used on Adds
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const newNote = `${ts}: ${rawNew}`;
+    // Keep [CRITICAL_ALERT] always on top
+    const criticalMatch = existing.match(/^\[CRITICAL_ALERT\]\s*.+$/m);
+    const criticalLine = criticalMatch ? criticalMatch[0] : '';
+    const rest = existing.split('\n').filter(l => !l.startsWith('[CRITICAL_ALERT]')).join('\n').trim();
+    const parts = [criticalLine, newNote, rest].filter(Boolean);
+    combined = parts.join('\n');
+  }
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: formAutoPayValue(),
+    expirationDate: formExpirationValue(),
+    notes: combined
+  });
+
+  // ✅ Post the edit, then refresh THIS row from Google Sheets (server truth),
+  // ✅ mark it as latest change, resort, and re-render.
+  const savedExp = formExpirationValue();
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(text => {
+      if (text && /unauthorized|error/i.test(text)) throw new Error(text);
+      return applyRowEditFromServer(savedExp);
+    })
+    .then(() => verifyExpirationSavedToSheet(selectedRowIndex, savedExp))
+    .catch(err => alert('Update failed: ' + err))
+    .finally(() => setBusy('.edit-btn', false));
+}
+
+
+          function addRow() {
+        setBusy('.add-btn', true);
+
+        // Save undo state before making changes
+        const currentData = {
+          username: domCache.username ? domCache.username.value : '',
+          password: domCache.password ? domCache.password.value : '',
+          email: domCache.email ? domCache.email.value : '',
+          phone: domCache.phone ? domCache.phone.value : '',
+          server: domCache.server ? domCache.server.value : '',
+          autoPay: domCache.autoPay ? domCache.autoPay.value : '',
+          expirationDate: domCache.expirationDate ? domCache.expirationDate.value : '',
+          notes: domCache.notes ? domCache.notes.value : ''
+        };
+        saveUndoState('add', currentData);
+
+        // Use cached DOM elements for better performance
+        const username = domCache.username ? domCache.username.value.trim() : '';
+        if (!username) { alert('Username is required.'); setBusy('.add-btn', false); return; }
+        if (existingUsernames.includes(username.toLowerCase())) { alert('Username already exists'); setBusy('.add-btn', false); return; }
+
+        commitPendingExtendToForm();
+
+        const savedExpiration = formExpirationValue();
+        const data = {
+          action: 'add',
+          password: sessionPassword,
+          username: username,
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: formAutoPayValue(),
+          expirationDate: savedExpiration,
+          notes: domCache.notes ? domCache.notes.value.trim() : ''
+        };
+
+        // 1) Save to Apps Script
+        fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
+          .then(r => r.text())
+          .then(() => {
+            // 2) Refresh JUST the newly added row from Google Sheets
+            //    First get the Username column to find the new row index.
+            const usernamesRange = 'data!A2:A3000';
+            const urlA = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(usernamesRange)}?key=${apiKey}`;
+            return fetch(urlA).then(res => res.json()).then(col => {
+              const arr = (col && col.values) ? col.values.map(v => (v[0] || '')) : [];
+              const target = username.toLowerCase();
+              let foundIndex = -1;
+              for (let i = arr.length - 1; i >= 0; i--) {
+                if ((arr[i] || '').toLowerCase() === target) { foundIndex = i; break; }
+              }
+              if (foundIndex === -1) {
+                // Fallback: full reload if we can't find it for any reason.
+                loadData();
+                clearForm();
+                return null;
+              }
+              const sheetRow = 2 + foundIndex; // because A2 is index 0
+
+              const singleRange = `data!A${sheetRow}:I${sheetRow}`;
+              const urlRow = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(singleRange)}?key=${apiKey}`;
+              return fetch(urlRow).then(r2 => r2.json()).then(data2 => {
+                const row = (data2 && data2.values && data2.values[0]) ? data2.values[0] : [];
+                const newRow = applyExpirationToRow(row, savedExpiration);
+
+                // 3) Update local caches and sort by latest change (this row)
+                existingUsernames.push(username.toLowerCase());
+                totalRows = Math.max(totalRows, sheetRow);
+
+                const rec = {
+                  row: newRow,
+                  sheetRow: sheetRow,
+                  lastEditMs: Date.now() // treat this add as the latest change
+                };
+                allRecords.push(rec);
+
+                sortRecords(allRecords);
+                renderTablePage(allRecords, false);
+                syncUpcomingExpPanelAfterExpirationChange(sheetRow, savedExpiration);
+                verifyExpirationSavedToSheet(sheetRow, savedExpiration);
+
+                clearForm();
+                return null;
+              });
+            });
+          })
+          .catch(err => { console.error(err); alert('Error saving row.'); })
+          .finally(() => setBusy('.add-btn', false));
+      }
+
+
+
+      window.addRow = addRow;
+      function addCriticalAlert() {
+  if (selectedRowIndex === null) { alert('Select a row first.'); return; }
+
+  const msg = prompt('Enter the CRITICAL ALERT message for this row:');
+  if (msg === null) return;                 // user canceled
+  const trimmed = msg.trim();
+  if (!trimmed) { alert('Alert message cannot be empty.'); return; }
+
+  // Keep everything else in Notes, but ensure only one [CRITICAL_ALERT] line exists (always on top)
+  const existing = (selectedRawNotes || '').replace(/#\d+:\s*/g, '').trim();
+  const cleaned = existing
+    .split('\n')
+    .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+    .join('\n');
+
+  const combined = `[CRITICAL_ALERT] ${trimmed}` + (cleaned ? `\n${cleaned}` : '');
+
+  const params = new URLSearchParams({
+    action: 'edit',
+    password: sessionPassword,
+    row: selectedRowIndex,
+    username: domCache.username ? domCache.username.value.trim() : '',
+    passwordField: domCache.password ? domCache.password.value.trim() : '',
+    email: domCache.email ? domCache.email.value.trim() : '',
+    phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+    server: domCache.server ? domCache.server.value.trim() : '',
+    autoPay: formAutoPayValue(),
+    expirationDate: formExpirationValue(),
+    notes: combined
+  });
+
+  // ✅ No page refresh: update UI + local cache, then resort by last change
+  fetch(scriptURL, { method: 'POST', body: params })
+    .then(r => r.text())
+    .then(() => {
+      alert('Critical alert saved.');
+
+      // Update our in-memory state + row UI
+      selectedRawNotes = combined;
+
+      const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+      if (rec) {
+        const newRow = normalizeSheetRow(rec.row);
+        newRow[0] = domCache.username ? domCache.username.value.trim() : '';
+        newRow[1] = domCache.password ? domCache.password.value.trim() : '';
+        newRow[2] = domCache.email ? domCache.email.value.trim() : '';
+        newRow[3] = normalizePhone(domCache.phone ? domCache.phone.value.trim() : '');
+        newRow[4] = domCache.server ? domCache.server.value.trim() : '';
+        newRow[COL_AUTOPAY] = formAutoPayValue();
+        newRow[COL_NOTES] = combined;
+        newRow[COL_EXPIRATION] = formExpirationValue();
+        rec.row = newRow;
+        rec.lastEditMs = Date.now(); // treat this as latest change
+        const selectedTr = document.querySelector('#dataTable tr.selected');
+        if (selectedTr) selectedTr.innerHTML = tdHTML(newRow);
+      }
+
+      // Resort by last change and re-render the visible chunk (no network)
+      allRecords.sort((a, b) => (b.lastEditMs - a.lastEditMs) || (b.sheetRow - a.sheetRow));
+      renderTablePage(allRecords, false);
+    })
+    .catch(err => alert('Failed to save critical alert: ' + err));
+}
+window.addCriticalAlert = addCriticalAlert;
+
+      function removeCriticalAlert() {
+        if (selectedRowIndex === null) { 
+          alert('Select a row first.'); 
+          return; 
+        }
+
+        // Check if the selected row has a critical alert
+        const noteCell = selectedRawNotes || '';
+        if (!noteCell.includes('[CRITICAL_ALERT]')) {
+          alert('No critical alert found on this row.');
+          return;
+        }
+
+        if (!confirm('Remove the critical alert from this row?')) return;
+
+        // Remove all critical alert lines
+        const cleaned = noteCell
+          .split('\n')
+          .filter(line => !line.startsWith('[CRITICAL_ALERT]'))
+          .join('\n')
+          .trim();
+
+        const params = new URLSearchParams({
+          action: 'edit',
+          password: sessionPassword,
+          row: selectedRowIndex,
+          username: domCache.username ? domCache.username.value.trim() : '',
+          passwordField: domCache.password ? domCache.password.value.trim() : '',
+          email: domCache.email ? domCache.email.value.trim() : '',
+          phone: normalizePhone(domCache.phone ? domCache.phone.value.trim() : ''),
+          server: domCache.server ? domCache.server.value.trim() : '',
+          autoPay: formAutoPayValue(),
+          expirationDate: formExpirationValue(),
+          notes: cleaned
+        });
+
+        setBusy('.remove-alert-btn', true);
+
+        fetch(scriptURL, { method: 'POST', body: params })
+          .then(r => r.text())
+          .then(() => {
+            alert('Critical alert removed successfully.');
+            
+            // Update local cache and UI
+            selectedRawNotes = cleaned;
+            
+            const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+            if (rec) {
+              rec.row[COL_NOTES] = cleaned;
+              rec.row = normalizeSheetRow(rec.row);
+              rec.lastEditMs = Date.now();
+              
+              // Update the selected row in the table
+              const selectedTr = document.querySelector('#dataTable tr.selected');
+              if (selectedTr) selectedTr.innerHTML = tdHTML(rec.row);
+            }
+            
+            // Resort and re-render
+            sortRecords(allRecords);
+            renderTablePage(allRecords, false);
+          })
+          .catch(err => alert('Failed to remove critical alert: ' + err))
+          .finally(() => setBusy('.remove-alert-btn', false));
+      }
+      window.removeCriticalAlert = removeCriticalAlert;
+
+      window.undoLastChange = undoLastChange;
+
+    /* ---------- Reminder feature ---------- */
+    const REMINDER_STORAGE_KEY = 'contactsManagerReminders';
+    let reminders = [];
+    try {
+      reminders = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]') || [];
+    } catch (e) {
+      reminders = [];
+    }
+    if (!Array.isArray(reminders)) reminders = [];
+
+    function saveReminders() {
+      localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(reminders));
+    }
+
+    let reminderCalYear = new Date().getFullYear();
+    let reminderCalMonth = new Date().getMonth();
+
+    function reminderCalendarNav(which) {
+      if (which === 'prevYear') reminderCalYear--;
+      else if (which === 'nextYear') reminderCalYear++;
+      else if (which === 'prevMonth') {
+        reminderCalMonth--;
+        if (reminderCalMonth < 0) { reminderCalMonth = 11; reminderCalYear--; }
+      } else if (which === 'nextMonth') {
+        reminderCalMonth++;
+        if (reminderCalMonth > 11) { reminderCalMonth = 0; reminderCalYear++; }
+      }
+      renderReminderPreview();
+    }
+    window.reminderCalendarNav = reminderCalendarNav;
+
+    function renderReminderPreview() {
+      const calEl = document.getElementById('reminderPreviewCalendar');
+      const listEl = document.getElementById('reminderPreviewList');
+      if (!calEl || !listEl) return;
+
+      let stored = [];
+      try {
+        stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+      } catch (e) { stored = []; }
+      if (!Array.isArray(stored)) stored = [];
+
+      /* Upcoming + calendar dots: localStorage reminders only (Add Reminder). Sheet Notes column is not read. */
+      const merged = [];
+      stored.forEach(r => {
+        if (!r || r.completed || r.id == null) return;
+        if (r.due != null && !isNaN(Number(r.due))) {
+          merged.push({
+            id: r.id,
+            text: r.text || 'Reminder',
+            due: Number(r.due),
+            username: r.username || ''
+          });
+        } else if (r.text && String(r.text).trim()) {
+          merged.push({
+            id: r.id,
+            text: r.text,
+            due: null,
+            username: r.username || ''
+          });
+        }
+      });
+      const horizonStart = new Date();
+      horizonStart.setHours(0, 0, 0, 0);
+      horizonStart.setDate(horizonStart.getDate() - 1);
+      const minDue = horizonStart.getTime();
+      const maxDue = minDue + 86400000 * 420;
+
+      const withDue = merged.filter(x => x.due != null && !isNaN(x.due) && x.due >= minDue && x.due <= maxDue);
+      const noDue = merged.filter(x => x.due == null || isNaN(x.due));
+      withDue.sort((a, b) => a.due - b.due);
+      noDue.sort((a, b) => String(a.text || '').localeCompare(String(b.text || '')));
+      const active = withDue.concat(noDue);
+
+      const now = new Date();
+      const y = reminderCalYear;
+      const mo = reminderCalMonth;
+      const first = new Date(y, mo, 1);
+      const lastDay = new Date(y, mo + 1, 0).getDate();
+      const padStart = (first.getDay() + 6) % 7;
+      const monthLabel = first.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+      const daySet = new Set();
+      withDue.forEach(item => {
+        const d = new Date(item.due);
+        if (d.getFullYear() === y && d.getMonth() === mo) daySet.add(d.getDate());
+      });
+
+      let calHtml = '<div class="rpc-cal-head">';
+      calHtml += '<span class="rpc-kicker">Calendar</span>';
+      calHtml += '<div class="rpc-nav">';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Previous year" onclick="reminderCalendarNav(\'prevYear\')">«</button>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Previous month" onclick="reminderCalendarNav(\'prevMonth\')">‹</button>';
+      calHtml += '<span class="rpc-month-label">' + escapeHTML(monthLabel) + '</span>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Next month" onclick="reminderCalendarNav(\'nextMonth\')">›</button>';
+      calHtml += '<button type="button" class="rpc-nav-btn" aria-label="Next year" onclick="reminderCalendarNav(\'nextYear\')">»</button>';
+      calHtml += '</div><span></span></div>';
+
+      calHtml += '<table><thead><tr>';
+      ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach(function (d, i) {
+        calHtml += '<th title="' + ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] + '">' + d + '</th>';
+      });
+      calHtml += '</tr></thead><tbody><tr>';
+      for (let i = 0; i < padStart; i++) calHtml += '<td class="rpc-day-muted"><span class="rpc-day-cell"></span></td>';
+
+      const todayD = now.getDate();
+      const todayM = now.getMonth();
+      const todayY = now.getFullYear();
+      let col = padStart;
+      for (let day = 1; day <= lastDay; day++) {
+        if (col === 7) { calHtml += '</tr><tr>'; col = 0; }
+        const isToday = day === todayD && mo === todayM && y === todayY;
+        const hasEvent = daySet.has(day);
+        let cls = '';
+        if (isToday) cls += ' cal-day-today';
+        if (hasEvent) cls += ' cal-day-event';
+        calHtml += '<td class="' + cls.trim() + '"><span class="rpc-day-cell">' + day + '</span></td>';
+        col++;
+      }
+      while (col < 7) {
+        calHtml += '<td class="rpc-day-muted"><span class="rpc-day-cell"></span></td>';
+        col++;
+      }
+      calHtml += '</tr></tbody></table>';
+      calHtml += '<div class="rpc-cal-foot">' + escapeHTML(monthLabel) + '</div>';
+      calEl.innerHTML = calHtml;
+
+      if (active.length === 0) {
+        listEl.innerHTML = '<p class="rpc-empty">No reminders yet. Use Add Reminder to create one (a due date shows it on the calendar).</p>';
+        return;
+      }
+      listEl.innerHTML = active.slice(0, 25).map(r => {
+        const title = escapeHTML(r.text || 'Reminder');
+        const user = r.username ? escapeHTML(r.username) : '';
+        let meta = '';
+        if (r.due != null && !isNaN(r.due)) {
+          const dt = new Date(r.due);
+          const shortDate = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+          meta = shortDate + ' · ' + timeStr + (user ? ' · ' + user : '');
+        } else {
+          meta = (user ? user + ' · ' : '') + 'No due date — use Edit to set one';
+        }
+        const rid = Number(r.id);
+        return (
+          '<div class="reminder-preview-item">' +
+          '<div class="rv-body"><div class="rv-title">' + title + '</div><div class="rv-meta">' + meta + '</div></div>' +
+          '<div class="rv-actions">' +
+          '<button type="button" class="rv-btn-edit" onclick="editReminderFromPreview(' + rid + ')">Edit</button>' +
+          '<button type="button" class="rv-btn-done" onclick="completeReminderFromPreview(' + rid + ')">Done</button>' +
+          '</div></div>'
+        );
+      }).join('');
+    }
+
+    let editingReminderId = null;
+
+    function reminderModalTitle(text) {
+      const h3 = document.querySelector('#reminderModal .reminder-modal h3');
+      if (h3) h3.textContent = text;
+    }
+
+    function dueToDatetimeLocalValue(ms) {
+      if (ms == null || isNaN(ms)) return '';
+      const d = new Date(ms);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return y + '-' + m + '-' + day + 'T' + h + ':' + min;
+    }
+
+    function editReminderFromPreview(id) {
+      const rid = Number(id);
+      const r = reminders.find(x => x.id === rid);
+      if (!r || r.completed) return;
+      editingReminderId = rid;
+      reminderModalTitle('Edit Reminder');
+      const userInput = document.getElementById('reminderUsername');
+      const textInput = document.getElementById('reminderText');
+      const dueInput = document.getElementById('reminderDue');
+      if (userInput) userInput.value = r.username || '';
+      if (textInput) textInput.value = r.text || '';
+      if (dueInput) dueInput.value = dueToDatetimeLocalValue(r.due);
+      renderUserReminders(r.username || '');
+      const modal = document.getElementById('reminderModal');
+      if (modal) modal.classList.add('open');
+    }
+
+    function completeReminderFromPreview(id) {
+      const rid = Number(id);
+      const idx = reminders.findIndex(x => x.id === rid);
+      if (idx === -1) return;
+      reminders[idx].completed = true;
+      saveReminders();
+      renderReminderPreview();
+    }
+
+    function openReminderModal() {
+      let username = '';
+      if (selectedRowIndex !== null) {
+        const rec = allRecords.find(r => r.sheetRow === selectedRowIndex);
+        username = rec && rec.row && rec.row[0] ? String(rec.row[0]).trim() : '';
+      }
+      if (!username && domCache.username) {
+        username = domCache.username.value ? String(domCache.username.value).trim() : '';
+      }
+      if (!username) {
+        alert('Select a row first: click on a row in the table, then click Add Reminder.');
+        return;
+      }
+      editingReminderId = null;
+      reminderModalTitle('Add Reminder');
+      const modal = document.getElementById('reminderModal');
+      const userInput = document.getElementById('reminderUsername');
+      const textInput = document.getElementById('reminderText');
+      const dueInput = document.getElementById('reminderDue');
+      if (userInput) userInput.value = username;
+      if (textInput) textInput.value = '';
+      if (dueInput) dueInput.value = '';
+      renderUserReminders(username);
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeReminderModal() {
+      const modal = document.getElementById('reminderModal');
+      if (modal) modal.classList.remove('open');
+      editingReminderId = null;
+      reminderModalTitle('Add Reminder');
+    }
+
+    function renderUserReminders(username) {
+      const list = document.getElementById('userRemindersList');
+      if (!list) return;
+      const userReminders = reminders.filter(r =>
+        (r.username || '').toLowerCase() === (username || '').toLowerCase() &&
+        !r.alertShown
+      );
+      if (userReminders.length === 0) {
+        list.innerHTML = '';
+        return;
+      }
+      list.innerHTML = '<h4>Existing reminders for this user</h4>' +
+        userReminders.map(r => '<span class="reminder-chip">' + escapeHTML(r.text) + (r.due ? ' (' + new Date(r.due).toLocaleDateString() + ')' : '') + '</span>').join('');
+    }
+
+    function saveReminderFromModal() {
+      const username = (document.getElementById('reminderUsername') || {}).value || '';
+      const text = (document.getElementById('reminderText') || {}).value.trim();
+      const dueVal = (document.getElementById('reminderDue') || {}).value;
+      if (!username) { alert('Username is required.'); return; }
+      if (!text) { alert('Enter a reminder.'); return; }
+      const due = dueVal ? new Date(dueVal).getTime() : null;
+      if (editingReminderId != null) {
+        const idx = reminders.findIndex(x => x.id === editingReminderId);
+        if (idx !== -1) {
+          reminders[idx].username = username;
+          reminders[idx].text = text;
+          reminders[idx].due = due;
+          reminders[idx].completed = false;
+          reminders[idx].alertShown = false;
+        }
+        editingReminderId = null;
+      } else {
+        reminders.push({
+          id: Date.now(),
+          username,
+          text,
+          due,
+          completed: false,
+          alertShown: false,
+          createdAt: Date.now()
+        });
+      }
+      saveReminders();
+      renderReminderPreview();
+      closeReminderModal();
+    }
+
+    let currentReminderId = null;
+
+    function showReminderNotification(reminder) {
+      if (!reminder) return;
+      currentReminderId = reminder.id;
+      const sub = document.getElementById('reminderNotifSub');
+      const userEl = document.getElementById('reminderNotifUser');
+      const msg = document.getElementById('reminderNotifMsg');
+      const overlay = document.getElementById('reminderNotification');
+      if (sub) sub.textContent = 'Due: ' + new Date(reminder.due).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      if (userEl) {
+        userEl.textContent = reminder.username ? 'For: ' + reminder.username : '';
+        userEl.style.display = reminder.username ? 'inline-block' : 'none';
+      }
+      if (msg) msg.textContent = reminder.text || 'Reminder';
+      if (overlay) overlay.classList.add('open');
+    }
+
+    function closeReminderNotification() {
+      const overlay = document.getElementById('reminderNotification');
+      if (overlay) overlay.classList.remove('open');
+      currentReminderId = null;
+    }
+
+    function handleReminderAction(action) {
+      if (!currentReminderId) { closeReminderNotification(); return; }
+      try {
+        let stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+        const idx = stored.findIndex(r => r.id === currentReminderId);
+        if (idx === -1) { closeReminderNotification(); return; }
+        const r = stored[idx];
+        const now = Date.now();
+        if (action === 'done') {
+          stored = stored.filter(x => x.id !== currentReminderId);
+        } else {
+          const mins = { snooze30: 30, snooze60: 60, snooze360: 360, snooze1440: 1440 }[action] || 30;
+          r.due = now + mins * 60 * 1000;
+          r.alertShown = false;
+        }
+        localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify(stored));
+        reminders = stored;
+      } catch (e) {}
+      closeReminderNotification();
+      setTimeout(checkRemindersDue, 500);
+      renderReminderPreview();
+    }
+
+    function checkRemindersDue() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(REMINDER_STORAGE_KEY) || '[]');
+        if (!Array.isArray(stored)) return;
+        if (document.getElementById('reminderNotification') && document.getElementById('reminderNotification').classList.contains('open')) return;
+        const now = Date.now();
+        const due = stored.find(r => r.due && !r.alertShown && now >= r.due);
+        if (due) showReminderNotification(due);
+      } catch (e) {}
+    }
+
+    setInterval(() => { checkRemindersDue(); renderReminderPreview(); }, 30000);
+    document.addEventListener('DOMContentLoaded', () => { checkRemindersDue(); renderReminderPreview(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') { checkRemindersDue(); renderReminderPreview(); }
+    });
+
+    window.openReminderModal = openReminderModal;
+    window.closeReminderModal = closeReminderModal;
+    window.saveReminderFromModal = saveReminderFromModal;
+    window.handleReminderAction = handleReminderAction;
+    window.editReminderFromPreview = editReminderFromPreview;
+    window.completeReminderFromPreview = completeReminderFromPreview;
+
+  </script>
+
+
+
+</body>
+
+</html>
