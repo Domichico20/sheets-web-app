@@ -5,13 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Google Sheets Manager</title>
-  <link rel="preload" as="image" href="logo.png">
-  <link rel="preload" as="image" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png">
+  <link rel="preload" as="image" href="1%20logo.png">
   <link rel="icon" type="image/png"
     href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
   <link rel="shortcut icon" type="image/png"
     href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png?v=12">
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png?v=6">
+  <link rel="apple-touch-icon" href="1%20logo.png">
 
 
 
@@ -2272,9 +2271,8 @@
     <div class="abstract-grid"></div>
   </div>
   <header>
-    <img src="https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/logo.png" alt="Company Logo"
-      class="logo" width="200" height="200" decoding="async" fetchpriority="high" referrerpolicy="no-referrer"
-      onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Domichico20/sheets-web-app/main/1%20logo.png';">
+    <img src="1%20logo.png" alt="Company Logo"
+      class="logo" width="200" height="200" decoding="async" fetchpriority="high">
   </header>
 
   <div id="loginSection">
@@ -3587,6 +3585,28 @@ window.debouncedSearch = debouncedSearch;
         return parseExpirationMs(rec.row[COL_EXPIRATION]);
       }
 
+      function assertAppsScriptOk(text) {
+        const t = String(text || '').trim();
+        if (!t) return;
+        if (/^OK$/i.test(t)) return;
+        try {
+          const j = JSON.parse(t);
+          if (j.ok === true || j.success === true) return;
+          if (j.ok === false || j.error) {
+            throw new Error(String(j.error || j.message || 'Save failed'));
+          }
+        } catch (e) {
+          if (!(e instanceof SyntaxError)) throw e;
+        }
+        if (/unauthorized/i.test(t)) {
+          throw new Error(
+            'Google Apps Script returned Unauthorized.\n\n' +
+            'In Apps Script, APP_PASS must match the password you use to unlock the app (e.g. Google#2020). Deploy → New deployment after changing it.'
+          );
+        }
+        if (/error|invalid/i.test(t)) throw new Error(t);
+      }
+
       function verifyExpirationSavedToSheet(sheetRow, expectedYmd) {
         if (!expectedYmd || !sheetRow) return;
         const rec = allRecords.find(r => r.sheetRow === Number(sheetRow));
@@ -3707,7 +3727,7 @@ window.debouncedSearch = debouncedSearch;
   fetch(scriptURL, { method: 'POST', body: params })
     .then(r => r.text())
     .then(text => {
-      if (text && /unauthorized|error/i.test(text)) throw new Error(text);
+      assertAppsScriptOk(text);
       return applyRowEditFromServer(savedExp);
     })
     .then(() => verifyExpirationSavedToSheet(selectedRowIndex, savedExp))
@@ -3756,7 +3776,8 @@ window.debouncedSearch = debouncedSearch;
         // 1) Save to Apps Script
         fetch(scriptURL, { method: 'POST', body: new URLSearchParams(data) })
           .then(r => r.text())
-          .then(() => {
+          .then(text => {
+            assertAppsScriptOk(text);
             // 2) Refresh JUST the newly added row from Google Sheets
             //    First get the Username column to find the new row index.
             const usernamesRange = 'data!A2:A3000';
